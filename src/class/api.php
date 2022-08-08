@@ -349,10 +349,16 @@ class LOVD_API
     {
         // Processes the GET calls to the API.
 
-        // Currently only handling the 'ga4gh' resource, for GA4GH Data Connect.
-        if ($this->sResource == 'ga4gh') {
+        // Currently handling the checkHGVS API from api.lovd.nl, and the 'ga4gh' resource, for GA4GH Data Connect.
+        if ($this->sResource == 'checkHGVS') {
+            require_once 'class/api.checkHGVS.php';
+            $o = new LOVD_API_checkHGVS($this);
+        } elseif ($this->sResource == 'ga4gh') {
             require_once 'class/api.ga4gh.php';
             $o = new LOVD_API_GA4GH($this);
+        }
+
+        if (isset($o)) {
             // This should process the request, return false on failure,
             //  true on success, and void otherwise (bugs).
             return $o->processGET($aURLElements, $bReturnBody);
