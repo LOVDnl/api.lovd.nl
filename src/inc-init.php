@@ -76,6 +76,17 @@ function lovd_API_handleError ($nError, $sError, $sFile, $nLine)
 }
 set_error_handler('lovd_API_handleError');
 
+function lovd_API_handleException ($oException)
+{
+    return lovd_API_handleError(
+        E_ERROR, // All Exceptions will be handled as Errors.
+        $oException->getMessage(),
+        $oException->getFile(),
+        $oException->getLine()
+    );
+}
+set_exception_handler('lovd_API_handleException');
+
 // Sometimes inc-init.php gets run over CLI (LOVD+, external scripts, etc.).
 // Handle that here, instead of building lots of code in many different places.
 if (!isset($_SERVER['HTTP_HOST'])) {
