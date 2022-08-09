@@ -5,7 +5,7 @@
  * Adapted from /src/inc-init.php in the LOVD3 project.
  *
  * Created     : 2022-08-08
- * Modified    : 2022-08-08
+ * Modified    : 2022-08-09
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -35,47 +35,46 @@ if (!defined('ROOT_PATH')) {
 }
 
 // This instance is JSON-only. Catch all errors and warnings and return these as JSON.
-set_error_handler(
-    function ($nError, $sError, $sFile, $nLine)
-    {
-        // Based on the example given within the documentation text
-        //  at https://www.php.net/set_error_handler.
-        // License, according to https://www.php.net/license/index.php,
-        //  is CC3.0-BY, compatible with GPL.
-        if (!(error_reporting() & $nError)) {
-            // This error code is not included in error_reporting, so let it
-            //  fall through to the standard PHP error handler
-            return false;
-        }
-
-        $aReturn = array(
-            'version' => '',
-            'messages' => array(),
-            'warnings' => array(),
-            'errors' => array(),
-            'data' => array(),
-        );
-
-        switch ($nError) {
-            case E_NOTICE:
-                $aReturn['messages'][] = "PHP notice: \"$sError\" in $sFile on line $nLine.";
-                $aReturn['warnings'][] = "Unhandled PHP notice in $sFile on line $nLine.";
-                break;
-
-            case E_WARNING:
-                $aReturn['warnings'][] = "PHP warning: \"$sError\" in $sFile on line $nLine.";
-                break;
-
-            case E_ERROR:
-            default:
-                $aReturn['errors'][] = "PHP error: \"$sError\" in $sFile on line $nLine.";
-                break;
-        }
-
-        header('HTTP/1.0 500 Internal Server Error', true, 500);
-        die(json_encode($aReturn, JSON_PRETTY_PRINT));
+function lovd_API_handleError ($nError, $sError, $sFile, $nLine)
+{
+    // Based on the example given within the documentation text
+    //  at https://www.php.net/set_error_handler.
+    // License, according to https://www.php.net/license/index.php,
+    //  is CC3.0-BY, compatible with GPL.
+    if (!(error_reporting() & $nError)) {
+        // This error code is not included in error_reporting, so let it
+        //  fall through to the standard PHP error handler
+        return false;
     }
-);
+
+    $aReturn = array(
+        'version' => '',
+        'messages' => array(),
+        'warnings' => array(),
+        'errors' => array(),
+        'data' => array(),
+    );
+
+    switch ($nError) {
+        case E_NOTICE:
+            $aReturn['messages'][] = "PHP notice: \"$sError\" in $sFile on line $nLine.";
+            $aReturn['warnings'][] = "Unhandled PHP notice in $sFile on line $nLine.";
+            break;
+
+        case E_WARNING:
+            $aReturn['warnings'][] = "PHP warning: \"$sError\" in $sFile on line $nLine.";
+            break;
+
+        case E_ERROR:
+        default:
+            $aReturn['errors'][] = "PHP error: \"$sError\" in $sFile on line $nLine.";
+            break;
+    }
+
+    header('HTTP/1.0 500 Internal Server Error', true, 500);
+    die(json_encode($aReturn, JSON_PRETTY_PRINT));
+}
+set_error_handler('lovd_API_handleError');
 
 // Sometimes inc-init.php gets run over CLI (LOVD+, external scripts, etc.).
 // Handle that here, instead of building lots of code in many different places.
