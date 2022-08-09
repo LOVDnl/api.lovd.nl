@@ -161,18 +161,9 @@ if (!defined('NOT_INSTALLED')) {
     // FIXME: Running lovd_cleanDirName() on the entire URI causes it to run also on the arguments.
     //  If there are arguments with ../ in there, this will take effect and arguments or even the path itself is eaten.
     $sPath = preg_replace('/^' . preg_quote(lovd_getInstallURL(false), '/') . '/', '', lovd_cleanDirName(html_entity_decode(rawurldecode($_SERVER['REQUEST_URI']), ENT_HTML5))); // 'login' or 'genes?create' or 'users/00001?edit'
-    $sPath = strip_tags($sPath); // XSS tag removal on entire string (and no longer on individual parts).
     $sPath = strstr($sPath . '?', '?', true); // Cut off the Query string, that will be handled later.
-    foreach (array("'", '"', '`', '+') as $sChar) {
-        // All these kind of quotes that we'll never have unless somebody is messing with us.
-        if (strpos($sPath, $sChar) !== false) {
-            // XSS attack. Filter everything out.
-            $sPath = strstr($sPath, $sChar, true);
-            // Also overwrite $_SERVER['REQUEST_URI'] as it's used more often (e.g., gene switcher) and we want it cleaned.
-            $_SERVER['REQUEST_URI'] = strstr($_SERVER['REQUEST_URI'], rawurlencode($sChar), true) .
-                (empty($_SERVER['QUERY_STRING'])? '' : '?' . $_SERVER['QUERY_STRING']);
-        }
-    }
+    // Removed filtering of characters that we need to successfully receive variants in the URL.
+    // Since we don't produce HTML, XSS isn't a problem for us.
     $_PE = explode('/', rtrim($sPath, '/')); // array('login') or array('genes') or array('users', '00001')
 
     if (isset($_SETT['objectid_length'][$_PE[0]]) && isset($_PE[1]) && ctype_digit($_PE[1])) {
