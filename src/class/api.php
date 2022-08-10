@@ -5,7 +5,7 @@
  * Adapted from /src/class/api.php in the LOVD3 project.
  *
  * Created     : 2022-08-08
- * Modified    : 2022-08-08
+ * Modified    : 2022-08-09
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
