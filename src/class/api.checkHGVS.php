@@ -171,6 +171,58 @@ class LOVD_API_checkHGVS
                         ' Although we aim to support all of the HGVS nomenclature rules,' .
                         ' some complex variants are not fully implemented yet in our syntax checker.' .
                         ' We invite you to submit your variant description here, so we can have a look: https://github.com/LOVDnl/api.lovd.nl/issues.';
+
+                } else {
+                    // Not HGVS-compliant, so let's see if we can suggest something better.
+                    $sFixedVariant = lovd_fixHGVS($sVariant);
+                    $aFixedVariantInfo = lovd_getVariantInfo($sFixedVariant, false);
+                    unset($aFixedVariantInfo['warnings']['WNOTSUPPORTED']);
+                    if ($sVariant != $sFixedVariant
+                        && empty($aFixedVariantInfo['errors']) && empty($aFixedVariantInfo['warnings'])) {
+                        // So, we suggest some changes, and the result is HGVS-compliant.
+                        // We choose not to show non-HGVS compliant suggestions here.
+                        // We anyway pass on the errors and warnings to the user,
+                        //  so they can always try to fix things and try again.
+                        $aResponse['data']['suggested_correction']['value'] = $sFixedVariant;
+
+                        // Now, let's add a confidence score.
+                        // High, for corrections that we're very sure about.
+                        // Medium, for corrections that are a bit more complex.
+                        // Low, for everything else.
+                        // We'll probably tinker a lot with these values.
+
+                        // Remove Stuff that we feel confident about.
+                        $aErrors = array_diff_key(
+                            $aVariantInfo['errors'],
+                            array_fill_keys(array('ENOTSUPPORTED', 'EPIPEMISSING'), 1)
+                        );
+                        $aWarnings = array_diff_key(
+                            $aVariantInfo['warnings'],
+                            array_fill_keys(array('WREFERENCEFORMAT', 'WSUFFIXFORMAT', 'WWRONGCASE', 'WWRONGTYPE'), 1)
+                        );
+                        if (empty($aErrors) && empty($aWarnings)) {
+                            // OK, we're very confident that we were right about these corrections!
+                            $aResponse['data']['suggested_correction']['confidence'] = 'high';
+
+                        } else {
+                            // Remove Stuff that we feel less confident about.
+                            $aErrors = array_diff_key(
+                                $aErrors,
+                                array_fill_keys(array('EFALSEINTRONIC', 'EFALSEUTR', 'EPOSITIONFORMAT'), 1)
+                            );
+                            $aWarnings = array_diff_key(
+                                $aWarnings,
+                                array_fill_keys(array('WPOSITIONFORMAT', 'WSUFFIXGIVEN', 'WTOOMUCHUNKNOWN'), 1)
+                            );
+                            if (empty($aErrors) && empty($aWarnings)) {
+                                // OK, we're very confident that we were right about these corrections!
+                                $aResponse['data']['suggested_correction']['confidence'] = 'medium';
+                            } else {
+                                // Well, at least we seem to have generated something HGVS-like, but it's quite vague.
+                                $aResponse['data']['suggested_correction']['confidence'] = 'low';
+                            }
+                        }
+                    }
                 }
 
                 if (!lovd_variantHasRefSeq($sVariant)) {
