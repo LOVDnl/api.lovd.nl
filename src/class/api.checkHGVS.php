@@ -128,6 +128,39 @@ class LOVD_API_checkHGVS
                 'data' => array(),
             );
 
+            // Start with checking the input.
+            // Note that this will generate weird 3' UTR positions, but so be it.
+            // I don't want to create a database here, and anyway they might not have sent a transcript.
+            $aVariantInfo = lovd_getVariantInfo($sVariant, false);
+            if (!$aVariantInfo) {
+                // No recognition at all.
+                $aResponse['errors']['EFAIL'] = 'Failed to recognize a variant description in your input.';
+            } else {
+                // In case it's set, we don't care about WNOTSUPPORTED. We won't validate anyway,
+                //  and this warning is thrown only for HGVS-compliant descriptions.
+                unset($aVariantInfo['warnings']['WNOTSUPPORTED']);
+
+                // Copy the data. This can be simplified if we choose to drop the "data" in $aResponse.
+                // We choose not to copy "messages" over. They're for LOVD internal use.
+                $aResponse['errors'] = $aVariantInfo['errors'];
+                $aResponse['warnings'] = $aVariantInfo['warnings'];
+                $aResponse['data']['position_start'] = $aVariantInfo['position_start'];
+                $aResponse['data']['position_end'] = $aVariantInfo['position_end'];
+                if (!empty($aVariantInfo['position_start_intron']) || !empty($aVariantInfo['position_end_intron'])) {
+                    $aResponse['data']['position_start_intron'] = $aVariantInfo['position_start_intron'];
+                    $aResponse['data']['position_end_intron'] = $aVariantInfo['position_end_intron'];
+                }
+                $aResponse['data']['type'] = $aVariantInfo['type'];
+                $aResponse['data']['range'] = $aVariantInfo['range'];
+                $aResponse['data']['suggested_correction'] = array();
+
+                if (!lovd_variantHasRefSeq($sVariant)) {
+                    $aResponse['messages']['IREFSEQMISSING'] = 'Please note that your variant description is missing a reference sequence. ' .
+                        'Although this is not necessary for our syntax check, a variant description does ' .
+                        'need a reference sequence to be fully informative and HGVS-compliant.';
+                }
+            }
+
             $this->API->aResponse['data'][$sVariant] = $aResponse;
         }
         return true;
