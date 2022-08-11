@@ -154,6 +154,25 @@ class LOVD_API_checkHGVS
                 $aResponse['data']['range'] = $aVariantInfo['range'];
                 $aResponse['data']['suggested_correction'] = array();
 
+                // Check if HGVS-compliant or not.
+                if (empty($aVariantInfo['errors']) && empty($aVariantInfo['warnings'])) {
+                    // This means that we're considering WPOSITIONLIMIT non-HGVS compliant,
+                    //  which is different from LOVD's isHGVS() function.
+                    // Note that WTRANSCRIPTFOUND and WDIFFERENTREFSEQ can't be thrown because
+                    //  of the way we call lovd_getVariantInfo().
+                    $aResponse['messages']['IOK'] = 'This variant description is HGVS-compliant.';
+
+                } elseif (isset($aVariantInfo['errors']['ENOTSUPPORTED'])
+                    && count($aVariantInfo['errors']) == 1
+                    && empty($aVariantInfo['warnings'])) {
+                    // Non-HGVS, but only has an ENOTSUPPORTED and no warnings.
+                    // We don't actually know whether this is HGVS compliant or not.
+                    $aResponse['messages']['INOTSUPPORTED'] = 'This variant description contains unsupported syntax.' .
+                        ' Although we aim to support all of the HGVS nomenclature rules,' .
+                        ' some complex variants are not fully implemented yet in our syntax checker.' .
+                        ' We invite you to submit your variant description here, so we can have a look: https://github.com/LOVDnl/api.lovd.nl/issues.';
+                }
+
                 if (!lovd_variantHasRefSeq($sVariant)) {
                     $aResponse['messages']['IREFSEQMISSING'] = 'Please note that your variant description is missing a reference sequence. ' .
                         'Although this is not necessary for our syntax check, a variant description does ' .
