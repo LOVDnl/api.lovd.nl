@@ -5,7 +5,7 @@
  * Adapted from /src/inc-init.php in the LOVD3 project.
  *
  * Created     : 2022-08-08
- * Modified    : 2022-08-09
+ * Modified    : 2022-08-11
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -101,6 +101,7 @@ if (!isset($_SERVER['HTTP_HOST'])) {
 
 // Require library standard functions.
 require_once ROOT_PATH . 'inc-lib-init.php';
+require_once ROOT_PATH . 'inc-lib-variants.php';
 
 // Set error_reporting if necessary. We don't want notices to show. This will do
 // fine most of the time.
