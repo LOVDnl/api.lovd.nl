@@ -107,6 +107,29 @@ class LOVD_API_checkHGVS
             return true;
         }
 
+        // For non-unique input, throw a warning, but continue.
+        $aInputUnique = array_unique($aInput, SORT_STRING);
+        if ($aInput != $aInputUnique) {
+            // Just throw a warning, but continue.
+            $this->API->aResponse['warnings'][] = 'One or more variant descriptions have been repeated in the input. This API will only handle the first submission of each variant description.';
+        }
+
+        $nInput = count($aInputUnique);
+        $this->API->aResponse['messages'][] = "Successfully received $nInput variant description" . ($nInput == 1? "." : "s.");
+        $this->API->aResponse['messages'][] = 'Note that this API does not validate variants on the sequence level, but only checks if the variant description follows the HGVS nomenclature rules.';
+        $this->API->aResponse['messages'][] = 'For sequence-level validation of DNA variants, please use https://variantvalidator.org.';
+
+        // Now actually handle the request.
+        foreach ($aInputUnique as $sVariant) {
+            $aResponse = array(
+                'messages' => array(),
+                'warnings' => array(),
+                'errors' => array(),
+                'data' => array(),
+            );
+
+            $this->API->aResponse['data'][$sVariant] = $aResponse;
+        }
         return true;
     }
 }
