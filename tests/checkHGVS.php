@@ -34,6 +34,7 @@ $aTests = array(
     // V1 output. Using this structure, we can tests different API versions,
     //  as each version should be backwards-compatible.
     1 => array(
+        // Prefixes.
         'g.123dup' => array(
             'messages' => array(
                 'IOK' => 'This variant description is HGVS-compliant.',
@@ -44,6 +45,119 @@ $aTests = array(
             'data' => array(
                 'position_start' => 123,
                 'position_end' => 123,
+                'type' => 'dup',
+                'range' => false,
+                'suggested_correction' => array(),
+            ),
+        ),
+        'c.123dup' => array(
+            'messages' => array(
+                'IOK' => 'This variant description is HGVS-compliant.',
+                'IREFSEQMISSING' => 'Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant.',
+            ),
+            'warnings' => array(),
+            'errors' => array(),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 123,
+                'type' => 'dup',
+                'range' => false,
+                'suggested_correction' => array(),
+            ),
+        ),
+        'm.123dup' => array(
+            'messages' => array(
+                'IOK' => 'This variant description is HGVS-compliant.',
+                'IREFSEQMISSING' => 'Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant.',
+            ),
+            'warnings' => array(),
+            'errors' => array(),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 123,
+                'type' => 'dup',
+                'range' => false,
+                'suggested_correction' => array(),
+            ),
+        ),
+        'n.123dup' => array(
+            'messages' => array(
+                'IOK' => 'This variant description is HGVS-compliant.',
+                'IREFSEQMISSING' => 'Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant.',
+            ),
+            'warnings' => array(),
+            'errors' => array(),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 123,
+                'type' => 'dup',
+                'range' => false,
+                'suggested_correction' => array(),
+            ),
+        ),
+        'g.-123dup' => array(
+            'messages' => array(
+                'IREFSEQMISSING' => 'Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant.',
+            ),
+            'warnings' => array(),
+            'errors' => array(
+                'EFALSEUTR' => 'Only coding transcripts (c. prefix) have a UTR region. Therefore, position "-123" which describes a position in the 5\' UTR, is invalid when using the "g" prefix.',
+            ),
+            'data' => array(
+                'position_start' => 0,
+                'position_end' => 0,
+                'type' => 'dup',
+                'range' => false,
+                'suggested_correction' => array(),
+            ),
+        ),
+        'g.*123dup' => array(
+            'messages' => array(
+                'IREFSEQMISSING' => 'Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant.',
+            ),
+            'warnings' => array(),
+            'errors' => array(
+                'EFALSEUTR' => 'Only coding transcripts (c. prefix) have a UTR region. Therefore, position "*123" which describes a position in the 3\' UTR, is invalid when using the "g" prefix.',
+            ),
+            'data' => array(
+                'position_start' => 0,
+                'position_end' => 0,
+                'type' => 'dup',
+                'range' => false,
+                'suggested_correction' => array(),
+            ),
+        ),
+        'm.123+4_124-20dup' => array(
+            'messages' => array(
+                'IREFSEQMISSING' => 'Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant.',
+            ),
+            'warnings' => array(),
+            'errors' => array(
+                'EFALSEINTRONIC' => 'Only transcripts (c. or n. prefixes) have introns. Therefore, this variant description with a position in an intron is invalid when using the "m" prefix.',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 124,
+                'position_start_intron' => 4,
+                'position_end_intron' => -20,
+                'type' => 'dup',
+                'range' => true,
+                'suggested_correction' => array(),
+            ),
+        ),
+        'g.123000-125000dup' => array(
+            'messages' => array(
+                'IREFSEQMISSING' => 'Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant.',
+            ),
+            'warnings' => array(),
+            'errors' => array(
+                'EFALSEINTRONIC' => 'Only transcripts (c. or n. prefixes) have introns. Therefore, this variant description with a position in an intron is invalid when using the "g" prefix. Did you perhaps try to indicate a range? If so, please use an underscore (_) to indicate a range.',
+            ),
+            'data' => array(
+                'position_start' => 123000,
+                'position_end' => 123000,
+                'position_start_intron' => -125000,
+                'position_end_intron' => -125000,
                 'type' => 'dup',
                 'range' => false,
                 'suggested_correction' => array(),
