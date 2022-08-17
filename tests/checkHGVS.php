@@ -44,61 +44,47 @@ $aTests = array(
             'messages' => array(
                 'IOK' => 'This variant description is HGVS-compliant.',
             ),
-            'warnings' => array(),
-            'errors' => array(),
             'data' => array(
                 'position_start' => 123,
                 'position_end' => 123,
                 'type' => 'dup',
                 'range' => false,
-                'suggested_correction' => array(),
             ),
         ),
         'c.123dup' => array(
             'messages' => array(
                 'IOK' => 'This variant description is HGVS-compliant.',
             ),
-            'warnings' => array(),
-            'errors' => array(),
             'data' => array(
                 'position_start' => 123,
                 'position_end' => 123,
                 'type' => 'dup',
                 'range' => false,
-                'suggested_correction' => array(),
             ),
         ),
         'm.123dup' => array(
             'messages' => array(
                 'IOK' => 'This variant description is HGVS-compliant.',
             ),
-            'warnings' => array(),
-            'errors' => array(),
             'data' => array(
                 'position_start' => 123,
                 'position_end' => 123,
                 'type' => 'dup',
                 'range' => false,
-                'suggested_correction' => array(),
             ),
         ),
         'n.123dup' => array(
             'messages' => array(
                 'IOK' => 'This variant description is HGVS-compliant.',
             ),
-            'warnings' => array(),
-            'errors' => array(),
             'data' => array(
                 'position_start' => 123,
                 'position_end' => 123,
                 'type' => 'dup',
                 'range' => false,
-                'suggested_correction' => array(),
             ),
         ),
         'g.-123dup' => array(
-            'messages' => array(),
-            'warnings' => array(),
             'errors' => array(
                 'EFALSEUTR' => 'Only coding transcripts (c. prefix) have a UTR region. Therefore, position "-123" which describes a position in the 5\' UTR, is invalid when using the "g" prefix.',
             ),
@@ -107,12 +93,9 @@ $aTests = array(
                 'position_end' => 0,
                 'type' => 'dup',
                 'range' => false,
-                'suggested_correction' => array(),
             ),
         ),
         'g.*123dup' => array(
-            'messages' => array(),
-            'warnings' => array(),
             'errors' => array(
                 'EFALSEUTR' => 'Only coding transcripts (c. prefix) have a UTR region. Therefore, position "*123" which describes a position in the 3\' UTR, is invalid when using the "g" prefix.',
             ),
@@ -121,12 +104,9 @@ $aTests = array(
                 'position_end' => 0,
                 'type' => 'dup',
                 'range' => false,
-                'suggested_correction' => array(),
             ),
         ),
         'm.123+4_124-20dup' => array(
-            'messages' => array(),
-            'warnings' => array(),
             'errors' => array(
                 'EFALSEINTRONIC' => 'Only transcripts (c. or n. prefixes) have introns. Therefore, this variant description with a position in an intron is invalid when using the "m" prefix.',
             ),
@@ -137,12 +117,9 @@ $aTests = array(
                 'position_end_intron' => -20,
                 'type' => 'dup',
                 'range' => true,
-                'suggested_correction' => array(),
             ),
         ),
         'g.123000-125000dup' => array(
-            'messages' => array(),
-            'warnings' => array(),
             'errors' => array(
                 'EFALSEINTRONIC' => 'Only transcripts (c. or n. prefixes) have introns. Therefore, this variant description with a position in an intron is invalid when using the "g" prefix. Did you perhaps try to indicate a range? If so, please use an underscore (_) to indicate a range.',
             ),
@@ -153,7 +130,6 @@ $aTests = array(
                 'position_end_intron' => -125000,
                 'type' => 'dup',
                 'range' => false,
-                'suggested_correction' => array(),
             ),
         ),
     ),
@@ -172,6 +148,24 @@ $nTestsFailed = 0;
 foreach ($aTests as $nVersion => $aTestSet) {
     foreach ($aTestSet as $sVariant => $aExpectedOutput) {
         $nTests ++;
+
+        // Tests don't need to define empty arrays, to compact the definition of tests.
+        if (!isset($aExpectedOutput['messages'])) {
+            $aExpectedOutput = array('messages' => array()) + $aExpectedOutput;
+        }
+        // Because I don't sort on key when comparing outputs, I need to maintain the order.
+        $sPrevField = 'messages';
+        foreach (array('warnings', 'errors') as $sField) {
+            if (!isset($aExpectedOutput[$sField])) {
+                lovd_arrayInsertAfter($sPrevField, $aExpectedOutput, $sField, array());
+            }
+            $sPrevField = $sField;
+        }
+        // We also don't get suggestions always.
+        if (!isset($aExpectedOutput['data']['suggested_correction'])) {
+            $aExpectedOutput['data']['suggested_correction'] = array();
+        }
+
         // We also expect some other output.
         $aExpectedOutput = array(
             'version' => $nVersion,
