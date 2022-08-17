@@ -239,6 +239,13 @@ if ($aDifferences) {
         var_dump($aExpectedOutput);
         $aExpectedOutput = explode("\n", ob_get_clean());
 
+        // Make diff smaller, by ignoring differences in array size. Just remove those numbers.
+        foreach (array('aOutput', 'aExpectedOutput') as $sVariable) {
+            $$sVariable = array_map(function ($sValue) {
+                return preg_replace('/^(\s*array)\([0-9]+\) \{$/', '\1 {', $sValue);
+            }, $$sVariable);
+        }
+
         // Generate a diff.
         $aPrefix = array();
         $aSuffix = array();
