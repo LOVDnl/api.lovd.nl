@@ -257,10 +257,10 @@ if ($aDifferences) {
 
         // Print the differences. We always have a prefix and suffix, because we always have an array.
         echo "  " . implode("\n  ", $aPrefix) . "\n";
-        if ($aOutput) {
+        if ($aExpectedOutput) {
             echo "- " . implode("\n- ", $aExpectedOutput) . "\n";
         }
-        if ($aExpectedOutput) {
+        if ($aOutput) {
             echo "+ " . implode("\n+ ", $aOutput) . "\n";
         }
         echo "  " . implode("\n  ", $aSuffix) . "\n";
