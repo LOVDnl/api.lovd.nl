@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-16
- * Modified    : 2022-08-16
+ * Modified    : 2022-08-17
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -111,4 +111,46 @@ foreach ($aTests as $nVersion => $aTestSet) {
 echo "\n";
 // Generate stats.
 echo "Ran $nTests tests, $nTestsFailed failed, $nTestsSucceeded succeeded.\n";
+
+if ($aDifferences) {
+    foreach ($aDifferences as $nID => $aDifference) {
+        list($nVersion, $sVariant, $aExpectedOutput, $aOutput) = $aDifference;
+
+        echo "\n#$nID CheckHGVS API v$nVersion $sVariant\n\n";
+
+        // Now catch the output of the var_dump()s of both arrays.
+        ob_start();
+        var_dump($aOutput);
+        $aOutput = explode("\n", ob_get_clean());
+        ob_start();
+        var_dump($aExpectedOutput);
+        $aExpectedOutput = explode("\n", ob_get_clean());
+
+        // Generate a diff.
+        $aPrefix = array();
+        $aSuffix = array();
+
+        // Collect the common prefix.
+        while (isset($aOutput[0]) && isset($aExpectedOutput[0]) && $aOutput[0] === $aExpectedOutput[0]) {
+            $aPrefix[] = array_shift($aOutput);
+            array_shift($aExpectedOutput);
+        }
+
+        // Collect the common suffix.
+        while ($aOutput && $aExpectedOutput && end($aOutput) === end($aExpectedOutput)) {
+            array_unshift($aSuffix, array_pop($aOutput));
+            array_pop($aExpectedOutput);
+        }
+
+        // Print the differences. We always have a prefix and suffix, because we always have an array.
+        echo "  " . implode("\n  ", $aPrefix) . "\n";
+        if ($aOutput) {
+            echo "- " . implode("\n- ", $aExpectedOutput) . "\n";
+        }
+        if ($aExpectedOutput) {
+            echo "+ " . implode("\n+ ", $aOutput) . "\n";
+        }
+        echo "  " . implode("\n  ", $aSuffix) . "\n";
+    }
+}
 ?>
