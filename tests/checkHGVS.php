@@ -89,16 +89,17 @@ foreach ($aTests as $nVersion => $aTestSet) {
 
         if (!isset($aOutput['library_version']) || !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $aOutput['library_version'])) {
             // Error...
-            $aDifferences[] = array($nVersion, $sVariant, $aExpectedOutput, $aOutput);
+            $aDifferences[$nTests] = array($nVersion, $sVariant, $aExpectedOutput, $aOutput);
             echo 'E';
             $nTestsFailed ++;
+            continue;
         }
         // Since our tests don't define it, unset it.
         unset($aOutput['library_version']);
 
         if ($aOutput !== $aExpectedOutput) {
             // Something's different. We don't mention that here yet.
-            $aDifferences[] = array($nVersion, $sVariant, $aExpectedOutput, $aOutput);
+            $aDifferences[$nTests] = array($nVersion, $sVariant, $aExpectedOutput, $aOutput);
             echo 'F';
             $nTestsFailed ++;
         } else {
