@@ -39,7 +39,8 @@ $aTests = array(
     // V1 output. Using this structure, we can tests different API versions,
     //  as each version should be backwards-compatible.
     1 => array(
-        // Prefixes.
+        // lovd_getVariantInfo()'s prefix tests, as general tests for us.
+        // We will not repeat all of lovd_getVariantInfo()'s tests.
         'g.123dup' => array(
             'messages' => array(
                 'IOK' => 'This variant description is HGVS-compliant.',
@@ -130,6 +131,50 @@ $aTests = array(
                 'position_end_intron' => -125000,
                 'type' => 'dup',
                 'range' => false,
+            ),
+        ),
+        '123dup' => array(
+            'errors' => array(
+                'EFAIL' => 'Failed to recognize a variant description in your input.',
+            ),
+            'data' => array(
+                'suggested_correction' => array(
+                    'value' => 'g.123dup',
+                    'confidence' => 'medium',
+                ),
+            ),
+        ),
+        '(123dup)' => array(
+            'errors' => array(
+                'EFAIL' => 'Failed to recognize a variant description in your input.',
+            ),
+            'data' => array(
+                'suggested_correction' => array(
+                    'value' => 'g.(123dup)',
+                    'confidence' => 'medium',
+                ),
+            ),
+        ),
+        '.123dup' => array(
+            'errors' => array(
+                'EFAIL' => 'Failed to recognize a variant description in your input.',
+            ),
+            'data' => array(
+                'suggested_correction' => array(
+                    'value' => 'g.123dup',
+                    'confidence' => 'medium',
+                ),
+            ),
+        ),
+        '123-5dup' => array(
+            'errors' => array(
+                'EFAIL' => 'Failed to recognize a variant description in your input.',
+            ),
+            'data' => array(
+                'suggested_correction' => array(
+                    'value' => 'c.123-5dup',
+                    'confidence' => 'medium',
+                ),
             ),
         ),
     ),
