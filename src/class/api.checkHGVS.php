@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-08
- * Modified    : 2022-08-11   // When modified, also change the library_version.
+ * Modified    : 2022-08-17   // When modified, also change the library_version.
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -53,7 +53,7 @@ class LOVD_API_checkHGVS
             return false;
         }
         $this->API = $oAPI;
-        $this->API->aResponse['library_version'] = '2022-08-11';
+        $this->API->aResponse['library_version'] = '2022-08-17';
 
         return true;
     }
@@ -152,7 +152,6 @@ class LOVD_API_checkHGVS
                 }
                 $aResponse['data']['type'] = $aVariantInfo['type'];
                 $aResponse['data']['range'] = $aVariantInfo['range'];
-                $aResponse['data']['suggested_correction'] = array();
 
                 // Check if HGVS-compliant or not.
                 if (empty($aVariantInfo['errors']) && empty($aVariantInfo['warnings'])) {
@@ -171,27 +170,34 @@ class LOVD_API_checkHGVS
                         ' Although we aim to support all of the HGVS nomenclature rules,' .
                         ' some complex variants are not fully implemented yet in our syntax checker.' .
                         ' We invite you to submit your variant description here, so we can have a look: https://github.com/LOVDnl/api.lovd.nl/issues.';
+                }
+            }
+            $aResponse['data']['suggested_correction'] = array();
 
-                } else {
-                    // Not HGVS-compliant, so let's see if we can suggest something better.
-                    $sFixedVariant = lovd_fixHGVS($sVariant);
-                    $aFixedVariantInfo = lovd_getVariantInfo($sFixedVariant, false);
-                    unset($aFixedVariantInfo['warnings']['WNOTSUPPORTED']);
-                    if ($sVariant != $sFixedVariant
-                        && empty($aFixedVariantInfo['errors']) && empty($aFixedVariantInfo['warnings'])) {
-                        // So, we suggest some changes, and the result is HGVS-compliant.
-                        // We choose not to show non-HGVS compliant suggestions here.
-                        // We anyway pass on the errors and warnings to the user,
-                        //  so they can always try to fix things and try again.
-                        $aResponse['data']['suggested_correction']['value'] = $sFixedVariant;
+            if (empty($aResponse['messages'])) {
+                // Not HGVS-compliant, and not unsupported, so let's see if we can suggest something better.
+                $sFixedVariant = lovd_fixHGVS($sVariant);
+                $aFixedVariantInfo = lovd_getVariantInfo($sFixedVariant, false);
+                unset($aFixedVariantInfo['warnings']['WNOTSUPPORTED']);
+                if ($sVariant != $sFixedVariant
+                    && empty($aFixedVariantInfo['errors']) && empty($aFixedVariantInfo['warnings'])) {
+                    // So, we suggest some changes, and the result is HGVS-compliant.
+                    // We choose not to show non-HGVS compliant suggestions here.
+                    // We anyway pass on the errors and warnings to the user,
+                    //  so they can always try to fix things and try again.
+                    $aResponse['data']['suggested_correction']['value'] = $sFixedVariant;
 
-                        // Now, let's add a confidence score.
-                        // High, for corrections that we're very sure about.
-                        // Medium, for corrections that are a bit more complex.
-                        // Low, for everything else.
-                        // We'll probably tinker a lot with these values.
+                    // Now, let's add a confidence score.
+                    // High, for corrections that we're very sure about.
+                    // Medium, for corrections that are a bit more complex.
+                    // Low, for everything else.
+                    // We'll probably tinker a lot with these values.
 
-                        // Remove Stuff that we feel confident about.
+                    // If the original variant wasn't recognized at all, add a "medium" confidence.
+                    if (!$aVariantInfo) {
+                        $aResponse['data']['suggested_correction']['confidence'] = 'medium';
+                    } else {
+                        // Remove stuff that we feel confident about.
                         $aErrors = array_diff_key(
                             $aVariantInfo['errors'],
                             array_fill_keys(array('ENOTSUPPORTED', 'EPIPEMISSING'), 1)
@@ -205,7 +211,7 @@ class LOVD_API_checkHGVS
                             $aResponse['data']['suggested_correction']['confidence'] = 'high';
 
                         } else {
-                            // Remove Stuff that we feel less confident about.
+                            // Remove stuff that we feel less confident about.
                             $aErrors = array_diff_key(
                                 $aErrors,
                                 array_fill_keys(array('EFALSEINTRONIC', 'EFALSEUTR', 'EPOSITIONFORMAT'), 1)
@@ -224,12 +230,12 @@ class LOVD_API_checkHGVS
                         }
                     }
                 }
+            }
 
-                if (!lovd_variantHasRefSeq($sVariant)) {
-                    $aResponse['messages']['IREFSEQMISSING'] = 'Please note that your variant description is missing a reference sequence. ' .
-                        'Although this is not necessary for our syntax check, a variant description does ' .
-                        'need a reference sequence to be fully informative and HGVS-compliant.';
-                }
+            if (!lovd_variantHasRefSeq($sVariant)) {
+                $aResponse['messages']['IREFSEQMISSING'] = 'Please note that your variant description is missing a reference sequence. ' .
+                    'Although this is not necessary for our syntax check, a variant description does ' .
+                    'need a reference sequence to be fully informative and HGVS-compliant.';
             }
 
             $this->API->aResponse['data'][$sVariant] = $aResponse;
