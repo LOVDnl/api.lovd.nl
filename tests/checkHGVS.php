@@ -28,6 +28,11 @@
  *
  *************/
 
+// We'll use some library functions. However, we'll need a trick to determine where to find the library.
+// Since this file is executed using `php -f ...`, our cwd isn't where we are located.
+define('ROOT_PATH', dirname(__FILE__) . '/../src/');
+require ROOT_PATH . 'inc-init.php';
+
 // Very basic tests, not using PHPUnit.
 $sURL = 'http://localhost/git/api.lovd.nl/src';
 $aTests = array(
@@ -38,7 +43,6 @@ $aTests = array(
         'g.123dup' => array(
             'messages' => array(
                 'IOK' => 'This variant description is HGVS-compliant.',
-                'IREFSEQMISSING' => 'Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant.',
             ),
             'warnings' => array(),
             'errors' => array(),
@@ -53,7 +57,6 @@ $aTests = array(
         'c.123dup' => array(
             'messages' => array(
                 'IOK' => 'This variant description is HGVS-compliant.',
-                'IREFSEQMISSING' => 'Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant.',
             ),
             'warnings' => array(),
             'errors' => array(),
@@ -68,7 +71,6 @@ $aTests = array(
         'm.123dup' => array(
             'messages' => array(
                 'IOK' => 'This variant description is HGVS-compliant.',
-                'IREFSEQMISSING' => 'Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant.',
             ),
             'warnings' => array(),
             'errors' => array(),
@@ -83,7 +85,6 @@ $aTests = array(
         'n.123dup' => array(
             'messages' => array(
                 'IOK' => 'This variant description is HGVS-compliant.',
-                'IREFSEQMISSING' => 'Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant.',
             ),
             'warnings' => array(),
             'errors' => array(),
@@ -96,9 +97,7 @@ $aTests = array(
             ),
         ),
         'g.-123dup' => array(
-            'messages' => array(
-                'IREFSEQMISSING' => 'Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant.',
-            ),
+            'messages' => array(),
             'warnings' => array(),
             'errors' => array(
                 'EFALSEUTR' => 'Only coding transcripts (c. prefix) have a UTR region. Therefore, position "-123" which describes a position in the 5\' UTR, is invalid when using the "g" prefix.',
@@ -112,9 +111,7 @@ $aTests = array(
             ),
         ),
         'g.*123dup' => array(
-            'messages' => array(
-                'IREFSEQMISSING' => 'Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant.',
-            ),
+            'messages' => array(),
             'warnings' => array(),
             'errors' => array(
                 'EFALSEUTR' => 'Only coding transcripts (c. prefix) have a UTR region. Therefore, position "*123" which describes a position in the 3\' UTR, is invalid when using the "g" prefix.',
@@ -128,9 +125,7 @@ $aTests = array(
             ),
         ),
         'm.123+4_124-20dup' => array(
-            'messages' => array(
-                'IREFSEQMISSING' => 'Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant.',
-            ),
+            'messages' => array(),
             'warnings' => array(),
             'errors' => array(
                 'EFALSEINTRONIC' => 'Only transcripts (c. or n. prefixes) have introns. Therefore, this variant description with a position in an intron is invalid when using the "m" prefix.',
@@ -146,9 +141,7 @@ $aTests = array(
             ),
         ),
         'g.123000-125000dup' => array(
-            'messages' => array(
-                'IREFSEQMISSING' => 'Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant.',
-            ),
+            'messages' => array(),
             'warnings' => array(),
             'errors' => array(
                 'EFALSEINTRONIC' => 'Only transcripts (c. or n. prefixes) have introns. Therefore, this variant description with a position in an intron is invalid when using the "g" prefix. Did you perhaps try to indicate a range? If so, please use an underscore (_) to indicate a range.',
@@ -193,6 +186,11 @@ foreach ($aTests as $nVersion => $aTestSet) {
                 $sVariant => $aExpectedOutput,
             ),
         );
+
+        // If the variant has no refseq, the output will remind the user.
+        if (!lovd_variantHasRefSeq($sVariant)) {
+            $aExpectedOutput['data'][$sVariant]['messages']['IREFSEQMISSING'] = 'Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant.';
+        }
 
         // Measure the actual output.
         $aOutput = array('Failed to decode JSON.');
