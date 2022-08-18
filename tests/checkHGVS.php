@@ -291,7 +291,7 @@ $aTests = array(
                 'range' => true,
                 'suggested_correction' => array(
                     'value' => 'g.1_2insN[50]',
-                    'confidence' => 'high',
+                    'confidence' => 'medium',
                 ),
             ),
         ),
@@ -306,7 +306,7 @@ $aTests = array(
                 'range' => true,
                 'suggested_correction' => array(
                     'value' => 'g.1_2insN[(5_10)]',
-                    'confidence' => 'high',
+                    'confidence' => 'medium',
                 ),
             ),
         ),
@@ -321,7 +321,7 @@ $aTests = array(
                 'range' => true,
                 'suggested_correction' => array(
                     'value' => 'g.1_2insN[(5_10)]',
-                    'confidence' => 'high',
+                    'confidence' => 'medium',
                 ),
             ),
         ),
@@ -336,7 +336,7 @@ $aTests = array(
                 'range' => true,
                 'suggested_correction' => array(
                     'value' => 'g.1_2insN[10]',
-                    'confidence' => 'high',
+                    'confidence' => 'medium',
                 ),
             ),
         ),

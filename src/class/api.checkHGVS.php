@@ -209,7 +209,7 @@ class LOVD_API_checkHGVS
                         }
                         $aWarnings = array_diff_key(
                             $aVariantInfo['warnings'],
-                            array_fill_keys(array('WREFERENCEFORMAT', 'WSUFFIXFORMAT', 'WWRONGCASE', 'WWRONGTYPE'), 1)
+                            array_fill_keys(array('WREFERENCEFORMAT', 'WWRONGCASE', 'WWRONGTYPE'), 1)
                         );
                         if (empty($aErrors) && empty($aWarnings)) {
                             // OK, we're very confident that we were right about these corrections!
@@ -223,7 +223,7 @@ class LOVD_API_checkHGVS
                             );
                             $aWarnings = array_diff_key(
                                 $aWarnings,
-                                array_fill_keys(array('WPOSITIONFORMAT', 'WSUFFIXGIVEN', 'WTOOMUCHUNKNOWN'), 1)
+                                array_fill_keys(array('WPOSITIONFORMAT', 'WSUFFIXFORMAT', 'WSUFFIXGIVEN', 'WTOOMUCHUNKNOWN'), 1)
                             );
                             if (empty($aErrors) && empty($aWarnings)) {
                                 // OK, we're very confident that we were right about these corrections!
