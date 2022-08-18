@@ -496,6 +496,20 @@ if ($aDifferences) {
             array_pop($aExpectedOutput);
         }
 
+        // Clean up long diffs by shortening common pre- and suffixes.
+        if (count($aPrefix) > 10) {
+            $aPrefix = array_merge(
+                array('...'),
+                array_slice($aPrefix, -10)
+            );
+        }
+        if (count($aSuffix) > 10) {
+            $aSuffix = array_merge(
+                array_slice($aSuffix, 0, 10),
+                array('...')
+            );
+        }
+
         // Print the differences. We always have a prefix and suffix, because we always have an array.
         echo "  " . implode("\n  ", $aPrefix) . "\n";
         if ($aExpectedOutput) {
