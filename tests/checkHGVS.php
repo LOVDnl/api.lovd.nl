@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-16
- * Modified    : 2022-08-17
+ * Modified    : 2022-08-18
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -133,6 +133,7 @@ $aTests = array(
                 'range' => false,
             ),
         ),
+        // lovd_fixHGVS()'s prefix-related tests.
         '123dup' => array(
             'errors' => array(
                 'EFAIL' => 'Failed to recognize a variant description in your input.',
@@ -174,6 +175,71 @@ $aTests = array(
                 'suggested_correction' => array(
                     'value' => 'c.123-5dup',
                     'confidence' => 'medium',
+                ),
+            ),
+        ),
+
+        // lovd_getVariantInfo()'s substitution-related tests that are fixable.
+        'g.123A>GC' => array(
+            'warnings' => array(
+                'WWRONGTYPE' => 'A substitution should be a change of one base to one base. Did you mean to describe a deletion-insertion?',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 123,
+                'type' => 'subst',
+                'range' => false,
+                'suggested_correction' => array(
+                    'value' => 'g.123delinsGC',
+                    'confidence' => 'high',
+                ),
+            ),
+        ),
+        'g.123AA>G' => array(
+            'warnings' => array(
+                'WWRONGTYPE' => 'A substitution should be a change of one base to one base. Did you mean to describe a deletion-insertion?',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 123,
+                'type' => 'subst',
+                'range' => false,
+                'suggested_correction' => array(
+                    'value' => 'g.123_124delinsG',
+                    'confidence' => 'high',
+                ),
+            ),
+        ),
+        'g.123A>.' => array(
+            'warnings' => array(
+                'WWRONGTYPE' => 'A substitution should be a change of one base to one base. Did you mean to describe a deletion?',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 123,
+                'type' => 'subst',
+                'range' => false,
+                'suggested_correction' => array(
+                    'value' => 'g.123del',
+                    'confidence' => 'high',
+                ),
+            ),
+        ),
+        'g.123_124AA>GC' => array(
+            'warnings' => array(
+                'WWRONGTYPE' => 'A substitution should be a change of one base to one base. Did you mean to describe a deletion-insertion?',
+            ),
+            'errors' => array(
+                'ETOOMANYPOSITIONS' => 'Too many positions are given; a substitution is used to only indicate single-base changes and therefore should have only one position.'
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 124,
+                'type' => 'subst',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.123_124delinsGC',
+                    'confidence' => 'high',
                 ),
             ),
         ),
