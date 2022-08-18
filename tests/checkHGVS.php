@@ -40,7 +40,8 @@ $aTests = array(
     //  as each version should be backwards-compatible.
     1 => array(
         // lovd_getVariantInfo()'s prefix tests, as general tests for us.
-        // We will not repeat all of lovd_getVariantInfo()'s tests.
+        // We will not repeat all of lovd_getVariantInfo()'s tests;
+        //  we ought to test the API, not the library.
         'g.123dup' => array(
             'messages' => array(
                 'IOK' => 'This variant description is HGVS-compliant.',
@@ -240,6 +241,23 @@ $aTests = array(
                 'suggested_correction' => array(
                     'value' => 'g.123_124delinsGC',
                     'confidence' => 'high',
+                ),
+            ),
+        ),
+
+        // lovd_getVariantInfo()'s duplication-related tests that are fixable.
+        'g.123_125dupACG' => array(
+            'warnings' => array(
+                'WSUFFIXGIVEN' => 'Nothing should follow "dup".'
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 125,
+                'type' => 'dup',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.123_125dup',
+                    'confidence' => 'medium',
                 ),
             ),
         ),
