@@ -261,6 +261,23 @@ $aTests = array(
                 ),
             ),
         ),
+
+        // lovd_getVariantInfo()'s deletion-related tests that are fixable.
+        'g.1delA' => array(
+            'warnings' => array(
+                'WSUFFIXGIVEN' => 'Nothing should follow "del".'
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 1,
+                'type' => 'del',
+                'range' => false,
+                'suggested_correction' => array(
+                    'value' => 'g.1del',
+                    'confidence' => 'medium',
+                ),
+            ),
+        ),
     ),
 );
 
