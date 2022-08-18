@@ -278,6 +278,100 @@ $aTests = array(
                 ),
             ),
         ),
+
+        // lovd_getVariantInfo()'s insertion-related tests that are fixable.
+        'g.1_2ins(50)' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The part after "ins" does not follow HGVS guidelines.'
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 2,
+                'type' => 'ins',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.1_2insN[50]',
+                    'confidence' => 'high',
+                ),
+            ),
+        ),
+        'g.1_2insN[5_10]' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The part after "ins" does not follow HGVS guidelines. Please rewrite "N[5_10]" to "N[(5_10)]".',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 2,
+                'type' => 'ins',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.1_2insN[(5_10)]',
+                    'confidence' => 'high',
+                ),
+            ),
+        ),
+        'g.1_2insN[(10_5)]' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The part after "ins" does not follow HGVS guidelines. Please rewrite "N[(10_5)]" to "N[(5_10)]".',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 2,
+                'type' => 'ins',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.1_2insN[(5_10)]',
+                    'confidence' => 'high',
+                ),
+            ),
+        ),
+        'g.1_2insN[(10_10)]' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The part after "ins" does not follow HGVS guidelines. Please rewrite "N[(10_10)]" to "N[10]".',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 2,
+                'type' => 'ins',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.1_2insN[10]',
+                    'confidence' => 'high',
+                ),
+            ),
+        ),
+        'g.(1_2)insA' => array(
+            'errors' => array(
+                'EPOSITIONFORMAT' => 'The two positions do not indicate a range longer than two bases. Please remove the parentheses if the positions are certain.',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 2,
+                'type' => 'ins',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.1_2insA',
+                    'confidence' => 'medium',
+                ),
+            ),
+        ),
+        'c.(123+10_123+11)insA' => array(
+            'errors' => array(
+                'EPOSITIONFORMAT' => 'The two positions do not indicate a range longer than two bases. Please remove the parentheses if the positions are certain.',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 123,
+                'position_start_intron' => 10,
+                'position_end_intron' => 11,
+                'type' => 'ins',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'c.123+10_123+11insA',
+                    'confidence' => 'medium',
+                ),
+            ),
+        ),
     ),
 );
 
