@@ -5,7 +5,7 @@
  * Adapted from /src/inc-init.php in the LOVD3 project.
  *
  * Created     : 2022-08-08
- * Modified    : 2022-08-11
+ * Modified    : 2022-08-18
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -159,10 +159,18 @@ if (function_exists('mb_internal_encoding')) {
 // The following applies only if the system is fully installed.
 if (!defined('NOT_INSTALLED')) {
     // Define $_PE ($_PATH_ELEMENTS) and CURRENT_PATH.
+    // Take the part of REQUEST_URI in front of the ? before rawurldecode()ing the string,
+    //  to make sure URL encoded question marks don't break the URL parsing.
     // FIXME: Running lovd_cleanDirName() on the entire URI causes it to run also on the arguments.
     //  If there are arguments with ../ in there, this will take effect and arguments or even the path itself is eaten.
-    $sPath = preg_replace('/^' . preg_quote(lovd_getInstallURL(false), '/') . '/', '', lovd_cleanDirName(html_entity_decode(rawurldecode($_SERVER['REQUEST_URI']), ENT_HTML5))); // 'login' or 'genes?create' or 'users/00001?edit'
-    $sPath = strstr($sPath . '?', '?', true); // Cut off the Query string, that will be handled later.
+    $sPath = preg_replace(
+        '/^' . preg_quote(lovd_getInstallURL(false), '/') . '/',
+        '',
+        lovd_cleanDirName(
+            html_entity_decode(
+                rawurldecode(
+                    strstr($_SERVER['REQUEST_URI'] . '?', '?', true)
+                ), ENT_HTML5))); // 'login' or 'genes?create' or 'users/00001?edit'
     // Removed filtering of characters that we need to successfully receive variants in the URL.
     // Since we don't produce HTML, XSS isn't a problem for us.
     $_PE = explode('/', rtrim($sPath, '/')); // array('login') or array('genes') or array('users', '00001')
