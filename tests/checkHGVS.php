@@ -481,6 +481,20 @@ $aTests = array(
                 ),
             ),
         ),
+
+        // One of lovd_getVariantInfo()'s unknown variant-related tests as a
+        //  general test to see how we handle the question mark in the input.
+        'c.123?' => array(
+            'messages' => array(
+                'IOK' => 'This variant description is HGVS-compliant.',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 123,
+                'type' => null,
+                'range' => false,
+            ),
+        ),
     ),
 );
 
