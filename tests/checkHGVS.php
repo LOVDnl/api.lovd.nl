@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-16
- * Modified    : 2022-08-18
+ * Modified    : 2022-08-19
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -368,6 +368,84 @@ $aTests = array(
                 'range' => true,
                 'suggested_correction' => array(
                     'value' => 'c.123+10_123+11insA',
+                    'confidence' => 'medium',
+                ),
+            ),
+        ),
+
+        // lovd_getVariantInfo()'s deletion-insertion-related tests that are fixable.
+        'g.123delAinsG' => array(
+            'warnings' => array(
+                'WWRONGTYPE' => 'A deletion-insertion of one base to one base should be described as a substitution. Please rewrite "delAinsG" to "A>G".',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 123,
+                'type' => 'delins',
+                'range' => false,
+                'suggested_correction' => array(
+                    'value' => 'g.123A>G',
+                    'confidence' => 'high',
+                ),
+            ),
+        ),
+        'g.123delAinsGG' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The part after "del" does not follow HGVS guidelines. Please rewrite "delAinsGG" to "delinsGG".',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 123,
+                'type' => 'delins',
+                'range' => false,
+                'suggested_correction' => array(
+                    'value' => 'g.123delinsGG',
+                    'confidence' => 'medium',
+                ),
+            ),
+        ),
+        'g.100_200con400_500' => array(
+            'warnings' => array(
+                'WWRONGTYPE' => 'A conversion should be described as a deletion-insertion. Please rewrite "con" to "delins".',
+            ),
+            'data' => array(
+                'position_start' => 100,
+                'position_end' => 200,
+                'type' => 'delins',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.100_200delins400_500',
+                    'confidence' => 'high',
+                ),
+            ),
+        ),
+        'g.123conNC_000001.10:100_200' => array(
+            'warnings' => array(
+                'WWRONGTYPE' => 'A conversion should be described as a deletion-insertion. Please rewrite "con" to "delins".',
+                'WSUFFIXFORMAT' => 'The part after "con" does not follow HGVS guidelines.',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 123,
+                'type' => 'delins',
+                'range' => false,
+                'suggested_correction' => array(
+                    'value' => 'g.123delins[NC_000001.10:g.100_200]',
+                    'confidence' => 'medium',
+                ),
+            ),
+        ),
+        'g.1_5delins20_10' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The part after "delins" does not follow HGVS guidelines.',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 5,
+                'type' => 'delins',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.1_5delins10_20',
                     'confidence' => 'medium',
                 ),
             ),
