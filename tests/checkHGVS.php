@@ -495,6 +495,23 @@ $aTests = array(
                 'range' => false,
             ),
         ),
+
+        // lovd_getVariantInfo()'s unsure variant-related test that is fixable.
+        'g.((1_2insA)' => array(
+            'warnings' => array(
+                'WUNBALANCEDPARENTHESES' => 'The variant description contains unbalanced parentheses.'
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 2,
+                'type' => 'ins',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.(1_2insA)',
+                    'confidence' => 'low',
+                ),
+            ),
+        ),
     ),
 );
 
