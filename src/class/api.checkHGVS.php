@@ -179,6 +179,19 @@ class LOVD_API_checkHGVS
                 $sFixedVariant = lovd_fixHGVS($sVariant);
                 $aFixedVariantInfo = lovd_getVariantInfo($sFixedVariant, false);
                 unset($aFixedVariantInfo['warnings']['WNOTSUPPORTED']);
+
+                // Treat the result as HGVS compliant (i.e., accept suggestion and show)
+                //  when all we had was a WTOOMUCHUNKNOWN and now we get a ESUFFIXMISSING.
+                // The issue is that WTOOMUCHUNKNOWN suggests a fix, so it's stupid to then not show it.
+                // Also, add the error to the current list, so it's not lost.
+                if ($aVariantInfo && $aFixedVariantInfo
+                    && array_keys($aVariantInfo['errors'] + $aVariantInfo['warnings']) == array('WTOOMUCHUNKNOWN')
+                    && array_keys($aFixedVariantInfo['errors'] + $aFixedVariantInfo['warnings']) == array('ESUFFIXMISSING')) {
+                    $aVariantInfo['errors'] += $aFixedVariantInfo['errors']; // For the confidence calculation.
+                    $aResponse['errors'] += $aFixedVariantInfo['errors']; // For the output.
+                    unset($aFixedVariantInfo['errors']['ESUFFIXMISSING']);
+                }
+
                 if ($sVariant != $sFixedVariant
                     && empty($aFixedVariantInfo['errors']) && empty($aFixedVariantInfo['warnings'])) {
                     // So, we suggest some changes, and the result is HGVS-compliant.
