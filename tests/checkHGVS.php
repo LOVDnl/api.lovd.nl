@@ -450,6 +450,20 @@ $aTests = array(
                 ),
             ),
         ),
+
+        // One of lovd_getVariantInfo()'s repeat-related tests as a general test
+        //  to see how we handle the WNOTSUPPORTED.
+        'g.1ACT[20]' => array(
+            'messages' => array(
+                'IOK' => 'This variant description is HGVS-compliant.',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 1,
+                'type' => 'repeat',
+                'range' => false,
+            ),
+        ),
     ),
 );
 
