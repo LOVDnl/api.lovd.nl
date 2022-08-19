@@ -464,6 +464,23 @@ $aTests = array(
                 'range' => false,
             ),
         ),
+
+        // lovd_getVariantInfo()'s wild type-related test that is fixable.
+        'g.123A=' => array(
+            'warnings' => array(
+                'WBASESGIVEN' => 'When using "=", please remove the original sequence before the "=".',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 123,
+                'type' => '=',
+                'range' => false,
+                'suggested_correction' => array(
+                    'value' => 'g.123=',
+                    'confidence' => 'medium',
+                ),
+            ),
+        ),
     ),
 );
 
