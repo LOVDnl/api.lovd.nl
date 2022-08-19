@@ -32,6 +32,7 @@
 // Since this file is executed using `php -f ...`, our cwd isn't where we are located.
 define('ROOT_PATH', dirname(__FILE__) . '/../src/');
 require ROOT_PATH . 'inc-init.php';
+restore_error_handler();
 
 // Very basic tests, not using PHPUnit.
 $sURL = 'http://localhost/git/api.lovd.nl/src';
@@ -567,8 +568,9 @@ foreach ($aTests as $nVersion => $aTestSet) {
         }
 
         // Measure the actual output.
-        $aOutput = array('Failed to decode JSON.');
-        $sOutput = file_get_contents($sURL . '/v' . $nVersion . '/checkHGVS/' . rawurlencode($sVariant));
+        $sVariantURL = $sURL . '/v' . $nVersion . '/checkHGVS/' . rawurlencode($sVariant);
+        $aOutput = array("Failed to decode JSON when calling $sVariantURL.");
+        $sOutput = file_get_contents($sVariantURL);
         if ($sOutput) {
             $aOutput = json_decode($sOutput, true);
         }
