@@ -513,6 +513,206 @@ $aTests = array(
                 ),
             ),
         ),
+
+        // lovd_getVariantInfo()'s question mark-related tests that are fixable.
+        'g.?_?del' => array(
+            'warnings' => array(
+                'WTOOMUCHUNKNOWN' => 'This variant description contains redundant question marks. Please rewrite the positions ?_? to ?.',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 4294967295,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.?del',
+                    'confidence' => 'medium',
+                ),
+            ),
+        ),
+        'g.(?_?)del' => array(
+            'warnings' => array(
+                'WTOOMUCHUNKNOWN' => 'This variant description contains redundant question marks. Please rewrite the positions (?_?) to ?.',
+            ),
+            'errors' => array(
+                'ESUFFIXMISSING' => 'The length must be provided for variants which took place within an uncertain range.',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 4294967295,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.?del',
+                    'confidence' => 'low',
+                ),
+            ),
+        ),
+        'g.(5_?)_?del' => array(
+            'warnings' => array(
+                'WTOOMUCHUNKNOWN' => 'This variant description contains redundant question marks. Please rewrite the positions (5_?)_? to (5_?).',
+            ),
+            'errors' => array(
+                'ESUFFIXMISSING' => 'The length must be provided for variants which took place within an uncertain range.',
+            ),
+            'data' => array(
+                'position_start' => 5,
+                'position_end' => 4294967295,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.(5_?)del',
+                    'confidence' => 'low',
+                ),
+            ),
+        ),
+        'g.(?_?)_10del' => array(
+            'warnings' => array(
+                'WTOOMUCHUNKNOWN' => 'This variant description contains redundant question marks. Please rewrite the positions (?_?)_10 to ?_10.',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 10,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.?_10del',
+                    'confidence' => 'medium',
+                ),
+            ),
+        ),
+        'g.(?_?)_(10_?)del' => array(
+            'warnings' => array(
+                'WTOOMUCHUNKNOWN' => 'This variant description contains redundant question marks. Please rewrite the positions (?_?)_(10_?) to ?_(10_?).',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 10,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.?_(10_?)del',
+                    'confidence' => 'medium',
+                ),
+            ),
+        ),
+        'g.(?_?)_(?_10)del' => array(
+            'warnings' => array(
+                'WTOOMUCHUNKNOWN' => 'This variant description contains redundant question marks. Please rewrite the positions (?_?)_(?_10) to (?_10).',
+            ),
+            'errors' => array(
+                'ESUFFIXMISSING' => 'The length must be provided for variants which took place within an uncertain range.',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 10,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.(?_10)del',
+                    'confidence' => 'low',
+                ),
+            ),
+        ),
+        'g.?_(?_10)del' => array(
+            'warnings' => array(
+                'WTOOMUCHUNKNOWN' => 'This variant description contains redundant question marks. Please rewrite the positions ?_(?_10) to (?_10).',
+            ),
+            'errors' => array(
+                'ESUFFIXMISSING' => 'The length must be provided for variants which took place within an uncertain range.',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 10,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.(?_10)del',
+                    'confidence' => 'low',
+                ),
+            ),
+        ),
+        'g.5_(?_?)del' => array(
+            'warnings' => array(
+                'WTOOMUCHUNKNOWN' => 'This variant description contains redundant question marks. Please rewrite the positions 5_(?_?) to 5_?.',
+            ),
+            'data' => array(
+                'position_start' => 5,
+                'position_end' => 4294967295,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.5_?del',
+                    'confidence' => 'medium',
+                ),
+            ),
+        ),
+        'g.(5_?)_(?_?)del' => array(
+            'warnings' => array(
+                'WTOOMUCHUNKNOWN' => 'This variant description contains redundant question marks. Please rewrite the positions (5_?)_(?_?) to (5_?).',
+            ),
+            'errors' => array(
+                'ESUFFIXMISSING' => 'The length must be provided for variants which took place within an uncertain range.',
+            ),
+            'data' => array(
+                'position_start' => 5,
+                'position_end' => 4294967295,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.(5_?)del',
+                    'confidence' => 'low',
+                ),
+            ),
+        ),
+        'g.(?_5)_(?_?)del' => array(
+            'warnings' => array(
+                'WTOOMUCHUNKNOWN' => 'This variant description contains redundant question marks. Please rewrite the positions (?_5)_(?_?) to (?_5)_?.',
+            ),
+            'data' => array(
+                'position_start' => 5,
+                'position_end' => 4294967295,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.(?_5)_?del',
+                    'confidence' => 'medium',
+                ),
+            ),
+        ),
+        'g.(5_?)_(?_10)del' => array(
+            'warnings' => array(
+                'WTOOMUCHUNKNOWN' => 'This variant description contains redundant question marks. Please rewrite the positions (5_?)_(?_10) to (5_10).',
+            ),
+            'errors' => array(
+                'ESUFFIXMISSING' => 'The length must be provided for variants which took place within an uncertain range.',
+            ),
+            'data' => array(
+                'position_start' => 5,
+                'position_end' => 10,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.(5_10)del',
+                    'confidence' => 'low',
+                ),
+            ),
+        ),
+        'g.(?_?)_(?_?)del' => array(
+            'warnings' => array(
+                'WTOOMUCHUNKNOWN' => 'This variant description contains redundant question marks. Please rewrite the positions (?_?)_(?_?) to ?.',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 4294967295,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.?del',
+                    'confidence' => 'medium',
+                ),
+            ),
+        ),
     ),
 );
 
