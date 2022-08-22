@@ -5,7 +5,7 @@
  * Adapted from /src/inc-lib-init.php in the LOVD3 project.
  *
  * Created     : 2022-08-08
- * Modified    : 2022-08-10
+ * Modified    : 2022-08-22
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -37,7 +37,8 @@ $_LIBRARIES = array(
         'refseq' => array(
             'basic' => '/^[A-Z_.t0-9()]+$/',
             'strict'  =>
-                '/^([NX][CGMRTW]_[0-9]{6,9}\.[0-9]+' .
+                '/^([NX][CGMRTW]_[0-9]{6}\.[0-9]+' .
+                '|[NX][MR]_[0-9]{9}\.[0-9]+' .
                 '|N[CGTW]_[0-9]{6}\.[0-9]+\([NX][MR]_[0-9]{6,9}\.[0-9]+\)' .
                 '|ENS[TG][0-9]{11}\.[0-9]+' .
                 '|LRG_[0-9]+(t[0-9]+)?' .
