@@ -824,6 +824,53 @@ $aTests = array(
                 ),
             )
         ),
+
+        // lovd_getVariantInfo()'s tests for fixable challenging insertions.
+        'g.1_2ins(5_10)' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The part after "ins" does not follow HGVS guidelines.',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 2,
+                'type' => 'ins',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.1_2insN[(5_10)]',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
+        'g.1_2ins[A]' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The part after "ins" does not follow HGVS guidelines.',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 2,
+                'type' => 'ins',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.1_2insA',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
+        'g.1_2insNC123456.1:g.1_10' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The part after "ins" does not follow HGVS guidelines.',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 2,
+                'type' => 'ins',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.1_2ins[NC_123456.1:g.1_10]',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
     ),
 );
 
