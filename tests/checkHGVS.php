@@ -871,6 +871,158 @@ $aTests = array(
                 ),
             )
         ),
+
+        // lovd_getVariantInfo()'s tests for fixable suffixes with other affected sequences.
+        'g.1_10delAAAAAAAAAA' => array(
+            'warnings' => array(
+                'WSUFFIXGIVEN' => 'Nothing should follow "del".'
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 10,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.1_10del',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
+        'g.(1_100)del50' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The length of the variant is not formatted following the HGVS guidelines. Please rewrite "50" to "N[50]".',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 100,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.(1_100)delN[50]',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
+        'g.(1_100)del(30)' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The length of the variant is not formatted following the HGVS guidelines. Please rewrite "(30)" to "N[30]".',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 100,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.(1_100)delN[30]',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
+        'g.(1_100)del(30_30)' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The length of the variant is not formatted following the HGVS guidelines. Please rewrite "(30_30)" to "N[30]".',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 100,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.(1_100)delN[30]',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
+        'g.(1_100)del(30_50)' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The length of the variant is not formatted following the HGVS guidelines. Please rewrite "(30_50)" to "N[(30_50)]".',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 100,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.(1_100)delN[(30_50)]',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
+        'g.(1_100)del(50_30)' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The length of the variant is not formatted following the HGVS guidelines. Please rewrite "(50_30)" to "N[(30_50)]".',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 100,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.(1_100)delN[(30_50)]',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
+        'g.(1_100)delN[30_50]' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The length of the variant is not formatted following the HGVS guidelines. Please rewrite "N[30_50]" to "N[(30_50)]".',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 100,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.(1_100)delN[(30_50)]',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
+        'g.(100_200)_(400_500)del300' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The length of the variant is not formatted following the HGVS guidelines. Please rewrite "300" to "N[300]".',
+            ),
+            'data' => array(
+                'position_start' => 200,
+                'position_end' => 400,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.(100_200)_(400_500)delN[300]',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
+        'g.(1_200)_(400_500)del(300)' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The length of the variant is not formatted following the HGVS guidelines. Please rewrite "(300)" to "N[300]".',
+            ),
+            'data' => array(
+                'position_start' => 200,
+                'position_end' => 400,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.(1_200)_(400_500)delN[300]',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
+        'g.(1_100)inv(30)' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The length of the variant is not formatted following the HGVS guidelines. Please rewrite "(30)" to "N[30]".',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 100,
+                'type' => 'inv',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.(1_100)invN[30]',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
     ),
 );
 
