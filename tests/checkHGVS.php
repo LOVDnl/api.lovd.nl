@@ -1040,6 +1040,23 @@ $aTests = array(
                 ),
             )
         ),
+
+        // One of lovd_getVariantInfo()'s EUNSUPPORTED-related tests as a general test
+        //  to see how we handle the error.
+        'g.123^124A>C' => array(
+            'messages' => array(
+                'INOTSUPPORTED' => 'This variant description contains unsupported syntax. Although we aim to support all of the HGVS nomenclature rules, some complex variants are not fully implemented yet in our syntax checker. We invite you to submit your variant description here, so we can have a look: https://github.com/LOVDnl/api.lovd.nl/issues.',
+            ),
+            'errors' => array(
+                'ENOTSUPPORTED' => 'Currently, variant descriptions using "^" are not yet supported. This does not necessarily mean the description is not valid HGVS.',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 123,
+                'type' => '^',
+                'range' => false,
+            )
+        ),
     ),
 );
 
