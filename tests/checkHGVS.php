@@ -1023,6 +1023,23 @@ $aTests = array(
                 ),
             )
         ),
+
+        // lovd_getVariantInfo()'s tests for fixable methylation-related changes.
+        'g.123lom' => array(
+            'errors' => array(
+                'EPIPEMISSING' => 'Please place a "|" between the positions and the variant type (lom).',
+            ),
+            'data' => array(
+                'position_start' => 0,
+                'position_end' => 0,
+                'type' => '',
+                'range' => false,
+                'suggested_correction' => array(
+                    'value' => 'g.123|lom',
+                    'confidence' => 'high',
+                ),
+            )
+        ),
     ),
 );
 
