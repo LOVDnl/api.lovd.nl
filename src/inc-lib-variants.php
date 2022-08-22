@@ -5,7 +5,7 @@
  * Adapted from /src/inc-lib-variants.php in the LOVD3 project.
  *
  * Created     : 2022-08-11
- * Modified    : 2022-08-18
+ * Modified    : 2022-08-22
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -265,7 +265,7 @@ function lovd_fixHGVS ($sVariant, $sType = '')
     // Swap the reference sequences if they are used in the wrong order.
     if (isset($aVariant['warnings']['WREFERENCEFORMAT'])
         && preg_match('/Please rewrite "([^"]+)" to "([^"]+)"\.$/', $aVariant['warnings']['WREFERENCEFORMAT'], $aRegs)) {
-        return lovd_fixHGVS($aRegs[2] . ':' . $sVariant, $sType);
+        return lovd_fixHGVS(str_replace($aRegs[1], $aRegs[2], $sReference . $sVariant), $sType);
     }
 
     // Fix case problems.
