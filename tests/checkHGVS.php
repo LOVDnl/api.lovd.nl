@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-16
- * Modified    : 2022-08-19
+ * Modified    : 2022-08-22
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -712,6 +712,117 @@ $aTests = array(
                     'confidence' => 'medium',
                 ),
             ),
+        ),
+
+        // lovd_getVariantInfo()'s tests for fixable challenging positions.
+        'c.-010+01del' => array(
+            'warnings' => array(
+                'WPOSITIONFORMAT' => 'Variant positions should not be prefixed by a 0. Please rewrite "-010" to "-10". Please rewrite "+01" to "+1".'
+            ),
+            'data' => array(
+                'position_start' => -10,
+                'position_end' => -10,
+                'position_start_intron' => 1,
+                'position_end_intron' => 1,
+                'type' => 'del',
+                'range' => false,
+                'suggested_correction' => array(
+                    'value' => 'c.-10+1del',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
+        'g.1_1del' => array(
+            'warnings' => array(
+                'WPOSITIONFORMAT' => 'This variant description contains two positions that are the same. Please verify your description and try again.'
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 1,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.1del',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
+        'g.2_1del' => array(
+            'warnings' => array(
+                'WPOSITIONFORMAT' => 'The positions are not given in the correct order. Please verify your description and try again.'
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 2,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.1_2del',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
+        'c.*2_1del' => array(
+            'warnings' => array(
+                'WPOSITIONFORMAT' => 'The positions are not given in the correct order. Please verify your description and try again.'
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 1000002,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'c.1_*2del',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
+        'c.(*50_500)_(100_1)del' => array(
+            'warnings' => array(
+                'WPOSITIONFORMAT' => 'The positions are not given in the correct order. Please verify your description and try again.'
+            ),
+            'data' => array(
+                'position_start' => 100,
+                'position_end' => 1000050,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'c.(1_100)_(500_*50)del',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
+        'c.(500_*50)_(1_100)del' => array(
+            'warnings' => array(
+                'WPOSITIONFORMAT' => 'The positions are not given in the correct order. Please verify your description and try again.'
+            ),
+            'data' => array(
+                'position_start' => 100,
+                'position_end' => 1000050,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'c.(1_100)_(500_*50)del',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
+        'c.123-5_123-10del' => array(
+            'warnings' => array(
+                'WPOSITIONFORMAT' => 'The intronic positions are not given in the correct order. Please verify your description and try again.'
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 123,
+                'position_start_intron' => -10,
+                'position_end_intron' => -5,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'c.123-10_123-5del',
+                    'confidence' => 'medium',
+                ),
+            )
         ),
     ),
 );
