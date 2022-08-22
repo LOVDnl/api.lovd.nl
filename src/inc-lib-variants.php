@@ -518,7 +518,7 @@ function lovd_fixHGVS ($sVariant, $sType = '')
                         array('/\(([0-9]+)\)/', '/\(([0-9]+_[0-9]+)\)/'),
                         array('N[${1}]', 'N[(${1})]'), $sPart);
 
-                } elseif (preg_match('/^[NX][CGMRTW]_[0-9]+/i', $sPart)) {
+                } elseif (lovd_variantHasRefSeq($sPart)) {
                     // This is a full position with refseq. Often, mistakes are
                     //  made in this suffix. So check it.
                     // Append '=' to convert the position into something we can
