@@ -1099,6 +1099,164 @@ $aTests = array(
                 ),
             )
         ),
+
+        // lovd_getVariantInfo()'s tests for all other errors or problems.
+        'G.123dup' => array(
+            'warnings' => array(
+                'WWRONGCASE' => 'This is not a valid HGVS description, due to characters being in the wrong case. Please check the use of upper- and lowercase characters.',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 123,
+                'type' => 'dup',
+                'range' => false,
+                'suggested_correction' => array(
+                    'value' => 'g.123dup',
+                    'confidence' => 'high',
+                ),
+            )
+        ),
+        'g.123DUP' => array(
+            'warnings' => array(
+                'WWRONGCASE' => 'This is not a valid HGVS description, due to characters being in the wrong case. Please check the use of upper- and lowercase characters.',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 123,
+                'type' => 'dup',
+                'range' => false,
+                'suggested_correction' => array(
+                    'value' => 'g.123dup',
+                    'confidence' => 'high',
+                ),
+            )
+        ),
+        'g.123_130delgagagatt' => array(
+            'warnings' => array(
+                'WWRONGCASE' => 'This is not a valid HGVS description, due to characters being in the wrong case. Please rewrite "delgagagatt" to "delGAGAGATT".',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 130,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.123_130del',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
+        'g.123_130delgagagauu' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The part after "del" does not follow HGVS guidelines. Please rewrite "delgagagauu" to "delGAGAGATT".',
+                'WWRONGCASE' => 'This is not a valid HGVS description, due to characters being in the wrong case. Please check the use of upper- and lowercase characters after "del".',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 130,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.123_130del',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
+        'g.123_130deln[8]' => array(
+            'warnings' => array(
+                'WWRONGCASE' => 'This is not a valid HGVS description, due to characters being in the wrong case. Please rewrite "deln[8]" to "delN[8]".',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 130,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.123_130del',
+                    'confidence' => 'high',
+                ),
+            )
+        ),
+        'g.123delinsgagagauu' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => // Adding a WWRONGCASE here is difficult; the code handling insertions is too complex and we'd need to then fix lovd_fixHGVS() again also.
+                    'The part after "delins" does not follow HGVS guidelines.', // Idem for the suggestion how to fix it. It's too complex right now and lovd_fixHGVS() easily handles it anyway.
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 123,
+                'type' => 'delins',
+                'range' => false,
+                'suggested_correction' => array(
+                    'value' => 'g.123delinsGAGAGATT',
+                    'confidence' => 'medium',
+                ),
+            )
+        ),
+        'g.123delainst' => array(
+            'warnings' => array(
+                'WWRONGCASE' => 'This is not a valid HGVS description, due to characters being in the wrong case. Please check the use of upper- and lowercase characters after "del".',
+                'WWRONGTYPE' =>
+                    'A deletion-insertion of one base to one base should be described as a substitution. Please rewrite "delainst" to "A>T".',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 123,
+                'type' => 'delins',
+                'range' => false,
+                'suggested_correction' => array(
+                    'value' => 'g.123A>T',
+                    'confidence' => 'high',
+                ),
+            )
+        ),
+        'g.123delainsu' => array(
+            'warnings' => array(
+                'WWRONGCASE' => 'This is not a valid HGVS description, due to characters being in the wrong case. Please check the use of upper- and lowercase characters after "del".',
+                'WWRONGTYPE' =>
+                    'A deletion-insertion of one base to one base should be described as a substitution. Please rewrite "delainsu" to "A>T".',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 123,
+                'type' => 'delins',
+                'range' => false,
+                'suggested_correction' => array(
+                    'value' => 'g.123A>T',
+                    'confidence' => 'high',
+                ),
+            )
+        ),
+        'g. 123_124insA' => array(
+            'warnings' => array(
+                'WWHITESPACE' => 'This variant description contains one or more whitespace characters (spaces, tabs, etc). Please remove these.',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 124,
+                'type' => 'ins',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.123_124insA',
+                    'confidence' => 'high',
+                ),
+            )
+        ),
+        ' g.123del' => array(
+            'warnings' => array(
+                'WWHITESPACE' => 'This variant description contains one or more whitespace characters (spaces, tabs, etc). Please remove these.',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 123,
+                'type' => 'del',
+                'range' => false,
+                'suggested_correction' => array(
+                    'value' => 'g.123del',
+                    'confidence' => 'high',
+                ),
+            )
+        ),
     ),
 );
 
