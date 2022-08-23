@@ -225,6 +225,20 @@ class LOVD_API_checkHGVS
                             $aVariantInfo['warnings'],
                             array_fill_keys(array('WREFERENCEFORMAT', 'WWHITESPACE', 'WWRONGCASE', 'WWRONGTYPE'), 1)
                         );
+                        // But, compensate for WWRONGCASE that should also have had a WSUFFIXGIVEN.
+                        // Currently, in this case sometimes only WWRONGCASE is given, while lovd_fixHGVS()
+                        //  also removes the suffix. This should result in a medium confidence.
+                        if (!$aWarnings && array_keys($aVariantInfo['warnings']) == array('WWRONGCASE')) {
+                            // Determine if we should have seen a WSUFFIXGIVEN as well.
+                            $sSuffix = substr(stristr($sVariant, $aVariantInfo['type']), strlen($aVariantInfo['type']));
+                            $sFixedSuffix = substr(stristr($sFixedVariant, $aVariantInfo['type']), strlen($aVariantInfo['type']));
+                            if ($sSuffix && !$sFixedSuffix && !preg_match('/^N\[[0-9]+\]$/i', $sSuffix)) {
+                                // There was a suffix, now it's gone. And this suffix wasn't in the N[n] format.'
+                                // Switch to a medium confidence.
+                                $aWarnings['WSUFFIXGIVEN'] = 1;
+                            }
+                        }
+
                         if (empty($aErrors) && empty($aWarnings)) {
                             // OK, we're very confident that we were right about these corrections!
                             $aResponse['data']['suggested_correction']['confidence'] = 'high';
