@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-16
- * Modified    : 2022-08-22
+ * Modified    : 2022-08-23
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -1055,6 +1055,48 @@ $aTests = array(
                 'position_end' => 123,
                 'type' => '^',
                 'range' => false,
+            )
+        ),
+
+        // Some of lovd_getVariantInfo()'s tests containing reference sequences.
+        'NM_123456.1:c.1-1del' => array(
+            'errors' => array(
+                'EWRONGREFERENCE' =>
+                    'The variant is missing a genomic reference sequence required to verify the intronic positions.',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 1,
+                'position_start_intron' => -1,
+                'position_end_intron' => -1,
+                'type' => 'del',
+                'range' => false,
+            )
+        ),
+        'LRG:g.1del' => array(
+            'errors' => array(
+                'EREFERENCEFORMAT' => 'The reference sequence could not be recognised. Supported reference sequence IDs are from NCBI Refseq, Ensembl, and LRG.',
+            ),
+            'data' => array(
+                'position_start' => 1,
+                'position_end' => 1,
+                'type' => 'del',
+                'range' => false,
+            )
+        ),
+        'NM_123456.1(NC_123456.1):c.100del' => array(
+            'warnings' => array(
+                'WREFERENCEFORMAT' => 'The genomic and transcript reference sequences have been swapped. Please rewrite "NM_123456.1(NC_123456.1)" to "NC_123456.1(NM_123456.1)".',
+            ),
+            'data' => array(
+                'position_start' => 100,
+                'position_end' => 100,
+                'type' => 'del',
+                'range' => false,
+                'suggested_correction' => array(
+                    'value' => 'NC_123456.1(NM_123456.1):c.100del',
+                    'confidence' => 'high',
+                ),
             )
         ),
     ),
