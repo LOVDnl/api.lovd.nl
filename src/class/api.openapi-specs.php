@@ -121,6 +121,46 @@ class LOVD_API_OpenAPISpecs
                             ),
                         ),
                     ),
+                    '4XX' => array(
+                        'description' => 'A result of a processing error. The API has not been queried properly, and the data could not be processed.',
+                        'content' => array(
+                            'application/json' => array(
+                                'schema' => array(
+                                    '$ref' => 'checkHGVS/schema.json',
+                                ),
+                                'example' => array(
+                                    'version' => 1,
+                                    'messages' => array(),
+                                    'warnings' => array(),
+                                    'errors' => array(
+                                        'Could not parse the given request. Did you submit a variant?'
+                                    ),
+                                    'data' => array(),
+                                    'library_version' => '2022-08-24'
+                                ),
+                            ),
+                        ),
+                    ),
+                    '500' => array(
+                        'description' => 'A result of an internal error. The library could somehow not handle the request.',
+                        'content' => array(
+                            'application/json' => array(
+                                'schema' => array(
+                                    '$ref' => 'checkHGVS/schema.json',
+                                ),
+                                'example' => array(
+                                    'version' => 1,
+                                    'messages' => array(),
+                                    'warnings' => array(),
+                                    'errors' => array(
+                                        'Request not handled well by any handler.'
+                                    ),
+                                    'data' => array(),
+                                    'library_version' => '2022-08-24'
+                                ),
+                            ),
+                        ),
+                    ),
                 ),
             ),
             'externalDocs' => array(
