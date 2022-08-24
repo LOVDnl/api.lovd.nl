@@ -53,6 +53,21 @@ class LOVD_API_OpenAPISpecs
             return false;
         }
 
+        // Determine the list of current available versions.
+        $aVersions = array_values(
+            array_map(
+                function ($sMethod) {
+                    return strstr($sMethod, '_', true);
+                },
+                array_filter(
+                    get_class_methods($this),
+                    function ($sMethod) {
+                        return preg_match('/^v[0-9]+_getOpenAPISpecs$/', $sMethod);
+                    }
+                )
+            )
+        );
+
         $this->API = $oAPI;
         $this->API->aResponse = array(
             'openapi' => '3.0.3',
@@ -76,6 +91,7 @@ class LOVD_API_OpenAPISpecs
                     'description' => 'Public LOVD APIs, production server.',
                     'variables' => array(
                         'version' => array(
+                            'enum' => $aVersions,
                             'default' => 'v' . $this->API->nVersion,
                         ),
                     ),
@@ -199,7 +215,7 @@ class LOVD_API_OpenAPISpecs
 
 
 
-    // NOTE: Don't just change this function's name, it's called through call_user_func().
+    // NOTE: Don't just change this function's name, it's called through call_user_func() and get_class_methods().
     public function v1_getOpenAPISpecs ()
     {
         $aResponse = $this->API->aResponse;
