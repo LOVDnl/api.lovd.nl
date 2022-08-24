@@ -82,7 +82,47 @@ class LOVD_API_OpenAPISpecs
                 ),
             ),
             'paths' => array(), // To be filled in later.
-            'components' => array(),
+            'components' => array(
+                'responses' => array(
+                    '200' => array(
+                        'description' => 'A result of a successfully processed variant or list of variants. This does not mean that the input variant(s) are using valid nomenclature.',
+                        'content' => array(
+                            'application/json' => array(
+                                'schema' => array(
+                                    '$ref' => 'checkHGVS/schema.json',
+                                ),
+                                'example' => array(
+                                    'version' => 1,
+                                    'messages' => array(
+                                        'Successfully received 1 variant description.',
+                                        'Note that this API does not validate variants on the sequence level, but only checks if the variant description follows the HGVS nomenclature rules.',
+                                        'For sequence-level validation of DNA variants, please use https:\/\/variantvalidator.org.'
+                                    ),
+                                    'warnings' => array(),
+                                    'errors' => array(),
+                                    'data' => array(
+                                        'NM_002225.3:c.157C>T' => array(
+                                            'messages' => array(
+                                                'IOK' => 'This variant description is HGVS-compliant.'
+                                            ),
+                                            'warnings' => array(),
+                                            'errors' => array(),
+                                            'data' => array(
+                                                'position_start' => 157,
+                                                'position_end' => 157,
+                                                'type' => 'subst',
+                                                'range' => false,
+                                                'suggested_correction' => array()
+                                            )
+                                        )
+                                    ),
+                                    'library_version' => '2022-08-24'
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
             'externalDocs' => array(
                 'description' => 'Our Github page.',
                 'url' => 'https://github.com/LOVDnl/api.lovd.nl/',
