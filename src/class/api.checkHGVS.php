@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-08
- * Modified    : 2022-08-23   // When modified, also change the library_version.
+ * Modified    : 2022-08-24   // When modified, also change the library_version.
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -53,7 +53,7 @@ class LOVD_API_checkHGVS
             return false;
         }
         $this->API = $oAPI;
-        $this->API->aResponse['library_version'] = '2022-08-23';
+        $this->API->aResponse['library_version'] = '2022-08-24';
 
         return true;
     }
@@ -106,6 +106,16 @@ class LOVD_API_checkHGVS
         if (!$bReturnBody) {
             return true;
         }
+
+        // We have the option to be asked for the schema, instead of being asked to process a variant.
+        if ($sInput == 'schema.json') {
+            // Call method that provides the schema.
+            $sMethod = 'v' . $this->API->nVersion . '_getJSONSchema';
+            $this->API->aResponse = call_user_func(array($this, $sMethod));
+            return true;
+        }
+
+
 
         // For non-unique input, throw a warning, but continue.
         $aInputUnique = array_unique($aInput, SORT_STRING);
@@ -274,6 +284,224 @@ class LOVD_API_checkHGVS
             $this->API->aResponse['data'][$sVariant] = $aResponse;
         }
         return true;
+    }
+
+
+
+
+
+    // NOTE: Don't just change this function's name, it's called through call_user_func().
+    public function v1_getJSONSchema ()
+    {
+        // Return the JSON Schema for the v1 checkHGVS response format.
+        global $_PE;
+
+        return array(
+            '$schema' => 'https://json-schema.org/draft/2020-12/schema',
+            '$id' => lovd_getInstallURL() . rtrim(implode('/', $_PE), '/'),
+            'title' => 'LOVD checkHGVS API',
+            'description' => 'The response object of the LOVD checkHGVS API.',
+            'type' => 'object',
+            'additionalProperties' => false,
+            'properties' => array(
+                'version' => array(
+                    'description' => 'The version of the API specification.',
+                    'type' => 'integer',
+                    'minimum' => 1,
+                ),
+                'messages' => array(
+                    'description' => 'A list of messages, simply providing information and not indicating any kind of error.',
+                    'type' => 'array',
+                    'items' => array(
+                        'type' => 'string',
+                    ),
+                ),
+                'warnings' => array(
+                    'description' => 'A list of warnings, indicating something went wrong with the request. Warnings are usually recoverable.',
+                    'type' => 'array',
+                    'items' => array(
+                        'type' => 'string',
+                    ),
+                ),
+                'errors' => array(
+                    'description' => 'A list of errors, indicating something went wrong with the request. Errors are usually non-recoverable.',
+                    'type' => 'array',
+                    'items' => array(
+                        'type' => 'string',
+                    ),
+                ),
+                'data' => array(
+                    'description' => 'The data that is the result of the API request. This is empty if a problem occurred while handling the request.',
+                    'type' => 'object',
+                    'patternProperties' => array(
+                        '^.+$' => array(
+                            'type' => 'object',
+                            'additionalProperties' => false,
+                            'properties' => array(
+                                'messages' => array(
+                                    'description' => 'An object for messages, simply providing information and not indicating any kind of error.',
+                                    'oneOf' => array(
+                                        array(
+                                            'type' => 'array',
+                                            'maxContains' => 0,
+                                        ),
+                                        array(
+                                            'type' => 'object',
+                                            'additionalProperties' => false,
+                                            'patternProperties' => array(
+                                                '^I.+$' => array(
+                                                    'type' => 'string',
+                                                ),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                'warnings' => array(
+                                    'description' => 'An object for warnings, indicating something is wrong with the submitted variant description. Warnings are usually recoverable.',
+                                    'oneOf' => array(
+                                        array(
+                                            'type' => 'array',
+                                            'maxContains' => 0,
+                                        ),
+                                        array(
+                                            'type' => 'object',
+                                            'additionalProperties' => false,
+                                            'patternProperties' => array(
+                                                '^W.+$' => array(
+                                                    'type' => 'string',
+                                                ),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                'errors' => array(
+                                    'description' => 'An object for errors, indicating something is wrong with the submitted variant description. Errors are usually non-recoverable.',
+                                    'oneOf' => array(
+                                        array(
+                                            'type' => 'array',
+                                            'maxContains' => 0,
+                                        ),
+                                        array(
+                                            'type' => 'object',
+                                            'additionalProperties' => false,
+                                            'patternProperties' => array(
+                                                '^E.+$' => array(
+                                                    'type' => 'string',
+                                                ),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                'data' => array(
+                                    'description' => 'Data representing the submitted variant description.',
+                                    'type' => 'object',
+                                    'additionalProperties' => false,
+                                    'properties' => array(
+                                        'position_start' => array(
+                                            'description' => 'The start position of the submitted variant.',
+                                            'type' => 'integer',
+                                        ),
+                                        'position_end' => array(
+                                            'description' => 'The end position of the submitted variant.',
+                                            'type' => 'integer',
+                                        ),
+                                        'position_start_intron' => array(
+                                            'description' => 'The offset from the nearest exon for the start position of the submitted variant.',
+                                            'type' => 'integer',
+                                        ),
+                                        'position_end_intron' => array(
+                                            'description' => 'The offset from the nearest exon for the end position of the submitted variant.',
+                                            'type' => 'integer',
+                                        ),
+                                        'type' => array(
+                                            'description' => 'The type of the submitted variant.',
+                                            'type' => 'string',
+                                            'enum' => array(
+                                                '',
+                                                ';',
+                                                '=',
+                                                '^',
+                                                'chimeric',
+                                                'del',
+                                                'delins',
+                                                'dup',
+                                                'ins',
+                                                'inv',
+                                                'met',
+                                                'mosaic',
+                                                null,
+                                                'repeat',
+                                                'subst',
+                                            ),
+                                        ),
+                                        'range' => array(
+                                            'description' => 'Whether the variant was submitted as a range (multiple positions) or not.',
+                                            'type' => 'boolean',
+                                        ),
+                                        'suggested_correction' => array(
+                                            'description' => 'In case the variant description was not fully valid, this object might contain a suggestion how to fix the given description.',
+                                            'oneOf' => array(
+                                                array(
+                                                    'type' => 'array',
+                                                    'maxContains' => 0,
+                                                ),
+                                                array(
+                                                    'type' => 'object',
+                                                    'properties' => array(
+                                                        'value' => array(
+                                                            'description' => 'The suggested corrected variant description.',
+                                                            'type' => 'string',
+                                                        ),
+                                                        'confidence' => array(
+                                                            'description' => 'The confidence in which the API suggests this corrected variant description.',
+                                                            'type' => 'string',
+                                                            'enum' => array(
+                                                                'high',
+                                                                'medium',
+                                                                'low',
+                                                            ),
+                                                        ),
+                                                    ),
+                                                    'required' => array(
+                                                        'value',
+                                                        'confidence',
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                    ),
+                                    'required' => array(
+                                        'position_start',
+                                        'position_end',
+                                        'type',
+                                        'range',
+                                        'suggested_correction',
+                                    ),
+                                ),
+                            ),
+                            'required' => array(
+                                'messages',
+                                'warnings',
+                                'errors',
+                                'data',
+                            ),
+                        ),
+                    ),
+                ),
+                'library_version' => array(
+                    'description' => 'The date that the library that powers this API, has been updated.',
+                    'type' => 'string',
+                    'pattern' => '^[0-9]{4}-[0-9]{2}-[0-9]{2}$',
+                ),
+            ),
+            'required' => array(
+                'version',
+                'messages',
+                'warnings',
+                'errors',
+                'library_version',
+            ),
+        );
     }
 }
 ?>
