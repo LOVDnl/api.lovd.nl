@@ -5,7 +5,7 @@
  * Adapted from /src/class/api.php in the LOVD3 project.
  *
  * Created     : 2022-08-08
- * Modified    : 2022-08-09
+ * Modified    : 2022-08-24
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -62,6 +62,8 @@ class LOVD_API
     // Currently supported resources (resource => array(methods)):
     private $aResourcesSupported = array(
         'checkHGVS' => array('GET', 'HEAD'),
+        'openapi.json' => array('GET', 'HEAD'),
+        'swagger.json' => array('GET', 'HEAD'),
     );
 
     // Currently supported output formats that can be requested:
@@ -409,6 +411,9 @@ class LOVD_API
         } elseif ($this->sResource == 'ga4gh') {
             require_once 'class/api.ga4gh.php';
             $o = new LOVD_API_GA4GH($this);
+        } elseif (in_array($this->sResource, array('openapi.json', 'swagger.json'))) {
+            require_once 'class/api.openapi-specs.php';
+            $o = new LOVD_API_OpenAPISpecs($this);
         }
 
         if (isset($o)) {
