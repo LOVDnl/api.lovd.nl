@@ -185,7 +185,58 @@ class LOVD_API_OpenAPISpecs
         //  be more independent on the rest of the infrastructure.
         // Note that LOVD API's sendHeaders() function does check for HEAD and
         //  automatically won't print any contents if HEAD is used.
+        if (!$bReturnBody) {
+            return true;
+        }
+
+        // Call the method for the currently used version.
+        $sMethod = 'v' . $this->API->nVersion . '_getOpenAPISpecs';
+        $this->API->aResponse = call_user_func(array($this, $sMethod));
         return true;
+    }
+
+
+
+
+
+    // NOTE: Don't just change this function's name, it's called through call_user_func().
+    public function v1_getOpenAPISpecs ()
+    {
+        $aResponse = $this->API->aResponse;
+        $aResponse['paths'] = array(
+            '/checkHGVS/{variant}' => array(
+                'summary' => 'Method to validate variant descriptions using the HGVS nomenclature rules.',
+                'get' => array(
+                    'summary' => 'Validate variant descriptions.',
+                    'description' => 'Validate a single variant description or a set of variant descriptions using this API. It will return informative messages, warnings, and/or errors about the variant description and may suggest improvements in case an issue has been identified.',
+                    'operationId' => 'getCheckHGVS',
+                    'parameters' => array(
+                        array(
+                            'name' => 'variant',
+                            'in' => 'path',
+                            'description' => 'A single variant description or a JSON-formatted list of variant descriptions, following the HGVS nomenclature guidelines.',
+                            'required' => true,
+                        ),
+                    ),
+                    'responses' => array(
+                        'default' => array(
+                            '$ref' => '#/components/responses/200',
+                        ),
+                        '200' => array(
+                            '$ref' => '#/components/responses/200',
+                        ),
+                        '4XX' => array(
+                            '$ref' => '#/components/responses/4XX',
+                        ),
+                        '500' => array(
+                            '$ref' => '#/components/responses/500',
+                        ),
+                    ),
+                ),
+            ),
+        );
+
+        return $aResponse;
     }
 }
 ?>
