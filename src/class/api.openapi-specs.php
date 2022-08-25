@@ -182,7 +182,7 @@ class LOVD_API_OpenAPISpecs
                 ),
             ),
             'externalDocs' => array(
-                'description' => 'Our Github page.',
+                'description' => 'More documentation can be found on our Github page.',
                 'url' => 'https://github.com/LOVDnl/api.lovd.nl/',
             ),
         );
@@ -223,9 +223,8 @@ class LOVD_API_OpenAPISpecs
         $aResponse = $this->API->aResponse;
         $aResponse['paths'] = array(
             '/checkHGVS/{variant}' => array(
-                'summary' => 'Method to validate variant descriptions using the HGVS nomenclature rules.',
                 'get' => array(
-                    'summary' => 'Validate variant descriptions.',
+                    'summary' => 'Method to validate variant descriptions using the HGVS nomenclature rules.',
                     'description' => 'Validate a single variant description or a set of variant descriptions using this API. It will return informative messages, warnings, and/or errors about the variant description and may suggest improvements in case an issue has been identified.',
                     'operationId' => 'getCheckHGVS',
                     'parameters' => array(
