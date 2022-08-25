@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-24
- * Modified    : 2022-08-24         // When modified, also change info->version.
+ * Modified    : 2022-08-25         // When modified, also change info->version.
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -69,6 +69,8 @@ class LOVD_API_OpenAPISpecs
         );
 
         $this->API = $oAPI;
+        // A good validator is https://editor.swagger.io/.
+        // Their "normal" validator provides unreadable error messages and is of no use.
         $this->API->aResponse = array(
             'openapi' => '3.0.3',
             'info' => array(
@@ -83,7 +85,7 @@ class LOVD_API_OpenAPISpecs
                     'name' => 'GNU General Public License v3.0',
                     'url' => 'https://github.com/LOVDnl/api.lovd.nl/raw/main/LICENSE',
                 ),
-                'version' => '2022-08-24',
+                'version' => '2022-08-25',
             ),
             'servers' => array(
                 array(
@@ -232,6 +234,32 @@ class LOVD_API_OpenAPISpecs
                             'in' => 'path',
                             'description' => 'A single variant description or a JSON-formatted list of variant descriptions, following the HGVS nomenclature guidelines.',
                             'required' => true,
+                            'schema' => array(
+                                'oneOf' => array(
+                                    // These schemas can also contain examples, but Swagger doesn't show them.
+                                    // So pulled out the examples, and stored them separately.
+                                    array(
+                                        'title' => 'A single variant description following the HGVS nomenclature guidelines.',
+                                        'type' => 'string',
+                                    ),
+                                    array(
+                                        'title' => 'A JSON-formatted list of variant descriptions following the HGVS nomenclature guidelines.',
+                                        'type' => 'string',
+                                        'pattern' => '^\[".+"\]$',
+                                    ),
+                                ),
+                            ),
+                            'examples' => array(
+                                // The key name doesn't seem to matter.
+                                'single' => array(
+                                    'summary' => 'A single variant description.',
+                                    'value' => 'NM_002225.3:c.157C>T',
+                                ),
+                                'multiple' => array(
+                                    'summary' => 'A JSON-formatted list of variant descriptions.',
+                                    'value' => '["NM_002225.3:c.157C>T","NC_000015.9:g.40699840C>T"]',
+                                ),
+                            ),
                         ),
                     ),
                     'responses' => array(
