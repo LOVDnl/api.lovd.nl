@@ -69,7 +69,7 @@ class LOVD_API_OpenAPISpecs
         );
 
         $this->API = $oAPI;
-        // A good validator is https://editor.swagger.io/.
+        // Good validators are https://editor.swagger.io/ or https://editor-next.swagger.io/.
         // Their "normal" validator provides unreadable error messages and is of no use.
         $this->API->aResponse = array(
             'openapi' => '3.0.3',
@@ -224,6 +224,9 @@ class LOVD_API_OpenAPISpecs
         $aResponse['paths'] = array(
             '/checkHGVS/{variant}' => array(
                 'get' => array(
+                    'tags' => array(
+                        'Public LOVD API endpoints'
+                    ),
                     'summary' => 'Method to validate variant descriptions using the HGVS nomenclature rules.',
                     'description' => 'Validate a single variant description or a set of variant descriptions using this API. It will return informative messages, warnings, and/or errors about the variant description and may suggest improvements in case an issue has been identified.',
                     'operationId' => 'getCheckHGVS',
@@ -275,8 +278,10 @@ class LOVD_API_OpenAPISpecs
                 ),
             ),
             '/hello' => array(
-                'summary' => 'Method to check whether the API is alive or not.',
                 'get' => array(
+                    'tags' => array(
+                        'Public LOVD API endpoints'
+                    ),
                     'summary' => 'Method to check whether the API is alive or not.',
                     'operationId' => 'getHello',
                     'responses' => array(
