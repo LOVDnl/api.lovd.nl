@@ -102,7 +102,7 @@ class LOVD_API_OpenAPISpecs
             'paths' => array(), // To be filled in later.
             'components' => array(
                 'responses' => array(
-                    '200' => array(
+                    '200_checkHGVS' => array(
                         'description' => 'A result of a successfully processed variant or list of variants. This does not mean that the input variant(s) are using valid nomenclature.',
                         'content' => array(
                             'application/json' => array(
@@ -139,7 +139,7 @@ class LOVD_API_OpenAPISpecs
                             ),
                         ),
                     ),
-                    '4XX' => array(
+                    '4XX_checkHGVS' => array(
                         'description' => 'A result of a processing error. The API has not been queried properly, and the data could not be processed.',
                         'content' => array(
                             'application/json' => array(
@@ -159,7 +159,7 @@ class LOVD_API_OpenAPISpecs
                             ),
                         ),
                     ),
-                    '500' => array(
+                    '500_checkHGVS' => array(
                         'description' => 'A result of an internal error. The library could somehow not handle the request.',
                         'content' => array(
                             'application/json' => array(
@@ -263,17 +263,14 @@ class LOVD_API_OpenAPISpecs
                         ),
                     ),
                     'responses' => array(
-                        'default' => array(
-                            '$ref' => '#/components/responses/200',
-                        ),
                         '200' => array(
-                            '$ref' => '#/components/responses/200',
+                            '$ref' => '#/components/responses/200_checkHGVS',
                         ),
                         '4XX' => array(
-                            '$ref' => '#/components/responses/4XX',
+                            '$ref' => '#/components/responses/4XX_checkHGVS',
                         ),
                         '500' => array(
-                            '$ref' => '#/components/responses/500',
+                            '$ref' => '#/components/responses/500_checkHGVS',
                         ),
                     ),
                 ),
