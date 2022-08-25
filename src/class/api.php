@@ -5,7 +5,7 @@
  * Adapted from /src/class/api.php in the LOVD3 project.
  *
  * Created     : 2022-08-08
- * Modified    : 2022-08-24
+ * Modified    : 2022-08-25
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -81,6 +81,12 @@ class LOVD_API
     {
         // Initiates the API. Parses the URL, defines the variables, stores the allowed methods, etc.
         global $_PE;
+
+        // If the user has not requested a version nor an endpoint, they probably want to see the swagger interface.
+        if (empty($_PE) || $_PE == array('')) {
+            header('Location: ' . lovd_getInstallURL() . '/swagger');
+            exit;
+        }
 
         // Add version to the response. This can be overwritten later, if the
         //  URL of the request indicates so.
