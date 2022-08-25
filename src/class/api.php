@@ -254,7 +254,7 @@ class LOVD_API
 
             // Verify method. This depends on the resource.
             if (!in_array($_SERVER['REQUEST_METHOD'], $this->aResourcesSupported[$this->sResource])) {
-                $this->aResponse['errors'][] = 'Method not allowed here. Options: ' . implode(', ', $this->aResourcesSupported[$this->sResource]);
+                $this->aResponse['errors'][] = 'Method not allowed here. Options: ' . implode(', ', $this->aResourcesSupported[$this->sResource]) . '.';
                 $this->sendHeader(405, true); // Send 405 Method Not Allowed, print response, and quit.
             }
 
@@ -263,7 +263,7 @@ class LOVD_API
                 // Remove POST from options, before we mention it.
                 // FIXME: Yes, this currently means there are no methods left...
                 unset($this->aResourcesSupported[$this->sResource][array_search('POST', $this->aResourcesSupported[$this->sResource])]);
-                $this->aResponse['errors'][] = 'Method not allowed here. Options: ' . implode(', ', $this->aResourcesSupported[$this->sResource]);
+                $this->aResponse['errors'][] = 'Method not allowed here. Options: ' . implode(', ', $this->aResourcesSupported[$this->sResource]) . '.';
                 $this->sendHeader(405, true); // Send 405 Method Not Allowed, print response, and quit.
             }
 
