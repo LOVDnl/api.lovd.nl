@@ -278,6 +278,37 @@ class LOVD_API_OpenAPISpecs
                     ),
                 ),
             ),
+            '/hello' => array(
+                'summary' => 'Method to check whether the API is alive or not.',
+                'get' => array(
+                    'summary' => 'Method to check whether the API is alive or not.',
+                    'operationId' => 'getHello',
+                    'responses' => array(
+                        '200' => array(
+                            'description' => 'The API is up and functional.',
+                            'content' => array(
+                                'application/json' => array(
+                                    'example' => array(
+                                        'version' => 1,
+                                        'messages' => array(
+                                            'Hello!',
+                                        ),
+                                        'warnings' => array(),
+                                        'errors' => array(),
+                                        'data' => array(),
+                                    ),
+                                ),
+                            ),
+                        ),
+                        '4XX' => array(
+                            'description' => 'A result of a processing error. The API has not been queried properly.',
+                        ),
+                        '500' => array(
+                            'description' => 'A result of an internal error.',
+                        ),
+                    ),
+                ),
+            ),
         );
 
         return $aResponse;
