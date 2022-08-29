@@ -159,10 +159,8 @@ if (function_exists('mb_internal_encoding')) {
 // The following applies only if the system is fully installed.
 if (!defined('NOT_INSTALLED')) {
     // Define $_PE ($_PATH_ELEMENTS) and CURRENT_PATH.
-    // Take the part of REQUEST_URI in front of the ? before rawurldecode()ing the string,
-    //  to make sure URL encoded question marks don't break the URL parsing.
-    // FIXME: Running lovd_cleanDirName() on the entire URI causes it to run also on the arguments.
-    //  If there are arguments with ../ in there, this will take effect and arguments or even the path itself is eaten.
+    // Take the part of REQUEST_URI before the '?' before rawurldecode()ing the string and running lovd_cleanDirName(),
+    //  to make sure URL encoded question marks and arguments with '../' don't break the URL parsing.
     $sPath = preg_replace(
         '/^' . preg_quote(lovd_getInstallURL(false), '/') . '/',
         '',
