@@ -69,7 +69,7 @@ class LOVD_API_OpenAPISpecs
         );
 
         $this->API = $oAPI;
-        // A good validator is https://editor.swagger.io/.
+        // Good validators are https://editor.swagger.io/ or https://editor-next.swagger.io/.
         // Their "normal" validator provides unreadable error messages and is of no use.
         $this->API->aResponse = array(
             'openapi' => '3.0.3',
@@ -102,7 +102,7 @@ class LOVD_API_OpenAPISpecs
             'paths' => array(), // To be filled in later.
             'components' => array(
                 'responses' => array(
-                    '200' => array(
+                    '200_checkHGVS' => array(
                         'description' => 'A result of a successfully processed variant or list of variants. This does not mean that the input variant(s) are using valid nomenclature.',
                         'content' => array(
                             'application/json' => array(
@@ -139,7 +139,7 @@ class LOVD_API_OpenAPISpecs
                             ),
                         ),
                     ),
-                    '4XX' => array(
+                    '4XX_checkHGVS' => array(
                         'description' => 'A result of a processing error. The API has not been queried properly, and the data could not be processed.',
                         'content' => array(
                             'application/json' => array(
@@ -159,7 +159,7 @@ class LOVD_API_OpenAPISpecs
                             ),
                         ),
                     ),
-                    '500' => array(
+                    '500_checkHGVS' => array(
                         'description' => 'A result of an internal error. The library could somehow not handle the request.',
                         'content' => array(
                             'application/json' => array(
@@ -182,7 +182,7 @@ class LOVD_API_OpenAPISpecs
                 ),
             ),
             'externalDocs' => array(
-                'description' => 'Our Github page.',
+                'description' => 'More documentation can be found on our Github page.',
                 'url' => 'https://github.com/LOVDnl/api.lovd.nl/',
             ),
         );
@@ -223,9 +223,11 @@ class LOVD_API_OpenAPISpecs
         $aResponse = $this->API->aResponse;
         $aResponse['paths'] = array(
             '/checkHGVS/{variant}' => array(
-                'summary' => 'Method to validate variant descriptions using the HGVS nomenclature rules.',
                 'get' => array(
-                    'summary' => 'Validate variant descriptions.',
+                    'tags' => array(
+                        'Public LOVD API endpoints'
+                    ),
+                    'summary' => 'Method to validate variant descriptions using the HGVS nomenclature rules.',
                     'description' => 'Validate a single variant description or a set of variant descriptions using this API. It will return informative messages, warnings, and/or errors about the variant description and may suggest improvements in case an issue has been identified.',
                     'operationId' => 'getCheckHGVS',
                     'parameters' => array(
@@ -263,17 +265,47 @@ class LOVD_API_OpenAPISpecs
                         ),
                     ),
                     'responses' => array(
-                        'default' => array(
-                            '$ref' => '#/components/responses/200',
-                        ),
                         '200' => array(
-                            '$ref' => '#/components/responses/200',
+                            '$ref' => '#/components/responses/200_checkHGVS',
                         ),
                         '4XX' => array(
-                            '$ref' => '#/components/responses/4XX',
+                            '$ref' => '#/components/responses/4XX_checkHGVS',
                         ),
                         '500' => array(
-                            '$ref' => '#/components/responses/500',
+                            '$ref' => '#/components/responses/500_checkHGVS',
+                        ),
+                    ),
+                ),
+            ),
+            '/hello' => array(
+                'get' => array(
+                    'tags' => array(
+                        'Public LOVD API endpoints'
+                    ),
+                    'summary' => 'Method to check whether the API is alive or not.',
+                    'operationId' => 'getHello',
+                    'responses' => array(
+                        '200' => array(
+                            'description' => 'The API is up and functional.',
+                            'content' => array(
+                                'application/json' => array(
+                                    'example' => array(
+                                        'version' => 1,
+                                        'messages' => array(
+                                            'Hello!',
+                                        ),
+                                        'warnings' => array(),
+                                        'errors' => array(),
+                                        'data' => array(),
+                                    ),
+                                ),
+                            ),
+                        ),
+                        '4XX' => array(
+                            'description' => 'A result of a processing error. The API has not been queried properly.',
+                        ),
+                        '500' => array(
+                            'description' => 'A result of an internal error.',
                         ),
                     ),
                 ),

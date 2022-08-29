@@ -62,6 +62,7 @@ class LOVD_API
     // Currently supported resources (resource => array(methods)):
     private $aResourcesSupported = array(
         'checkHGVS' => array('GET', 'HEAD'),
+        'hello' => array('GET', 'HEAD', 'POST'),
         'openapi.json' => array('GET', 'HEAD'),
         'swagger.json' => array('GET', 'HEAD'),
     );
@@ -254,7 +255,7 @@ class LOVD_API
 
             // Verify method. This depends on the resource.
             if (!in_array($_SERVER['REQUEST_METHOD'], $this->aResourcesSupported[$this->sResource])) {
-                $this->aResponse['errors'][] = 'Method not allowed here. Options: ' . implode(', ', $this->aResourcesSupported[$this->sResource]);
+                $this->aResponse['errors'][] = 'Method not allowed here. Options: ' . implode(', ', $this->aResourcesSupported[$this->sResource]) . '.';
                 $this->sendHeader(405, true); // Send 405 Method Not Allowed, print response, and quit.
             }
 
@@ -263,8 +264,15 @@ class LOVD_API
                 // Remove POST from options, before we mention it.
                 // FIXME: Yes, this currently means there are no methods left...
                 unset($this->aResourcesSupported[$this->sResource][array_search('POST', $this->aResourcesSupported[$this->sResource])]);
-                $this->aResponse['errors'][] = 'Method not allowed here. Options: ' . implode(', ', $this->aResourcesSupported[$this->sResource]);
+                $this->aResponse['errors'][] = 'Method not allowed here. Options: ' . implode(', ', $this->aResourcesSupported[$this->sResource]) . '.';
                 $this->sendHeader(405, true); // Send 405 Method Not Allowed, print response, and quit.
+            }
+
+            // We'll handle the "hello" method differently. No need for a special class.
+            if ($this->sResource == 'hello') {
+                $this->aResponse['messages'][] = 'Hello!';
+                $this->sendHeader(200, true); // Send HTTP status code, print response, and quit.
+                return;
             }
 
             // If we're here, the API regarded the call acceptable, and assigned
