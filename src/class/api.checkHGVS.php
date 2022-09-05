@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-08
- * Modified    : 2022-08-24   // When modified, also change the library_version.
+ * Modified    : 2022-09-02   // When modified, also change the library_version.
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -53,7 +53,7 @@ class LOVD_API_checkHGVS
             return false;
         }
         $this->API = $oAPI;
-        $this->API->aResponse['library_version'] = '2022-08-24';
+        $this->API->aResponse['library_version'] = '2022-09-02';
 
         return true;
     }
@@ -202,9 +202,16 @@ class LOVD_API_checkHGVS
                     unset($aFixedVariantInfo['errors']['ESUFFIXMISSING']);
                 }
 
-                if ($sVariant != $sFixedVariant
-                    && $aFixedVariantInfo
-                    && empty($aFixedVariantInfo['errors']) && empty($aFixedVariantInfo['warnings'])) {
+                // Now check the confidence.
+                // This already checks if $sFixedVariant is different, and error-free. If not, it will return false.
+                $sConfidence = lovd_fixHGVSGetConfidence(
+                    $sVariant,
+                    $sFixedVariant,
+                    $aVariantInfo,
+                    $aFixedVariantInfo
+                );
+
+                if ($sConfidence) {
                     // So, we suggest some changes, and the result is HGVS-compliant.
                     // We choose not to show non-HGVS compliant suggestions here.
                     // We anyway pass on the errors and warnings to the user,
@@ -215,63 +222,7 @@ class LOVD_API_checkHGVS
                     // High, for corrections that we're very sure about.
                     // Medium, for corrections that are a bit more complex.
                     // Low, for everything else.
-                    // We'll probably tinker a lot with these values.
-
-                    // If the original variant wasn't recognized at all, add a "medium" confidence.
-                    if (!$aVariantInfo) {
-                        $aResponse['data']['suggested_correction']['confidence'] = 'medium';
-                    } else {
-                        // Remove stuff that we feel confident about.
-                        $aErrors = array_diff_key(
-                            $aVariantInfo['errors'],
-                            array_fill_keys(array('ENOTSUPPORTED', 'EPIPEMISSING'), 1)
-                        );
-                        if (isset($aErrors['ETOOMANYPOSITIONS']) && isset($aVariantInfo['warnings']['WWRONGTYPE'])) {
-                            // ETOOMANYPOSITIONS can be thrown for substitutions
-                            //  that should be deletions, insertions, or deletion-insertions.
-                            unset($aErrors['ETOOMANYPOSITIONS']);
-                        }
-                        $aWarnings = array_diff_key(
-                            $aVariantInfo['warnings'],
-                            array_fill_keys(array('WREFERENCEFORMAT', 'WWHITESPACE', 'WWRONGCASE', 'WWRONGTYPE'), 1)
-                        );
-                        // But, compensate for WWRONGCASE that should also have had a WSUFFIXGIVEN.
-                        // Currently, in this case sometimes only WWRONGCASE is given, while lovd_fixHGVS()
-                        //  also removes the suffix. This should result in a medium confidence.
-                        if (!$aWarnings && array_keys($aVariantInfo['warnings']) == array('WWRONGCASE')) {
-                            // Determine if we should have seen a WSUFFIXGIVEN as well.
-                            $sSuffix = substr(stristr($sVariant, $aVariantInfo['type']), strlen($aVariantInfo['type']));
-                            $sFixedSuffix = substr(stristr($sFixedVariant, $aVariantInfo['type']), strlen($aVariantInfo['type']));
-                            if ($sSuffix && !$sFixedSuffix && !preg_match('/^N\[[0-9]+\]$/i', $sSuffix)) {
-                                // There was a suffix, now it's gone. And this suffix wasn't in the N[n] format.'
-                                // Switch to a medium confidence.
-                                $aWarnings['WSUFFIXGIVEN'] = 1;
-                            }
-                        }
-
-                        if (empty($aErrors) && empty($aWarnings)) {
-                            // OK, we're very confident that we were right about these corrections!
-                            $aResponse['data']['suggested_correction']['confidence'] = 'high';
-
-                        } else {
-                            // Remove stuff that we feel less confident about.
-                            $aErrors = array_diff_key(
-                                $aErrors,
-                                array_fill_keys(array('EFALSEINTRONIC', 'EFALSEUTR', 'EPOSITIONFORMAT'), 1)
-                            );
-                            $aWarnings = array_diff_key(
-                                $aWarnings,
-                                array_fill_keys(array('WBASESGIVEN', 'WPOSITIONFORMAT', 'WSUFFIXFORMAT', 'WSUFFIXGIVEN', 'WTOOMUCHUNKNOWN'), 1)
-                            );
-                            if (empty($aErrors) && empty($aWarnings)) {
-                                // OK, we're very confident that we were right about these corrections!
-                                $aResponse['data']['suggested_correction']['confidence'] = 'medium';
-                            } else {
-                                // Well, at least we seem to have generated something HGVS-like, but it's quite vague.
-                                $aResponse['data']['suggested_correction']['confidence'] = 'low';
-                            }
-                        }
-                    }
+                    $aResponse['data']['suggested_correction']['confidence'] = $sConfidence;
                 }
             }
 
