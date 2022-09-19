@@ -140,3 +140,60 @@ The `library_version` shows the date the internal libraries that interpret
  updated.
 Such an update will not create a new API version, as the API version defines
  the behaviour of the API and its output.
+
+```
+https://api.lovd.nl/v1/checkHGVS/NM_002225.3%3Ac.157delCinsT
+```
+```json
+{
+    "version": 1,
+    "messages": [
+        "Successfully received 1 variant description.",
+        "Note that this API does not validate variants on the sequence level, but only checks if the variant description follows the HGVS nomenclature rules.",
+        "For sequence-level validation of DNA variants, please use https:\/\/variantvalidator.org."
+    ],
+    "warnings": [],
+    "errors": [],
+    "data": {
+        "NM_002225.3:c.157delCinsT": {
+            "messages": [],
+            "warnings": {
+                "WWRONGTYPE": "A deletion-insertion of one base to one base should be described as a substitution. Please rewrite \"delCinsT\" to \"C>T\"."
+            },
+            "errors": [],
+            "data": {
+                "position_start": 157,
+                "position_end": 157,
+                "type": "delins",
+                "range": false,
+                "suggested_correction": {
+                    "value": "NM_002225.3:c.157C>T",
+                    "confidence": "high"
+                }
+            }
+        }
+    },
+    "library_version": "2022-09-02"
+}
+```
+
+All `messages`, `warnings`, and `errors` within the `data` object return a code,
+ e.g., `WWRONGTYPE`, as well as a human-readable text.
+Codes allow you to interpret the meaning of the feedback without the need to
+ read it or rely on the stability of the verbose strings.
+We stress that between different library versions, the strings may be updated.
+Therefore, use the stable codes to recognize the type of feedback given.
+The text is meant for human users, and can be used by you for this purpose.
+
+The first letter of each code describes the type of reply;
+ `I` for information (messages), `W` for warning, and `E` for error.
+This allows you to group these objects if needed, while still being clear on the
+ origin of each entry.
+Note also that errors and warnings exist with similar codes, e.g., `EWRONGTYPE`
+ and `WWRONGTYPE`. 
+
+When requesting a variant that contains incorrect syntax, the API will attempt
+ to repair your description.
+If this results in a suggested correction, this suggestion is always provided
+ with a confidence of either `high`, `medium`, or `low`, indicating how sure the
+ library is that its suggestion describes the variant you meant to describe.
