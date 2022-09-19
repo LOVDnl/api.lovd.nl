@@ -28,3 +28,24 @@ If you wish to use the APIs directly through `api.lovd.nl`, then please follow
 If you wish to run a copy of these APIs locally, all you need is to place the
  files in the `src` directory in a location that is available to a PHP-enabled
  web server such as Apache.
+
+
+
+
+
+<!-- Based on the LOVD3 manual -->
+## Different versions of this API
+**Before you use the API, make sure you read this information, to prevent
+ unexpected problems if we would update the API.**
+
+To allow easy further development of this API,
+ we might change the way the API works or change the way the API returns data.
+To make sure this doesn't harm your application,
+ you can instruct the API to use a fixed version.
+To do so, you must include the APIs version in the URL.
+For instance, to always use version 1 of the API,
+ even when version 2 is already released, use
+ `/v1/checkHGVS` instead of `/checkHGVS`.
+_When you're not supplying a version number in the URL,
+ the API will automatically use the latest version._
+Make a decision based on what works best for you in your situation.
