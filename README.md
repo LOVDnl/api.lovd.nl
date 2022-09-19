@@ -19,3 +19,12 @@ If you wish to use the APIs directly through `api.lovd.nl`, then please follow
 - Not required, but appreciated; please set a `User-agent` string that
    identifies you, so we can see how the service is being used and we can
    contact you if necessary.
+
+
+
+
+
+## Installation
+If you wish to run a copy of these APIs locally, all you need is to place the
+ files in the `src` directory in a location that is available to a PHP-enabled
+ web server such as Apache.
