@@ -197,3 +197,74 @@ When requesting a variant that contains incorrect syntax, the API will attempt
 If this results in a suggested correction, this suggestion is always provided
  with a confidence of either `high`, `medium`, or `low`, indicating how sure the
  library is that its suggestion describes the variant you meant to describe.
+
+##### Multiple variant input
+To submit multiple variant descriptions in one request, present them as a
+ JSON array, added to the URL using the standard URL encoding.
+For instance, to submit `c.157C>T` and `g.40699840C>T` for validation,
+ you should construct an JSON array like so:
+```json
+["c.157C>T","g.40699840C>T"]
+```
+which is then URL encoded to:
+```
+%5B%22c.157C%3ET%22%2C%22g.40699840C%3ET%22%5D
+```
+
+We decided on this structure since lots of possible single character separators
+ are now, or maybe in the future, used as a part of the HGVS nomenclature.
+E.g., the forward slash is used to indicate mosaicism and chimerism, and the
+ pipe is used for non-sequence related changes such as loss of methylation.
+```
+https://api.lovd.nl/v1/checkHGVS/%5B%22c.157C%3ET%22%2C%22g.40699840C%3ET%22%5D
+```
+```json
+{
+    "version": 1,
+    "messages": [
+        "Successfully received 2 variant descriptions.",
+        "Note that this API does not validate variants on the sequence level, but only checks if the variant description follows the HGVS nomenclature rules.",
+        "For sequence-level validation of DNA variants, please use https:\/\/variantvalidator.org."
+    ],
+    "warnings": [],
+    "errors": [],
+    "data": {
+        "c.157C>T": {
+            "messages": {
+                "IOK": "This variant description is HGVS-compliant.",
+                "IREFSEQMISSING": "Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant."
+            },
+            "warnings": [],
+            "errors": [],
+            "data": {
+                "position_start": 157,
+                "position_end": 157,
+                "type": "subst",
+                "range": false,
+                "suggested_correction": []
+            }
+        },
+        "g.40699840C>T": {
+            "messages": {
+                "IOK": "This variant description is HGVS-compliant.",
+                "IREFSEQMISSING": "Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant."
+            },
+            "warnings": [],
+            "errors": [],
+            "data": {
+                "position_start": 40699840,
+                "position_end": 40699840,
+                "type": "subst",
+                "range": false,
+                "suggested_correction": []
+            }
+        }
+    },
+    "library_version": "2022-09-02"
+}
+```
+If the same variant description has been submitted more than once in the same
+ request, it will be presented in the output only once since the descriptions
+ are used as keys.
+
+More information on the output can be found under "[Single variant input](#single-variant-input)".
