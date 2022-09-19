@@ -49,3 +49,26 @@ For instance, to always use version 1 of the API,
 _When you're not supplying a version number in the URL,
  the API will automatically use the latest version._
 Make a decision based on what works best for you in your situation.
+
+
+
+
+
+## API endpoints
+### /hello
+Use this method just to see if the API is alive or not.
+If it is, it will return an HTTP 200 status with the following output.
+```json
+{
+  "version": 1,
+  "messages": [
+    "Hello!"
+  ],
+  "warnings": [],
+  "errors": [],
+  "data": []
+}
+```
+
+#### API possibilities
+This API doesn't support any input.
