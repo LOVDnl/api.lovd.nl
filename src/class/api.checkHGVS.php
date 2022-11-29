@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-08
- * Modified    : 2022-09-02   // When modified, also change the library_version.
+ * Modified    : 2022-11-29   // When modified, also change the library_version.
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -53,7 +53,7 @@ class LOVD_API_checkHGVS
             return false;
         }
         $this->API = $oAPI;
-        $this->API->aResponse['library_version'] = '2022-09-02';
+        $this->API->aResponse['library_version'] = '2022-11-29';
 
         return true;
     }
@@ -190,6 +190,7 @@ class LOVD_API_checkHGVS
                 $aFixedVariantInfo = lovd_getVariantInfo($sFixedVariant, false);
                 unset($aFixedVariantInfo['warnings']['WNOTSUPPORTED']);
 
+                // We normally don't show non-HGVS compliant suggestions. Exception 1;
                 // Treat the result as HGVS compliant (i.e., accept suggestion and show)
                 //  when all we had was a WTOOMUCHUNKNOWN and now we get a ESUFFIXMISSING.
                 // The issue is that WTOOMUCHUNKNOWN suggests a fix, so it's stupid to then not show it.
@@ -200,6 +201,15 @@ class LOVD_API_checkHGVS
                     $aVariantInfo['errors'] += $aFixedVariantInfo['errors']; // For the confidence calculation.
                     $aResponse['errors'] += $aFixedVariantInfo['errors']; // For the output.
                     unset($aFixedVariantInfo['errors']['ESUFFIXMISSING']);
+                }
+
+                // Exception 2; Treat the result as HGVS compliant (i.e., accept
+                //  suggestion and show) when all we have now is a EWRONGREFERENCE and
+                //  that was anyway already part of what we had.
+                if ($aVariantInfo && $aFixedVariantInfo
+                    && array_keys($aFixedVariantInfo['errors'] + $aFixedVariantInfo['warnings']) == array('EWRONGREFERENCE')
+                    && isset($aVariantInfo['errors']['EWRONGREFERENCE'])) {
+                    unset($aFixedVariantInfo['errors']['EWRONGREFERENCE']);
                 }
 
                 // Now check the confidence.
