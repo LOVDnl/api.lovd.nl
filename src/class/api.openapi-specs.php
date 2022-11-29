@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-24
- * Modified    : 2022-08-25         // When modified, also change info->version.
+ * Modified    : 2022-11-29         // When modified, also change info->version.
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -75,7 +75,7 @@ class LOVD_API_OpenAPISpecs
             'openapi' => '3.0.3',
             'info' => array(
                 'title' => 'Public LOVD API endpoints',
-                'description' => 'These are the public LOVD API endpoints provided to the community. For more information, please see [our Github page](https://github.com/LOVDnl/api.lovd.nl/).',
+                'description' => 'These are the public LOVD API endpoints provided to the community. For more information, please see [our Github page](https://github.com/LOVDnl/api.lovd.nl/). The human interface to this functionality can be accessed on [LOVD.nl/HGVS](https://LOVD.nl/HGVS).',
                 'termsOfService' => 'https://github.com/LOVDnl/api.lovd.nl/',
                 'contact' => array(
                     'name' => 'Leiden Open Variation Database team',
@@ -85,7 +85,7 @@ class LOVD_API_OpenAPISpecs
                     'name' => 'GNU General Public License v3.0',
                     'url' => 'https://github.com/LOVDnl/api.lovd.nl/raw/main/LICENSE',
                 ),
-                'version' => '2022-08-25',
+                'version' => '2022-11-29',
             ),
             'servers' => array(
                 array(

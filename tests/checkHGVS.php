@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-16
- * Modified    : 2022-09-16
+ * Modified    : 2022-11-29
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -37,7 +37,7 @@ restore_error_handler();
 // Very basic tests, not using PHPUnit.
 $sURL = 'http://localhost/git/api.lovd.nl/src';
 $aTests = array(
-    // V1 output. Using this structure, we can tests different API versions,
+    // V1 output. Using this structure, we can test different API versions,
     //  as each version should be backwards-compatible.
     1 => array(
         // lovd_getVariantInfo()'s prefix tests, as general tests for us.
@@ -1086,7 +1086,7 @@ $aTests = array(
         ),
         'NM_123456.1(NC_123456.1):c.100del' => array(
             'warnings' => array(
-                'WREFERENCEFORMAT' => 'The genomic and transcript reference sequences have been swapped. Please rewrite "NM_123456.1(NC_123456.1)" to "NC_123456.1(NM_123456.1)".',
+                'WREFERENCEFORMAT' => 'The genomic and transcript reference sequence IDs have been swapped. Please rewrite "NM_123456.1(NC_123456.1)" to "NC_123456.1(NM_123456.1)".',
             ),
             'data' => array(
                 'position_start' => 100,
@@ -1254,6 +1254,29 @@ $aTests = array(
                 'suggested_correction' => array(
                     'value' => 'g.123del',
                     'confidence' => 'high',
+                ),
+            )
+        ),
+
+        // API-specific test; do we suggest something anyway, when a EWRONGREFERENCE remains?
+        'NM_000277.1:c.838_842+3del8' => array(
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The length of the variant is not formatted following the HGVS guidelines. Please rewrite "8" to "N[8]".',
+                'WSUFFIXGIVEN' => 'Nothing should follow "del".',
+            ),
+            'errors' => array(
+                'EWRONGREFERENCE' => 'The variant is missing a genomic reference sequence required to verify the intronic positions.',
+            ),
+            'data' => array(
+                'position_start' => 838,
+                'position_end' => 842,
+                'position_start_intron' => 0,
+                'position_end_intron' => 3,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'NM_000277.1:c.838_842+3del',
+                    'confidence' => 'low',
                 ),
             )
         ),
