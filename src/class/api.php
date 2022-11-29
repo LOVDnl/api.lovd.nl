@@ -83,7 +83,8 @@ class LOVD_API
         // Initiates the API. Parses the URL, defines the variables, stores the allowed methods, etc.
         global $_PE;
 
-        // If the user has not requested a version nor an endpoint, they probably want to see the swagger interface.
+        // MODIFIED: If the user has not requested a version nor an endpoint,
+        //  they probably want to see the swagger interface.
         if (empty($_PE) || $_PE == array('')) {
             header('Location: ' . lovd_getInstallURL() . '/swagger');
             exit;
@@ -268,7 +269,7 @@ class LOVD_API
                 $this->sendHeader(405, true); // Send 405 Method Not Allowed, print response, and quit.
             }
 
-            // We'll handle the "hello" method differently. No need for a special class.
+            // MODIFIED: We'll handle the "hello" method differently. No need for a special class.
             if ($this->sResource == 'hello') {
                 $this->aResponse['messages'][] = 'Hello!';
                 $this->sendHeader(200, true); // Send HTTP status code, print response, and quit.
