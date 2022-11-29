@@ -1086,7 +1086,7 @@ $aTests = array(
         ),
         'NM_123456.1(NC_123456.1):c.100del' => array(
             'warnings' => array(
-                'WREFERENCEFORMAT' => 'The genomic and transcript reference sequences have been swapped. Please rewrite "NM_123456.1(NC_123456.1)" to "NC_123456.1(NM_123456.1)".',
+                'WREFERENCEFORMAT' => 'The genomic and transcript reference sequence IDs have been swapped. Please rewrite "NM_123456.1(NC_123456.1)" to "NC_123456.1(NM_123456.1)".',
             ),
             'data' => array(
                 'position_start' => 100,
