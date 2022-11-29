@@ -5,7 +5,7 @@
  * Adapted from /src/inc-lib-init.php in the LOVD3 project.
  *
  * Created     : 2022-08-08
- * Modified    : 2022-10-26
+ * Modified    : 2022-11-29
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -284,7 +284,7 @@ function lovd_getVariantInfo ($sVariant, $sTranscriptID = '', $bCheckHGVS = fals
                 // We should check if it matches the transcript in the DNA field.
                 $sField = (substr($sReferenceSequence, 0, 3) == 'ENS'? 'id_ensembl' : 'id_ncbi');
                 if (is_numeric($sTranscriptID)) {
-                    $sRefSeqID = $_DB->query('SELECT `' . $sField . '` FROM ' . TABLE_TRANSCRIPTS . ' WHERE id = ?',
+                    $sRefSeqID = $_DB->q('SELECT `' . $sField . '` FROM ' . TABLE_TRANSCRIPTS . ' WHERE id = ?',
                         array($sTranscriptID))->fetchColumn();
                 } else {
                     $sRefSeqID = $sTranscriptID;
@@ -699,7 +699,7 @@ function lovd_getVariantInfo ($sVariant, $sTranscriptID = '', $bCheckHGVS = fals
         $aTranscriptOffsets[$sTranscriptID] = 1000000;
 
     } elseif ($sTranscriptID && !isset($aTranscriptOffsets[$sTranscriptID])) {
-        $aTranscriptOffsets[$sTranscriptID] = $_DB->query('SELECT position_c_cds_end FROM ' . TABLE_TRANSCRIPTS . ' WHERE (id = ? OR id_ncbi = ?)',
+        $aTranscriptOffsets[$sTranscriptID] = $_DB->q('SELECT position_c_cds_end FROM ' . TABLE_TRANSCRIPTS . ' WHERE (id = ? OR id_ncbi = ?)',
             array($sTranscriptID, $sTranscriptID))->fetchColumn();
         if (!$aTranscriptOffsets[$sTranscriptID]) {
             // The transcript is not configured correctly. We will treat this transcript as unknown.
