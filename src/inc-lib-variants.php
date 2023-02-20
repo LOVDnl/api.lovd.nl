@@ -5,7 +5,7 @@
  * Adapted from /src/inc-lib-variants.php in the LOVD3 project.
  *
  * Created     : 2022-08-11
- * Modified    : 2022-10-21
+ * Modified    : 2022-10-21   // When modified, also change the library_version.
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/

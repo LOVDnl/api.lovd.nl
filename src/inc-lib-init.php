@@ -5,10 +5,10 @@
  * Adapted from /src/inc-lib-init.php in the LOVD3 project.
  *
  * Created     : 2022-08-08
- * Modified    : 2022-11-29
+ * Modified    : 2023-02-20   // When modified, also change the library_version.
  * For LOVD    : 3.0-29
  *
- * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
+ * Copyright   : 2004-2023 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
  *
  *
@@ -116,7 +116,7 @@ function lovd_convertBytesToHRSize ($nValue)
 {
     // This function takes integers and converts it to sizes like "128M".
 
-    if (!ctype_digit($nValue) && !is_int($nValue)) {
+    if (!is_int($nValue) && !ctype_digit($nValue)) {
         return false;
     }
 
@@ -286,6 +286,11 @@ function lovd_getVariantInfo ($sVariant, $sTranscriptID = '', $bCheckHGVS = fals
                 if (is_numeric($sTranscriptID)) {
                     $sRefSeqID = $_DB->q('SELECT `' . $sField . '` FROM ' . TABLE_TRANSCRIPTS . ' WHERE id = ?',
                         array($sTranscriptID))->fetchColumn();
+                } elseif (is_array($sTranscriptID)) {
+                    // LOVD+ sends us an array object instead of an ID, during conversion.
+                    $sRefSeqID =
+                        (isset($sTranscriptID['id_ncbi'])? $sTranscriptID['id_ncbi'] :
+                            (isset($sTranscriptID['id'])? $sTranscriptID['id'] : ''));
                 } else {
                     $sRefSeqID = $sTranscriptID;
                 }
@@ -690,7 +695,19 @@ function lovd_getVariantInfo ($sVariant, $sTranscriptID = '', $bCheckHGVS = fals
 
 
     // If given, check if we already know this transcript.
-    if ($sTranscriptID === false || !$_DB) {
+    if (is_array($sTranscriptID)) {
+        // LOVD+ sends us an array object instead of an ID, during conversion.
+        $nID =
+            (isset($sTranscriptID['id_ncbi'])? $sTranscriptID['id_ncbi'] :
+                (isset($sTranscriptID['id'])? $sTranscriptID['id'] :
+                    @implode($sTranscriptID)));
+        if (!isset($aTranscriptOffsets[$nID])) {
+            $aTranscriptOffsets[$nID] =
+                (isset($sTranscriptID['position_c_cds_end'])? $sTranscriptID['position_c_cds_end'] : 0);
+        }
+        $sTranscriptID = $nID;
+
+    } elseif ($sTranscriptID === false || !$_DB) {
         // If the transcript ID is passed as false, we are asked to ignore not
         //  having the transcript. Pick some random number, high enough to not
         //  be smaller than position_start if that's not in the UTR.
@@ -1118,7 +1135,7 @@ function lovd_getVariantInfo ($sVariant, $sTranscriptID = '', $bCheckHGVS = fals
         }
 
     } elseif ($aResponse['type'] == 'repeat' && $aVariant['prefix'] == 'c') {
-        foreach(explode('[', $aVariant['type']) as $sRepeat) {
+        foreach (explode('[', $aVariant['type']) as $sRepeat) {
             if (ctype_alpha($sRepeat) && strlen($sRepeat) % 3) {
                 // Repeat variants on coding DNA should always have
                 //  a length of a multiple of three bases.
@@ -1219,26 +1236,26 @@ function lovd_getVariantInfo ($sVariant, $sTranscriptID = '', $bCheckHGVS = fals
                         substr($aVariant['suffix'], 1, -1))) as $sInsertion) {
                     // Looping through all possible variants.
                     // Some have specific errors, so we handle these first.
-                    if (preg_match('/^[ACGTN]+\[([0-9]+|\?)_([0-9]+|\?)\]$/', $sInsertion, $aRegs)) {
+                    if (preg_match('/^([ACGTN]+)\[([0-9]+|\?)_([0-9]+|\?)\]$/', $sInsertion, $aRegs)) {
                         // c.1_2insN[10_20].
                         if ($bCheckHGVS) {
                             return false;
                         }
-                        list(, $nSuffixMinLength, $nSuffixMaxLength) = $aRegs;
+                        list(, $sSequence, $nSuffixMinLength, $nSuffixMaxLength) = $aRegs;
                         $aResponse['warnings']['WSUFFIXFORMAT'] =
                             'The part after "' . $aVariant['type'] . '" does not follow HGVS guidelines.' .
-                            ' Please rewrite "' . $sInsertion . '" to "N[' .
+                            ' Please rewrite "' . $sInsertion . '" to "' . $sSequence . '[' .
                             ($nSuffixMinLength == $nSuffixMaxLength?
                                 $nSuffixMinLength :
                                 '(' . (strpos($sInsertion, '?') !== false || $nSuffixMinLength < $nSuffixMaxLength?
                                     $nSuffixMinLength . '_' . $nSuffixMaxLength :
                                     min($nSuffixMinLength, $nSuffixMaxLength) . '_' . max($nSuffixMinLength, $nSuffixMaxLength)) . ')') . ']".';
 
-                    } elseif (preg_match('/^[ACGTN]+\[(([0-9]+|\?)|\(([0-9]+|\?)_([0-9]+|\?)\))\]$/', $sInsertion, $aRegs)) {
+                    } elseif (preg_match('/^([ACGTN]+)\[(([0-9]+|\?)|\(([0-9]+|\?)_([0-9]+|\?)\))\]$/', $sInsertion, $aRegs)) {
                         // c.1_2insN[40] or ..N[(1_2)].
-                        if (isset($aRegs[3])) {
+                        if (isset($aRegs[4])) {
                             // Range was given.
-                            list(, $nSuffixLength,, $nSuffixMinLength, $nSuffixMaxLength) = $aRegs;
+                            list(, $sSequence, $nSuffixLength,, $nSuffixMinLength, $nSuffixMaxLength) = $aRegs;
                             if (strpos($nSuffixLength, '?') === false && $nSuffixMinLength >= $nSuffixMaxLength) {
                                 if ($bCheckHGVS) {
                                     return false;
@@ -1246,7 +1263,7 @@ function lovd_getVariantInfo ($sVariant, $sTranscriptID = '', $bCheckHGVS = fals
                                 list($nSuffixMinLength, $nSuffixMaxLength) = array($nSuffixMaxLength, $nSuffixMinLength);
                                 $aResponse['warnings']['WSUFFIXFORMAT'] =
                                     'The part after "' . $aVariant['type'] . '" does not follow HGVS guidelines.' .
-                                    ' Please rewrite "' . $sInsertion . '" to "N[' .
+                                    ' Please rewrite "' . $sInsertion . '" to "' . $sSequence . '[' .
                                     ($nSuffixMinLength == $nSuffixMaxLength?
                                         $nSuffixMinLength :
                                         '(' . $nSuffixMinLength . '_' . $nSuffixMaxLength . ')') . ']".';
@@ -1673,7 +1690,7 @@ function lovd_getVariantPrefixesByRefSeq ($s)
     global $_LIBRARIES;
 
     // Get matching DNA type prefixes.
-    foreach($_LIBRARIES['regex_patterns']['refseq_to_DNA_type'] as $sPattern => $aDNATypes) {
+    foreach ($_LIBRARIES['regex_patterns']['refseq_to_DNA_type'] as $sPattern => $aDNATypes) {
         if (preg_match($sPattern, $s)) {
             return $aDNATypes;
         }
