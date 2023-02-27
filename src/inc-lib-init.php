@@ -5,7 +5,7 @@
  * Adapted from /src/inc-lib-init.php in the LOVD3 project.
  *
  * Created     : 2022-08-08
- * Modified    : 2023-02-20   // When modified, also change the library_version.
+ * Modified    : 2023-02-27   // When modified, also change the library_version.
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2023 Leiden University Medical Center; http://www.LUMC.nl/
@@ -99,6 +99,8 @@ function lovd_cleanDirName ($s)
     $s = preg_replace('/\/\.\//', '/', $s);
     // Clean up the pwd; remove '/dir/../'
     $s = preg_replace('/\/[^\/]+\/\.\.\//', '/', $s);
+    // Hackers may try to give us links that start with a parent dir. That would cause an infinite loop.
+    $s = preg_replace('/^\/\.\.\//', '/', $s);
 
     if (preg_match('/\/(\.)?\.\//', $s)) {
         // Still not clean... Pff...
