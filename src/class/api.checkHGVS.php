@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-08
- * Modified    : 2023-02-20   // When modified, also change the library_version.
+ * Modified    : 2023-05-31   // When modified, also change the library_version.
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2023 Leiden University Medical Center; http://www.LUMC.nl/
@@ -53,7 +53,7 @@ class LOVD_API_checkHGVS
             return false;
         }
         $this->API = $oAPI;
-        $this->API->aResponse['library_version'] = '2023-02-20';
+        $this->API->aResponse['library_version'] = '2023-05-31';
 
         return true;
     }
@@ -206,9 +206,11 @@ class LOVD_API_checkHGVS
                 // Exception 2; Treat the result as HGVS compliant (i.e., accept
                 //  suggestion and show) when all we have now is a EWRONGREFERENCE and
                 //  that was anyway already part of what we had.
+                // Obviously, this only applies when the fixed variant is different from what we had.
                 if ($aVariantInfo && $aFixedVariantInfo
                     && array_keys($aFixedVariantInfo['errors'] + $aFixedVariantInfo['warnings']) == array('EWRONGREFERENCE')
-                    && isset($aVariantInfo['errors']['EWRONGREFERENCE'])) {
+                    && isset($aVariantInfo['errors']['EWRONGREFERENCE'])
+                    && $sVariant != $sFixedVariant) {
                     unset($aFixedVariantInfo['errors']['EWRONGREFERENCE']);
                 }
 
