@@ -5,10 +5,10 @@
  * Adapted from /src/inc-init.php in the LOVD3 project.
  *
  * Created     : 2022-08-08
- * Modified    : 2022-08-18
+ * Modified    : 2023-09-19
  * For LOVD    : 3.0-29
  *
- * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
+ * Copyright   : 2004-2023 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
  *
  *
@@ -133,7 +133,7 @@ if ((!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PR
 $_SERVER['SCRIPT_NAME'] = lovd_cleanDirName(str_replace('\\', '/', $_SERVER['SCRIPT_NAME']));
 
 // Our output formats: application/json by default.
-$aFormats = array('application/json'); // Key [0] is default. Other values may not always be allowed. It is checked in the Template class' printHeader() and in Objects::viewList().
+$aFormats = array('application/json'); // Key [0] is default.
 if (!empty($_GET['format']) && in_array($_GET['format'], $aFormats)) {
     define('FORMAT', $_GET['format']);
 } else {
@@ -173,12 +173,6 @@ if (!defined('NOT_INSTALLED')) {
     // Since we don't produce HTML, XSS isn't a problem for us.
     $_PE = explode('/', rtrim($sPath, '/')); // array('login') or array('genes') or array('users', '00001')
 
-    if (isset($_SETT['objectid_length'][$_PE[0]]) && isset($_PE[1]) && ctype_digit($_PE[1])) {
-        $_PE[1] = sprintf('%0' . $_SETT['objectid_length'][$_PE[0]] . 'd', $_PE[1]);
-    } elseif (isset($_PE[2]) && $_PE[0] == 'phenotypes' && $_PE[1] == 'disease') {
-        // Disease-specific list of phenotypes; /phenotypes/disease/00001.
-        $_PE[2] = sprintf('%0' . $_SETT['objectid_length'][$_PE[1] . 's'] . 'd', $_PE[2]);
-    }
     define('CURRENT_PATH', implode('/', $_PE));
     define('PATH_COUNT', count($_PE)); // So you don't need !empty($_PE[1]) && ...
 
@@ -188,9 +182,6 @@ if (!defined('NOT_INSTALLED')) {
     } else {
         define('ACTION', false);
     }
-
-    // STUB; This should be implemented properly later on.
-    define('OFFLINE_MODE', false);
 
     // Define constant for request method.
     define($_SERVER['REQUEST_METHOD'], true);
