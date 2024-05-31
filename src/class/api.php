@@ -5,10 +5,10 @@
  * Adapted from /src/class/api.php in the LOVD3 project.
  *
  * Created     : 2022-08-08
- * Modified    : 2023-09-19
- * For LOVD    : 3.0-29
+ * Modified    : 2024-05-07
+ * For LOVD    : 3.0-30
  *
- * Copyright   : 2004-2023 Leiden University Medical Center; http://www.LUMC.nl/
+ * Copyright   : 2004-2024 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
  *
  *
@@ -239,7 +239,7 @@ class LOVD_API
                 $this->nID = array_shift($aURLElements);
 
                 // Rest of the URL should be empty at this point.
-                if (implode('', $aURLElements)) {
+                if (implode($aURLElements)) {
                     // URL still had more data. At this point, that can't be right.
                     $this->aResponse['errors'][] = 'Could not parse requested URL.';
                     $this->sendHeader(400, true); // Send 400 Bad Request, print response, and quit.
