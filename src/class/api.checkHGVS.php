@@ -279,6 +279,18 @@ class LOVD_API_checkHGVS
 
         require ROOT_PATH . 'libs/HGVS-syntax-checker/HGVS.php';
         $this->API->aResponse['versions'] = HGVS::getVersions();
+
+        // v1 used to have a check here for unique input, but since we format the output differently, we don't care.
+        $nInput = count($aInput);
+        $this->API->aResponse['messages'][] = "Successfully received $nInput variant description" . ($nInput == 1? "." : "s.");
+        $this->API->aResponse['messages'][] = 'Note that this API does not validate variants on the sequence level, but only checks if the variant description follows the HGVS nomenclature rules.';
+        $this->API->aResponse['messages'][] = 'For sequence-level validation of DNA variants, please use https://variantvalidator.org.';
+
+        // Now actually handle the request.
+        foreach ($aInput as $sVariant) {
+            $aResponse = HGVS::checkVariant($sVariant)->allowMissingReferenceSequence()->getInfo();
+            $this->API->aResponse['data'][] = $aResponse;
+        }
         return true;
     }
 
