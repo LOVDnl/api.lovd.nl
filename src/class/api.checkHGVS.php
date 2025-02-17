@@ -116,6 +116,19 @@ class LOVD_API_checkHGVS
 
 
 
+        // Check the current version and run that method.
+        $sMethod = 'v' . $this->API->nVersion . '_checkHGVS';
+        return call_user_func(array($this, $sMethod), $aInput);
+    }
+
+
+
+
+
+    public function v1_checkHGVS ($aInput)
+    {
+        // Run the validations, using the old lovd_getVariantInfo() and lovd_fixHGVS() approach.
+
         // For non-unique input, throw a warning, but continue.
         $aInputUnique = array_unique($aInput, SORT_STRING);
         if ($aInput != $aInputUnique) {
