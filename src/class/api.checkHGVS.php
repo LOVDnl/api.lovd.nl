@@ -289,6 +289,30 @@ class LOVD_API_checkHGVS
         // Now actually handle the request.
         foreach ($aInput as $sVariant) {
             $aResponse = HGVS::checkVariant($sVariant)->allowMissingReferenceSequence()->getInfo();
+
+            // In case it's set, we don't care about WNOTSUPPORTED. We won't validate anyway,
+            //  and this warning is thrown only for HGVS-compliant descriptions.
+            unset($aResponse['warnings']['WNOTSUPPORTED']);
+
+            if (isset($aResponse['errors']['ENOTSUPPORTED'])) {
+                // Catch and convert ENOTSUPPORTED.
+                // We don't actually know whether this is HGVS compliant or not.
+                // The library allows for ENOTSUPPORTED, and flags it as valid.
+                $aResponse['messages']['INOTSUPPORTED'] = 'This variant description contains unsupported syntax.' .
+                    ' Although we aim to support all of the HGVS nomenclature rules,' .
+                    ' some complex variants are not fully implemented yet in our syntax checker.' .
+                    ' We invite you to submit your variant description here, so we can have a look: https://github.com/LOVDnl/api.lovd.nl/issues.';
+                // And remove the ENOTSUPPORTED.
+                unset($aResponse['errors']['ENOTSUPPORTED']);
+            }
+
+            if (isset($aResponse['messages']['IREFSEQMISSING'])) {
+                // Our version is more informative.
+                $aResponse['messages']['IREFSEQMISSING'] = 'Please note that your variant description is missing a reference sequence. ' .
+                    'Although this is not necessary for our syntax check, a variant description does ' .
+                    'need a reference sequence to be fully informative and HGVS-compliant.';
+            }
+
             $this->API->aResponse['data'][] = $aResponse;
         }
         return true;
