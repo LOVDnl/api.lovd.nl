@@ -266,6 +266,26 @@ class LOVD_API_checkHGVS
 
 
 
+    public function v2_checkHGVS ($aInput)
+    {
+        // Run the validations, using the new HGVS class approach.
+        if (!file_exists(ROOT_PATH . 'libs/HGVS-syntax-checker/HGVS.php')) {
+            // This API requires the HGVS.php class file from https://github.com/LOVDnl/HGVS-syntax-checker.
+            // If not found, double-check if you ran `git submodule init && git submodule update`.
+            // This repository will not duplicate the code.
+            $this->API->aResponse['errors'][] = 'Could not load the HGVS library.';
+            return false;
+        }
+
+        require ROOT_PATH . 'libs/HGVS-syntax-checker/HGVS.php';
+        $this->API->aResponse['versions'] = HGVS::getVersions();
+        return true;
+    }
+
+
+
+
+
     // NOTE: Don't just change this function's name, it's called through call_user_func().
     public function v1_getJSONSchema ()
     {
