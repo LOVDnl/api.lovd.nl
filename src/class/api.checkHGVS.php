@@ -322,7 +322,6 @@ class LOVD_API_checkHGVS
 
 
 
-    // NOTE: Don't just change this function's name, it's called through call_user_func().
     public function v1_getJSONSchema ()
     {
         // Return the JSON Schema for the v1 checkHGVS response format.
@@ -339,7 +338,7 @@ class LOVD_API_checkHGVS
                 'version' => array(
                     'description' => 'The version of the API specification.',
                     'type' => 'integer',
-                    'minimum' => 1,
+                    'const' => 1,
                 ),
                 'messages' => array(
                     'description' => 'A list of messages, simply providing information and not indicating any kind of error.',
@@ -542,6 +541,23 @@ class LOVD_API_checkHGVS
                 'library_version',
             ),
         );
+    }
+
+
+
+
+
+    public function v2_getJSONSchema ()
+    {
+        // Return the JSON Schema for the v2 checkHGVS response format.
+        // Takes the basics from the previous version, then makes changes.
+
+        $aReturn = $this->v1_getJSONSchema();
+
+        // Fix the version.
+        $aReturn['properties']['version']['const'] = 2;
+
+        return $aReturn;
     }
 }
 ?>
