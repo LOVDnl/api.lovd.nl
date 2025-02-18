@@ -557,6 +557,71 @@ class LOVD_API_checkHGVS
         // Fix the version.
         $aReturn['properties']['version']['const'] = 2;
 
+        // Fix the data specs.
+        $aReturn['properties']['data'] = array(
+            'description' => 'The data that is the result of the API request. This is empty if a problem occurred while handling the request.',
+            'type' => 'array',
+            'items' => array(
+                'type' => 'object',
+                'additionalProperties' => false,
+                'properties' => array(
+                    'input' => array(
+                        'description' => 'The given input.',
+                        'type' => 'string',
+                    ),
+                    'identified_as' => array(
+                        'description' => 'A short description of what the library identified the input as. This field is meant to be parsed, if needed.',
+                        'type' => 'string',
+                    ),
+                    'identified_as_formatted' => array(
+                        'description' => 'A formatted version of the "identified as" field. This field is meant to be displayed to the user, if needed.',
+                        'type' => 'string',
+                    ),
+                    'valid' => array(
+                        'description' => 'Whether the input was considered to be a valid variant description.',
+                        'type' => 'boolean',
+                    ),
+                    'messages' => $aReturn['properties']['data']['oneOf'][1]['patternProperties']['^.+$']['properties']['messages'],
+                    'warnings' => $aReturn['properties']['data']['oneOf'][1]['patternProperties']['^.+$']['properties']['warnings'],
+                    'errors'   => $aReturn['properties']['data']['oneOf'][1]['patternProperties']['^.+$']['properties']['errors'],
+                    'data'     => $aReturn['properties']['data']['oneOf'][1]['patternProperties']['^.+$']['properties']['data'],
+                    'corrected_values' => array(
+                        'description' => 'One or more corrected variant descriptions, given with a confidence score. The given corrections are not necessarily different from the input.',
+                        'type' => 'object',
+                        'additionalProperties' => false,
+                        'patternProperties' => array(
+                            '^.+$' => array(
+                                'description' => 'The confidence score for this correction, ranging from near zero to 100%.',
+                                'type' => 'number',
+                                'exclusiveMinimum' => 0,
+                                'maximum' => 1,
+                            ),
+                        ),
+                    ),
+                ),
+                'required' => array(
+                    'input',
+                    'identified_as',
+                    'identified_as_formatted',
+                    'valid',
+                    'messages',
+                    'warnings',
+                    'errors',
+                    'data',
+                    'corrected_values',
+                ),
+            ),
+        );
+
+        // Remove "suggested_correction".
+        unset($aReturn['properties']['data']['items']['properties']['data']['properties']['suggested_correction']);
+        // Also "type" isn't required anymore, so just rebuild the "required" array.
+        $aReturn['properties']['data']['items']['properties']['data']['required'] = array(
+            'position_start',
+            'position_end',
+            'range',
+        );
+
         return $aReturn;
     }
 }
