@@ -613,6 +613,27 @@ class LOVD_API_checkHGVS
             ),
         );
 
+        // OK, actually, "data" is not completely the same.
+        $aReturn['properties']['data']['items']['properties']['data']['properties']['type']['enum'] = array(
+            '=',
+            '>',
+            '?',
+            '^',
+            ';',
+            '0',
+            'chimeric',
+            'cnv',
+            'del',
+            'delins',
+            'dup',
+            'ins',
+            'inv',
+            'met',
+            'mosaic',
+            'repeat',
+            'sup',
+        );
+
         // Remove "suggested_correction".
         unset($aReturn['properties']['data']['items']['properties']['data']['properties']['suggested_correction']);
         // Also "type" isn't required anymore, so just rebuild the "required" array.
