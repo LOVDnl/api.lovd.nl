@@ -327,7 +327,49 @@ class LOVD_API_OpenAPISpecs
     public function v2_getOpenAPISpecs ()
     {
         // Fill in the v2-specific data.
+        // Takes the basics from the previous version, then makes changes.
         $aResponse = $this->v1_getOpenAPISpecs();
+
+        // Provide the available responses, they are different from v1.
+        // First, some general changes.
+        unset($aResponse['components']['responses']['200_checkHGVS']['content']['application/json']['example']['library_version']);
+        unset($aResponse['components']['responses']['4XX_checkHGVS']['content']['application/json']['example']['library_version']);
+        unset($aResponse['components']['responses']['500_checkHGVS']['content']['application/json']['example']['library_version']);
+
+        // Update the 200 OK output.
+        $aResponse['components']['responses']['200_checkHGVS']['content']['application/json']['example']['data'] = array(
+            array(
+                'input' => 'NM_002225.3:c.157C>T',
+                'identified_as' => 'full_variant_DNA',
+                'identified_as_formatted' => 'full variant (DNA)',
+                'valid' => true,
+                'messages' => array(),
+                'warnings' => array(),
+                'errors' => array(),
+                'data' => array(
+                    'position_start' => 157,
+                    'position_end' => 157,
+                    'position_start_intron' => 0,
+                    'position_end_intron' => 0,
+                    'range' => false,
+                    'type' => ">"
+                ),
+                'corrected_values' => array(
+                    'NM_002225.3:c.157C>T' => 1
+                )
+            )
+        );
+        $aResponse['components']['responses']['200_checkHGVS']['content']['application/json']['example']['versions'] = array(
+            'library_version' => '2025-02-14',
+            'HGVS_nomenclature_versions' => array(
+                'input' => array(
+                    'minimum' => '15.11',
+                    'maximum' => '21.1.1'
+                ),
+                'output' => '21.1.1'
+            ),
+        );
+
         return $aResponse;
     }
 }
