@@ -643,6 +643,49 @@ class LOVD_API_checkHGVS
             'range',
         );
 
+        // Replace "library_version" with "versions".
+        unset($aReturn['properties']['library_version']);
+        $aReturn['properties']['versions'] = array(
+            'description' => 'All relevant versions related to the library that powers this API.',
+            'type' => 'object',
+            'additionalProperties' => false,
+            'properties' => array(
+                'library_version' => array(
+                    'description' => 'The date that the library that powers this API, has been updated.',
+                    'type' => 'string',
+                    'pattern' => '^[0-9]{4}-[0-9]{2}-[0-9]{2}$',
+                ),
+                'HGVS_nomenclature_versions' => array(
+                    'description' => 'The HGVS nomenclature versions supported by this library.',
+                    'type' => 'object',
+                    'additionalProperties' => false,
+                    'properties' => array(
+                        'input' => array(
+                            'description' => 'The minimum and maximum HGVS nomenclature versions supported by this library as input.',
+                            'type' => 'object',
+                            'additionalProperties' => false,
+                            'properties' => array(
+                                'minimum' => array(
+                                    'type' => 'string',
+                                    'pattern' => '^[0-9]{2}\.[0-9]{1,2}(\.[0-9]{1,2})?$',
+                                ),
+                                'maximum' => array(
+                                    'type' => 'string',
+                                    'pattern' => '^[0-9]{2}\.[0-9]{1,2}\.[0-9]{1,2}$',
+                                ),
+                            ),
+                        ),
+                        'output' => array(
+                            'description' => 'The HGVS nomenclature version of the output created by this library.',
+                            'type' => 'string',
+                            'pattern' => '^[0-9]{2}\.[0-9]{1,2}\.[0-9]{1,2}$',
+                        ),
+                    ),
+                ),
+            ),
+        );
+        $aReturn['required'][4] = 'versions';
+
         return $aReturn;
     }
 }
