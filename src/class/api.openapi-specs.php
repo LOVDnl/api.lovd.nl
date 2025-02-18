@@ -139,7 +139,6 @@ class LOVD_API_OpenAPISpecs
 
 
 
-    // NOTE: Don't just change this function's name, it's called through call_user_func() and get_class_methods().
     public function v1_getOpenAPISpecs ()
     {
         // Fill in the v1-specific data.
@@ -318,6 +317,17 @@ class LOVD_API_OpenAPISpecs
             ),
         );
 
+        return $aResponse;
+    }
+
+
+
+
+
+    public function v2_getOpenAPISpecs ()
+    {
+        // Fill in the v2-specific data.
+        $aResponse = $this->v1_getOpenAPISpecs();
         return $aResponse;
     }
 }
