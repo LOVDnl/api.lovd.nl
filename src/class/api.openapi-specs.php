@@ -214,7 +214,7 @@ class LOVD_API_OpenAPISpecs
                             'content' => array(
                                 'application/json' => array(
                                     'example' => array(
-                                        'version' => 1,
+                                        'version' => $this->API->nVersion,
                                         'messages' => array(
                                             'Hello!',
                                         ),
@@ -246,7 +246,7 @@ class LOVD_API_OpenAPISpecs
                             '$ref' => 'checkHGVS/schema.json',
                         ),
                         'example' => array(
-                            'version' => 1,
+                            'version' => $this->API->nVersion,
                             'messages' => array(
                                 'Successfully received 1 variant description.',
                                 'Note that this API does not validate variants on the sequence level, but only checks if the variant description follows the HGVS nomenclature rules.',
@@ -283,7 +283,7 @@ class LOVD_API_OpenAPISpecs
                             '$ref' => 'checkHGVS/schema.json',
                         ),
                         'example' => array(
-                            'version' => 1,
+                            'version' => $this->API->nVersion,
                             'messages' => array(),
                             'warnings' => array(),
                             'errors' => array(
@@ -303,7 +303,7 @@ class LOVD_API_OpenAPISpecs
                             '$ref' => 'checkHGVS/schema.json',
                         ),
                         'example' => array(
-                            'version' => 1,
+                            'version' => $this->API->nVersion,
                             'messages' => array(),
                             'warnings' => array(),
                             'errors' => array(
