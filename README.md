@@ -150,21 +150,24 @@ https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157C%3ET
 ```
 
 Note that the first `messages`, `warnings`, and `errors` arrays describe the
- request as a whole, while those whithin the `data` object are specific for the
+ request as a whole, while those within the `data` object are specific for the
  given variant.
 Errors are, in general, non-recoverable.
 Warnings are, in general, recoverable and easily repairable.
 Messages are simply for your information.
 Due to limitations of our implementation of PHP's `json_encode()`, these objects
  will be arrays when empty.
-This applies as well to the `suggested_correction` object.
 This may be corrected in a later version of the API.
 
+The `versions` object collects all relevant versions related to the library that
+ powers this API.
 The `library_version` shows the date the internal libraries that interpret
  variant descriptions and provide feedback and possible corrections, were
  updated.
 Such an update will not create a new API version, as the API version defines
  the behaviour of the API and its output.
+The `HGVS_nomenclature_versions` object shows supported HGVS nomenclature
+ versions for input (minimum, maximum) and for output.
 
 ```
 https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157delCinsT
@@ -233,9 +236,10 @@ Note also that errors and warnings exist with similar codes, e.g., `EWRONGTYPE`
 
 When requesting a variant that contains incorrect syntax, the API will attempt
  to repair your description.
-If this results in a suggested correction, this suggestion is always provided
- with a confidence of either `high`, `medium`, or `low`, indicating how sure the
- library is that its suggestion describes the variant you meant to describe.
+If this results in one or more suggested corrections,
+ these suggestions are always provided with a confidence score between
+ near-zero and one, indicating how sure the library is that its suggestion
+ represents the variant you meant to describe.
 
 ##### Multiple variant input
 To submit multiple variant descriptions in one request, present them as a
@@ -323,8 +327,5 @@ https://api.lovd.nl/v2/checkHGVS/%5B%22c.157C%3ET%22%2C%22g.40699840C%3ET%22%5D
     }
 }
 ```
-If the same variant description has been submitted more than once in the same
- request, it will be presented in the output only once since the descriptions
- are used as keys.
 
 More information on the output can be found under "[Single variant input](#single-variant-input)".
