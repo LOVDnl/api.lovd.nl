@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-24
- * Modified    : 2022-11-29         // When modified, also change info->version.
+ * Modified    : 2025-02-19         // When modified, also change info->version.
  * For LOVD    : 3.0-29
  *
  * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
@@ -85,18 +85,11 @@ class LOVD_API_OpenAPISpecs
                     'name' => 'GNU General Public License v3.0',
                     'url' => 'https://github.com/LOVDnl/api.lovd.nl/raw/main/LICENSE',
                 ),
-                'version' => '2025-02-18',
             ),
             'servers' => array(
                 array(
-                    'url' => 'https://api.lovd.nl/{version}',
-                    'description' => 'Public LOVD APIs, production server.',
-                    'variables' => array(
-                        'version' => array(
-                            'enum' => $aVersions,
-                            'default' => 'v' . $this->API->nVersion,
-                        ),
-                    ),
+                    'url' => lovd_getInstallURL() . 'v' . $this->API->nVersion,
+                    'description' => 'Public LOVD APIs, production server, API v' . $this->API->nVersion . '.',
                 ),
             ),
             'paths' => array(), // NOTE: Will be filled in later by v#_getOpenAPISpecs().
@@ -143,6 +136,9 @@ class LOVD_API_OpenAPISpecs
     {
         // Fill in the v1-specific data.
         $aResponse = $this->API->aResponse;
+
+        // Add the version (date).
+        $aResponse['info']['version'] = '2022-11-29';
 
         // Provide the available paths.
         $aResponse['paths'] = array(
@@ -329,6 +325,9 @@ class LOVD_API_OpenAPISpecs
         // Fill in the v2-specific data.
         // Takes the basics from the previous version, then makes changes.
         $aResponse = $this->v1_getOpenAPISpecs();
+
+        // Add the version (date).
+        $aResponse['info']['version'] = '2025-02-19';
 
         // Provide the available responses, they are different from v1.
         // First, some general changes.
