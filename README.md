@@ -70,13 +70,13 @@ Use this method just to see if the API is alive or not.
 If it is, it will return an HTTP 200 status with the following output.
 ```json
 {
-  "version": 1,
-  "messages": [
-    "Hello!"
-  ],
-  "warnings": [],
-  "errors": [],
-  "data": []
+    "version": 2,
+    "messages": [
+        "Hello!"
+    ],
+    "warnings": [],
+    "errors": [],
+    "data": []
 }
 ```
 
@@ -95,42 +95,57 @@ It will return informative messages, warnings, and/or errors about the variant
 The JSON schema for the API output is encoded in the API itself and can be
  accessed by opening the URL `/checkHGVS/schema.json`.
 If you want to retrieve the schema for a certain version,
- use `/v1/checkHGVS/schema.json`.
-As an example, see https://api.lovd.nl/v1/checkHGVS/schema.json.
+ use `/v2/checkHGVS/schema.json`.
+As an example, see https://api.lovd.nl/v2/checkHGVS/schema.json.
 
 ##### Single variant input
 To submit a single variant description, e.g., `NM_002225.3:c.157C>T`, simply add
  it to the URL following the requirements for URL encoding:
 ```
-https://api.lovd.nl/v1/checkHGVS/NM_002225.3%3Ac.157C%3ET
+https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157C%3ET
 ```
 ```json
 {
-    "version": 1,
+    "version": 2,
     "messages": [
         "Successfully received 1 variant description.",
         "Note that this API does not validate variants on the sequence level, but only checks if the variant description follows the HGVS nomenclature rules.",
-        "For sequence-level validation of DNA variants, please use https:\/\/variantvalidator.org."
+        "For sequence-level validation of DNA variants, please use https://variantvalidator.org."
     ],
     "warnings": [],
     "errors": [],
-    "data": {
-        "NM_002225.3:c.157C>T": {
-            "messages": {
-                "IOK": "This variant description is HGVS-compliant."
-            },
+    "data": [
+        {
+            "input": "NM_002225.3:c.157C>T",
+            "identified_as": "full_variant_DNA",
+            "identified_as_formatted": "full variant (DNA)",
+            "valid": true,
+            "messages": [],
             "warnings": [],
             "errors": [],
             "data": {
                 "position_start": 157,
                 "position_end": 157,
-                "type": "subst",
+                "position_start_intron": 0,
+                "position_end_intron": 0,
                 "range": false,
-                "suggested_correction": []
+                "type": ">"
+            },
+            "corrected_values": {
+                "NM_002225.3:c.157C>T": 1
             }
         }
-    },
-    "library_version": "2022-09-02"
+    ],
+    "versions": {
+        "library_version": "2025-02-14",
+        "HGVS_nomenclature_versions": {
+            "input": {
+                "minimum": "15.11",
+                "maximum": "21.1.1"
+            },
+            "output": "21.1.1"
+        }
+    }
 }
 ```
 
@@ -152,38 +167,52 @@ Such an update will not create a new API version, as the API version defines
  the behaviour of the API and its output.
 
 ```
-https://api.lovd.nl/v1/checkHGVS/NM_002225.3%3Ac.157delCinsT
+https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157delCinsT
 ```
 ```json
 {
-    "version": 1,
+    "version": 2,
     "messages": [
         "Successfully received 1 variant description.",
         "Note that this API does not validate variants on the sequence level, but only checks if the variant description follows the HGVS nomenclature rules.",
-        "For sequence-level validation of DNA variants, please use https:\/\/variantvalidator.org."
+        "For sequence-level validation of DNA variants, please use https://variantvalidator.org."
     ],
     "warnings": [],
     "errors": [],
-    "data": {
-        "NM_002225.3:c.157delCinsT": {
+    "data": [
+        {
+            "input": "NM_002225.3:c.157delCinsT",
+            "identified_as": "full_variant_DNA",
+            "identified_as_formatted": "full variant (DNA)",
+            "valid": false,
             "messages": [],
             "warnings": {
-                "WWRONGTYPE": "A deletion-insertion of one base to one base should be described as a substitution. Please rewrite \"delCinsT\" to \"C>T\"."
+                "WWRONGTYPE": "Based on the given sequences, this deletion-insertion should be described as a substitution."
             },
             "errors": [],
             "data": {
                 "position_start": 157,
                 "position_end": 157,
-                "type": "delins",
+                "position_start_intron": 0,
+                "position_end_intron": 0,
                 "range": false,
-                "suggested_correction": {
-                    "value": "NM_002225.3:c.157C>T",
-                    "confidence": "high"
-                }
+                "type": "delins"
+            },
+            "corrected_values": {
+                "NM_002225.3:c.157C>T": 1
             }
         }
-    },
-    "library_version": "2022-09-02"
+    ],
+    "versions": {
+        "library_version": "2025-02-14",
+        "HGVS_nomenclature_versions": {
+            "input": {
+                "minimum": "15.11",
+                "maximum": "21.1.1"
+            },
+            "output": "21.1.1"
+        }
+    }
 }
 ```
 
@@ -226,22 +255,25 @@ We decided on this structure since lots of possible single character separators
 E.g., the forward slash is used to indicate mosaicism and chimerism, and the
  pipe is used for non-sequence related changes such as loss of methylation.
 ```
-https://api.lovd.nl/v1/checkHGVS/%5B%22c.157C%3ET%22%2C%22g.40699840C%3ET%22%5D
+https://api.lovd.nl/v2/checkHGVS/%5B%22c.157C%3ET%22%2C%22g.40699840C%3ET%22%5D
 ```
 ```json
 {
-    "version": 1,
+    "version": 2,
     "messages": [
         "Successfully received 2 variant descriptions.",
         "Note that this API does not validate variants on the sequence level, but only checks if the variant description follows the HGVS nomenclature rules.",
-        "For sequence-level validation of DNA variants, please use https:\/\/variantvalidator.org."
+        "For sequence-level validation of DNA variants, please use https://variantvalidator.org."
     ],
     "warnings": [],
     "errors": [],
-    "data": {
-        "c.157C>T": {
+    "data": [
+        {
+            "input": "c.157C>T",
+            "identified_as": "variant_DNA",
+            "identified_as_formatted": "variant (DNA)",
+            "valid": true,
             "messages": {
-                "IOK": "This variant description is HGVS-compliant.",
                 "IREFSEQMISSING": "Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant."
             },
             "warnings": [],
@@ -249,14 +281,21 @@ https://api.lovd.nl/v1/checkHGVS/%5B%22c.157C%3ET%22%2C%22g.40699840C%3ET%22%5D
             "data": {
                 "position_start": 157,
                 "position_end": 157,
-                "type": "subst",
+                "position_start_intron": 0,
+                "position_end_intron": 0,
                 "range": false,
-                "suggested_correction": []
+                "type": ">"
+            },
+            "corrected_values": {
+                "c.157C>T": 1
             }
         },
-        "g.40699840C>T": {
+        {
+            "input": "g.40699840C>T",
+            "identified_as": "variant_DNA",
+            "identified_as_formatted": "variant (DNA)",
+            "valid": true,
             "messages": {
-                "IOK": "This variant description is HGVS-compliant.",
                 "IREFSEQMISSING": "Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant."
             },
             "warnings": [],
@@ -264,13 +303,24 @@ https://api.lovd.nl/v1/checkHGVS/%5B%22c.157C%3ET%22%2C%22g.40699840C%3ET%22%5D
             "data": {
                 "position_start": 40699840,
                 "position_end": 40699840,
-                "type": "subst",
                 "range": false,
-                "suggested_correction": []
+                "type": ">"
+            },
+            "corrected_values": {
+                "g.40699840C>T": 1
             }
         }
-    },
-    "library_version": "2022-09-02"
+    ],
+    "versions": {
+        "library_version": "2025-02-14",
+        "HGVS_nomenclature_versions": {
+            "input": {
+                "minimum": "15.11",
+                "maximum": "21.1.1"
+            },
+            "output": "21.1.1"
+        }
+    }
 }
 ```
 If the same variant description has been submitted more than once in the same
