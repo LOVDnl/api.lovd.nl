@@ -138,7 +138,7 @@ class LOVD_API_OpenAPISpecs
         $aResponse = $this->API->aResponse;
 
         // Add the version (date).
-        $aResponse['info']['version'] = '2022-11-29';
+        $aResponse['info']['version'] = '2022-11-29'; // Copied in swagger-initializer.js.
 
         // Provide the available paths.
         $aResponse['paths'] = array(
@@ -327,7 +327,7 @@ class LOVD_API_OpenAPISpecs
         $aResponse = $this->v1_getOpenAPISpecs();
 
         // Add the version (date).
-        $aResponse['info']['version'] = '2025-02-19';
+        $aResponse['info']['version'] = '2025-02-19'; // Copied in swagger-initializer.js.
 
         // Provide the available responses, they are different from v1.
         // First, some general changes.
