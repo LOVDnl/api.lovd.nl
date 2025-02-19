@@ -1291,6 +1291,33 @@ $aTests = array(
             )
         ),
     ),
+    2 => array(
+        // API-specific test; just a single test to see if v2 is working.
+        array(
+            'input' => 'NM_000277.1:c.838_842+3del8',
+            'identified_as' => 'full_variant_DNA',
+            'identified_as_formatted' => 'full variant (DNA)',
+            'valid' => false,
+            'warnings' => array(
+                'WSUFFIXFORMAT' => 'The part after "del" does not follow HGVS guidelines.',
+                'WSUFFIXGIVEN' => 'The deleted sequence is redundant and should be removed.',
+            ),
+            'errors' => array(
+                'EWRONGREFERENCE' => 'A genomic transcript reference sequence is required to verify intronic positions.',
+            ),
+            'data' => array(
+                'position_start' => 838,
+                'position_end' => 842,
+                'position_start_intron' => 0,
+                'position_end_intron' => 3,
+                'range' => true,
+                'type' => 'del',
+            ),
+            'corrected_values' => array(
+                'NM_000277.1:c.838_842+3del' => 0.1,
+            ),
+        ),
+    ),
 );
 
 
@@ -1303,7 +1330,14 @@ $aDifferences = array();
 $nTests = 0;
 $nTestsSucceeded = 0;
 $nTestsFailed = 0;
+
+// First, test v1. It has a few hacks that we don't need for v2.
 foreach ($aTests as $nVersion => $aTestSet) {
+    if ($nVersion > 1) {
+        // Obviously, we could kill one loop, but then we have a huge diff.
+        // For now, this works.
+        continue;
+    }
     foreach ($aTestSet as $sVariant => $aExpectedOutput) {
         $nTests ++;
 
@@ -1371,6 +1405,80 @@ foreach ($aTests as $nVersion => $aTestSet) {
             echo '.';
             $nTestsSucceeded ++;
         }
+    }
+}
+
+// Then, test v2.
+$nVersion = 2;
+foreach ($aTests[$nVersion] as $aExpectedOutput) {
+    $nTests ++;
+    $sVariant = $aExpectedOutput['input'];
+
+    // Because I don't sort on key when comparing outputs, I need to maintain the order.
+    $sPrevField = 'valid';
+    foreach (array('messages', 'warnings', 'errors') as $sField) {
+        if (!isset($aExpectedOutput[$sField])) {
+            lovd_arrayInsertAfter($sPrevField, $aExpectedOutput, $sField, array());
+        }
+        $sPrevField = $sField;
+    }
+    // We also don't get suggestions always.
+    if (!isset($aExpectedOutput['corrected_values'])) {
+        $aExpectedOutput['corrected_values'] = array(
+            $sVariant => 1,
+        );
+    }
+
+    // We also expect some other output.
+    $aExpectedOutput = array(
+        'version' => $nVersion,
+        'messages' => array(
+            'Successfully received 1 variant description.',
+            'Note that this API does not validate variants on the sequence level, but only checks if the variant description follows the HGVS nomenclature rules.',
+            'For sequence-level validation of DNA variants, please use https://variantvalidator.org.',
+        ),
+        'warnings' => array(),
+        'errors' => array(),
+        'data' => array(
+            $aExpectedOutput,
+        ),
+    );
+
+    // If the variant has no refseq, the output will remind the user.
+    if (!str_starts_with($aExpectedOutput['data'][0]['identified_as'], 'full_variant')) {
+        $aExpectedOutput['data'][0]['messages']['IREFSEQMISSING'] = 'Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant.';
+    }
+
+    // Measure the actual output.
+    $sVariantURL = $sURL . '/v' . $nVersion . '/checkHGVS/' . rawurlencode($sVariant);
+    $aOutput = array("Failed to decode JSON when calling $sVariantURL.");
+    $sOutput = file_get_contents($sVariantURL);
+    if ($sOutput) {
+        $aOutput = json_decode($sOutput, true);
+    }
+
+    if (!isset($aOutput['versions'])
+        || array_keys($aOutput['versions']) != ['library_version', 'HGVS_nomenclature_versions']
+        || array_keys($aOutput['versions']['HGVS_nomenclature_versions']) != ['input', 'output']
+        || array_keys($aOutput['versions']['HGVS_nomenclature_versions']['input']) != ['minimum', 'maximum']
+        || !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $aOutput['versions']['library_version'])) {
+        // Error...
+        $aDifferences[$nTests] = array($nVersion, $sVariant, $aExpectedOutput, $aOutput);
+        echo 'E';
+        $nTestsFailed ++;
+        continue;
+    }
+    // Since our tests don't define it, unset it.
+    unset($aOutput['versions']);
+
+    if ($aOutput !== $aExpectedOutput) {
+        // Something's different. We don't mention that here yet.
+        $aDifferences[$nTests] = array($nVersion, $sVariant, $aExpectedOutput, $aOutput);
+        echo 'F';
+        $nTestsFailed ++;
+    } else {
+        echo '.';
+        $nTestsSucceeded ++;
     }
 }
 
