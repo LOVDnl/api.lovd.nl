@@ -39,16 +39,26 @@ If you wish to run a copy of these APIs locally, all you need is to place the
  unexpected problems if we would update the API.**
 
 To allow easy further development of this API,
- we might change the way the API works or change the way the API returns data.
+ we may change the way the API works or change the way the API returns data.
 To make sure this doesn't harm your application,
  you can instruct the API to use a fixed version.
-To do so, you must include the APIs version in the URL.
-For instance, to always use version 1 of the API,
- even when version 2 is already released, use
- `/v1/checkHGVS` instead of `/checkHGVS`.
+To do so, you must include the API's version in the URL.
+For instance, to always use
+ [version 1](https://api.lovd.nl/v1/checkHGVS/NM_002225.3%3Ac.157C%3ET)
+ of the API, even with
+ [version 2](https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157C%3ET)
+ now released, use `/v1/checkHGVS` instead of `/checkHGVS`.
 _When you're not supplying a version number in the URL,
  the API will automatically use the latest version._
+_This may cause your calls to fail if we release another update._
 Make a decision based on what works best for you in your situation.
+
+
+
+### Version 1 manual
+The manual specifically for version 1
+ [can be found here](https://github.com/LOVDnl/api.lovd.nl/blob/be43d94dc8703cf5224ed6a9ab918738ea24ba91/README.md#api-endpoints).
+Below is the updated manual for version 2.
 
 
 
