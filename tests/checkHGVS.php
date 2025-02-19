@@ -4,10 +4,10 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-16
- * Modified    : 2022-11-29
+ * Modified    : 2025-02-19
  * For LOVD    : 3.0-29
  *
- * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
+ * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
  *
  *
@@ -283,7 +283,7 @@ $aTests = array(
         // lovd_getVariantInfo()'s insertion-related tests that are fixable.
         'g.1_2ins(50)' => array(
             'warnings' => array(
-                'WSUFFIXFORMAT' => 'The part after "ins" does not follow HGVS guidelines.'
+                'WSUFFIXFORMAT' => 'The part after "ins" does not follow HGVS guidelines. Do you mean to indicate inserted positions (e.g., "ins50_60") or an inserted fragment with an unknown sequence but a given length (e.g., "insN[50]")?'
             ),
             'data' => array(
                 'position_start' => 1,
@@ -423,7 +423,7 @@ $aTests = array(
         'g.123conNC_000001.10:100_200' => array(
             'warnings' => array(
                 'WWRONGTYPE' => 'A conversion should be described as a deletion-insertion. Please rewrite "con" to "delins".',
-                'WSUFFIXFORMAT' => 'The part after "con" does not follow HGVS guidelines.',
+                'WSUFFIXFORMAT' => 'The part after "con" does not follow HGVS guidelines. Failed to recognize a valid sequence or position in "NC_000001.10:100_200".',
             ),
             'data' => array(
                 'position_start' => 123,
@@ -438,7 +438,7 @@ $aTests = array(
         ),
         'g.1_5delins20_10' => array(
             'warnings' => array(
-                'WSUFFIXFORMAT' => 'The part after "delins" does not follow HGVS guidelines.',
+                'WSUFFIXFORMAT' => 'The part after "delins" does not follow HGVS guidelines. The positions are not given in the correct order. Please verify your description and try again.',
             ),
             'data' => array(
                 'position_start' => 1,
@@ -828,7 +828,7 @@ $aTests = array(
         // lovd_getVariantInfo()'s tests for fixable challenging insertions.
         'g.1_2ins(5_10)' => array(
             'warnings' => array(
-                'WSUFFIXFORMAT' => 'The part after "ins" does not follow HGVS guidelines.',
+                'WSUFFIXFORMAT' => 'The part after "ins" does not follow HGVS guidelines. Do you mean to indicate inserted positions (e.g., "ins5_10") or an inserted fragment with an unknown sequence but a given length (e.g., "insN[(5_10)]")?',
             ),
             'data' => array(
                 'position_start' => 1,
@@ -843,7 +843,7 @@ $aTests = array(
         ),
         'g.1_2ins[A]' => array(
             'warnings' => array(
-                'WSUFFIXFORMAT' => 'The part after "ins" does not follow HGVS guidelines.',
+                'WSUFFIXFORMAT' => 'The part after "ins" does not follow HGVS guidelines. Only use square brackets for complex insertions.',
             ),
             'data' => array(
                 'position_start' => 1,
@@ -858,7 +858,7 @@ $aTests = array(
         ),
         'g.1_2insNC123456.1:g.1_10' => array(
             'warnings' => array(
-                'WSUFFIXFORMAT' => 'The part after "ins" does not follow HGVS guidelines.',
+                'WSUFFIXFORMAT' => 'The part after "ins" does not follow HGVS guidelines. Failed to recognize a valid sequence or position in "NC123456.1:g.1_10".',
             ),
             'data' => array(
                 'position_start' => 1,
@@ -890,7 +890,7 @@ $aTests = array(
         ),
         'g.(1_100)del50' => array(
             'warnings' => array(
-                'WSUFFIXFORMAT' => 'The length of the variant is not formatted following the HGVS guidelines. Please rewrite "50" to "N[50]".',
+                'WSUFFIXFORMAT' => 'The part after "del" does not follow HGVS guidelines. Please rewrite "50" to "N[50]".',
             ),
             'data' => array(
                 'position_start' => 1,
@@ -905,7 +905,7 @@ $aTests = array(
         ),
         'g.(1_100)del(30)' => array(
             'warnings' => array(
-                'WSUFFIXFORMAT' => 'The length of the variant is not formatted following the HGVS guidelines. Please rewrite "(30)" to "N[30]".',
+                'WSUFFIXFORMAT' => 'The part after "del" does not follow HGVS guidelines. Please rewrite "(30)" to "N[30]".',
             ),
             'data' => array(
                 'position_start' => 1,
@@ -920,7 +920,7 @@ $aTests = array(
         ),
         'g.(1_100)del(30_30)' => array(
             'warnings' => array(
-                'WSUFFIXFORMAT' => 'The length of the variant is not formatted following the HGVS guidelines. Please rewrite "(30_30)" to "N[30]".',
+                'WSUFFIXFORMAT' => 'The part after "del" does not follow HGVS guidelines. Please rewrite "(30_30)" to "N[30]".',
             ),
             'data' => array(
                 'position_start' => 1,
@@ -935,7 +935,7 @@ $aTests = array(
         ),
         'g.(1_100)del(30_50)' => array(
             'warnings' => array(
-                'WSUFFIXFORMAT' => 'The length of the variant is not formatted following the HGVS guidelines. Please rewrite "(30_50)" to "N[(30_50)]".',
+                'WSUFFIXFORMAT' => 'The part after "del" does not follow HGVS guidelines. Please rewrite "(30_50)" to "N[(30_50)]".',
             ),
             'data' => array(
                 'position_start' => 1,
@@ -950,7 +950,7 @@ $aTests = array(
         ),
         'g.(1_100)del(50_30)' => array(
             'warnings' => array(
-                'WSUFFIXFORMAT' => 'The length of the variant is not formatted following the HGVS guidelines. Please rewrite "(50_30)" to "N[(30_50)]".',
+                'WSUFFIXFORMAT' => 'The part after "del" does not follow HGVS guidelines. Please rewrite "(50_30)" to "N[(30_50)]".',
             ),
             'data' => array(
                 'position_start' => 1,
@@ -965,7 +965,7 @@ $aTests = array(
         ),
         'g.(1_100)delN[30_50]' => array(
             'warnings' => array(
-                'WSUFFIXFORMAT' => 'The length of the variant is not formatted following the HGVS guidelines. Please rewrite "N[30_50]" to "N[(30_50)]".',
+                'WSUFFIXFORMAT' => 'The part after "del" does not follow HGVS guidelines. Please rewrite "N[30_50]" to "N[(30_50)]".',
             ),
             'data' => array(
                 'position_start' => 1,
@@ -980,7 +980,7 @@ $aTests = array(
         ),
         'g.(100_200)_(400_500)del300' => array(
             'warnings' => array(
-                'WSUFFIXFORMAT' => 'The length of the variant is not formatted following the HGVS guidelines. Please rewrite "300" to "N[300]".',
+                'WSUFFIXFORMAT' => 'The part after "del" does not follow HGVS guidelines. Please rewrite "300" to "N[300]".',
             ),
             'data' => array(
                 'position_start' => 200,
@@ -995,7 +995,7 @@ $aTests = array(
         ),
         'g.(1_200)_(400_500)del(300)' => array(
             'warnings' => array(
-                'WSUFFIXFORMAT' => 'The length of the variant is not formatted following the HGVS guidelines. Please rewrite "(300)" to "N[300]".',
+                'WSUFFIXFORMAT' => 'The part after "del" does not follow HGVS guidelines. Please rewrite "(300)" to "N[300]".',
             ),
             'data' => array(
                 'position_start' => 200,
@@ -1010,7 +1010,7 @@ $aTests = array(
         ),
         'g.(1_100)inv(30)' => array(
             'warnings' => array(
-                'WSUFFIXFORMAT' => 'The length of the variant is not formatted following the HGVS guidelines. Please rewrite "(30)" to "N[30]".',
+                'WSUFFIXFORMAT' => 'The part after "inv" does not follow HGVS guidelines. Please rewrite "(30)" to "N[30]".',
             ),
             'data' => array(
                 'position_start' => 1,
@@ -1103,7 +1103,7 @@ $aTests = array(
         // lovd_getVariantInfo()'s tests for all other errors or problems.
         'G.123dup' => array(
             'warnings' => array(
-                'WWRONGCASE' => 'This is not a valid HGVS description, due to characters being in the wrong case. Please check the use of upper- and lowercase characters.',
+                'WWRONGCASE' => 'This is not a valid HGVS description, due to characters being in the wrong case. Please rewrite "G." to "g.".',
             ),
             'data' => array(
                 'position_start' => 123,
@@ -1118,7 +1118,7 @@ $aTests = array(
         ),
         'g.123DUP' => array(
             'warnings' => array(
-                'WWRONGCASE' => 'This is not a valid HGVS description, due to characters being in the wrong case. Please check the use of upper- and lowercase characters.',
+                'WWRONGCASE' => 'This is not a valid HGVS description, due to characters being in the wrong case. Please rewrite "DUP" to "dup".',
             ),
             'data' => array(
                 'position_start' => 123,
@@ -1134,6 +1134,7 @@ $aTests = array(
         'g.123_130delgagagatt' => array(
             'warnings' => array(
                 'WWRONGCASE' => 'This is not a valid HGVS description, due to characters being in the wrong case. Please rewrite "delgagagatt" to "delGAGAGATT".',
+                'WSUFFIXGIVEN' => 'Nothing should follow "del".',
             ),
             'data' => array(
                 'position_start' => 123,
@@ -1148,8 +1149,27 @@ $aTests = array(
         ),
         'g.123_130delgagagauu' => array(
             'warnings' => array(
-                'WSUFFIXFORMAT' => 'The part after "del" does not follow HGVS guidelines. Please rewrite "delgagagauu" to "delGAGAGATT".',
-                'WWRONGCASE' => 'This is not a valid HGVS description, due to characters being in the wrong case. Please check the use of upper- and lowercase characters after "del".',
+                'WWRONGCASE' => 'This is not a valid HGVS description, due to characters being in the wrong case. Please rewrite "delgagagauu" to "delGAGAGAUU".',
+                'WSUFFIXGIVEN' => 'Nothing should follow "del".',
+            ),
+            'errors' => array(
+                'EINVALIDNUCLEOTIDES' => 'This variant description contains invalid nucleotides: "U".',
+            ),
+            'data' => array(
+                'position_start' => 123,
+                'position_end' => 130,
+                'type' => 'del',
+                'range' => true,
+                'suggested_correction' => array(
+                    'value' => 'g.123_130del',
+                    'confidence' => 'low',
+                ),
+            )
+        ),
+        'g.123_130deln[8]' => array(
+            'warnings' => array(
+                'WWRONGCASE' => 'This is not a valid HGVS description, due to characters being in the wrong case. Please rewrite "deln[8]" to "delN[8]".',
+                'WSUFFIXGIVEN' => 'Nothing should follow "del".',
             ),
             'data' => array(
                 'position_start' => 123,
@@ -1162,25 +1182,12 @@ $aTests = array(
                 ),
             )
         ),
-        'g.123_130deln[8]' => array(
-            'warnings' => array(
-                'WWRONGCASE' => 'This is not a valid HGVS description, due to characters being in the wrong case. Please rewrite "deln[8]" to "delN[8]".',
-            ),
-            'data' => array(
-                'position_start' => 123,
-                'position_end' => 130,
-                'type' => 'del',
-                'range' => true,
-                'suggested_correction' => array(
-                    'value' => 'g.123_130del',
-                    'confidence' => 'high',
-                ),
-            )
-        ),
         'g.123delinsgagagauu' => array(
             'warnings' => array(
-                'WSUFFIXFORMAT' => // Adding a WWRONGCASE here is difficult; the code handling insertions is too complex and we'd need to then fix lovd_fixHGVS() again also.
-                    'The part after "delins" does not follow HGVS guidelines.', // Idem for the suggestion how to fix it. It's too complex right now and lovd_fixHGVS() easily handles it anyway.
+                'WWRONGCASE' => 'This is not a valid HGVS description, due to characters being in the wrong case. Please rewrite "delinsgagagauu" to "delinsGAGAGAUU".',
+            ),
+            'errors' => array(
+                'EINVALIDNUCLEOTIDES' => 'This variant description contains invalid nucleotides: "U".',
             ),
             'data' => array(
                 'position_start' => 123,
@@ -1189,7 +1196,7 @@ $aTests = array(
                 'range' => false,
                 'suggested_correction' => array(
                     'value' => 'g.123delinsGAGAGATT',
-                    'confidence' => 'medium',
+                    'confidence' => 'low',
                 ),
             )
         ),
@@ -1214,7 +1221,10 @@ $aTests = array(
             'warnings' => array(
                 'WWRONGCASE' => 'This is not a valid HGVS description, due to characters being in the wrong case. Please check the use of upper- and lowercase characters after "del".',
                 'WWRONGTYPE' =>
-                    'A deletion-insertion of one base to one base should be described as a substitution. Please rewrite "delainsu" to "A>T".',
+                    'A deletion-insertion of one base to one base should be described as a substitution. Please rewrite "delainsu" to "A>U".',
+            ),
+            'errors' => array(
+                'EINVALIDNUCLEOTIDES' => 'This variant description contains invalid nucleotides: "U".',
             ),
             'data' => array(
                 'position_start' => 123,
@@ -1223,7 +1233,7 @@ $aTests = array(
                 'range' => false,
                 'suggested_correction' => array(
                     'value' => 'g.123A>T',
-                    'confidence' => 'high',
+                    'confidence' => 'low',
                 ),
             )
         ),
@@ -1261,7 +1271,7 @@ $aTests = array(
         // API-specific test; do we suggest something anyway, when a EWRONGREFERENCE remains?
         'NM_000277.1:c.838_842+3del8' => array(
             'warnings' => array(
-                'WSUFFIXFORMAT' => 'The length of the variant is not formatted following the HGVS guidelines. Please rewrite "8" to "N[8]".',
+                'WSUFFIXFORMAT' => 'The part after "del" does not follow HGVS guidelines. Please rewrite "8" to "N[8]".',
                 'WSUFFIXGIVEN' => 'Nothing should follow "del".',
             ),
             'errors' => array(
