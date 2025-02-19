@@ -8,7 +8,7 @@
  * Modified    : 2025-02-18
  * For LOVD    : 3.0-30
  *
- * Copyright   : 2004-2024 Leiden University Medical Center; http://www.LUMC.nl/
+ * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
  *
  *
