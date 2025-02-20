@@ -4,10 +4,10 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-24
- * Modified    : 2022-11-29         // When modified, also change info->version.
+ * Modified    : 2025-02-19         // When modified, also change info->version.
  * For LOVD    : 3.0-29
  *
- * Copyright   : 2004-2022 Leiden University Medical Center; http://www.LUMC.nl/
+ * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
  *
  *
@@ -85,101 +85,16 @@ class LOVD_API_OpenAPISpecs
                     'name' => 'GNU General Public License v3.0',
                     'url' => 'https://github.com/LOVDnl/api.lovd.nl/raw/main/LICENSE',
                 ),
-                'version' => '2022-11-29',
             ),
             'servers' => array(
                 array(
-                    'url' => 'https://api.lovd.nl/{version}',
-                    'description' => 'Public LOVD APIs, production server.',
-                    'variables' => array(
-                        'version' => array(
-                            'enum' => $aVersions,
-                            'default' => 'v' . $this->API->nVersion,
-                        ),
-                    ),
+                    'url' => lovd_getInstallURL() . 'v' . $this->API->nVersion,
+                    'description' => 'Public LOVD APIs, production server, API v' . $this->API->nVersion . '.',
                 ),
             ),
-            'paths' => array(), // To be filled in later.
+            'paths' => array(), // NOTE: Will be filled in later by v#_getOpenAPISpecs().
             'components' => array(
-                'responses' => array(
-                    '200_checkHGVS' => array(
-                        'description' => 'A result of a successfully processed variant or list of variants. This does not mean that the input variant(s) are using valid nomenclature.',
-                        'content' => array(
-                            'application/json' => array(
-                                'schema' => array(
-                                    '$ref' => 'checkHGVS/schema.json',
-                                ),
-                                'example' => array(
-                                    'version' => 1,
-                                    'messages' => array(
-                                        'Successfully received 1 variant description.',
-                                        'Note that this API does not validate variants on the sequence level, but only checks if the variant description follows the HGVS nomenclature rules.',
-                                        'For sequence-level validation of DNA variants, please use https:\/\/variantvalidator.org.'
-                                    ),
-                                    'warnings' => array(),
-                                    'errors' => array(),
-                                    'data' => array(
-                                        'NM_002225.3:c.157C>T' => array(
-                                            'messages' => array(
-                                                'IOK' => 'This variant description is HGVS-compliant.'
-                                            ),
-                                            'warnings' => array(),
-                                            'errors' => array(),
-                                            'data' => array(
-                                                'position_start' => 157,
-                                                'position_end' => 157,
-                                                'type' => 'subst',
-                                                'range' => false,
-                                                'suggested_correction' => array()
-                                            )
-                                        )
-                                    ),
-                                    'library_version' => '2022-08-24'
-                                ),
-                            ),
-                        ),
-                    ),
-                    '4XX_checkHGVS' => array(
-                        'description' => 'A result of a processing error. The API has not been queried properly, and the data could not be processed.',
-                        'content' => array(
-                            'application/json' => array(
-                                'schema' => array(
-                                    '$ref' => 'checkHGVS/schema.json',
-                                ),
-                                'example' => array(
-                                    'version' => 1,
-                                    'messages' => array(),
-                                    'warnings' => array(),
-                                    'errors' => array(
-                                        'Could not parse the given request. Did you submit a variant?'
-                                    ),
-                                    'data' => array(),
-                                    'library_version' => '2022-08-24'
-                                ),
-                            ),
-                        ),
-                    ),
-                    '500_checkHGVS' => array(
-                        'description' => 'A result of an internal error. The library could somehow not handle the request.',
-                        'content' => array(
-                            'application/json' => array(
-                                'schema' => array(
-                                    '$ref' => 'checkHGVS/schema.json',
-                                ),
-                                'example' => array(
-                                    'version' => 1,
-                                    'messages' => array(),
-                                    'warnings' => array(),
-                                    'errors' => array(
-                                        'Request not handled well by any handler.'
-                                    ),
-                                    'data' => array(),
-                                    'library_version' => '2022-08-24'
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
+                'responses' => array(), // NOTE: Will be filled in later by v#_getOpenAPISpecs().
             ),
             'externalDocs' => array(
                 'description' => 'More documentation can be found on our Github page.',
@@ -217,10 +132,15 @@ class LOVD_API_OpenAPISpecs
 
 
 
-    // NOTE: Don't just change this function's name, it's called through call_user_func() and get_class_methods().
     public function v1_getOpenAPISpecs ()
     {
+        // Fill in the v1-specific data.
         $aResponse = $this->API->aResponse;
+
+        // Add the version (date).
+        $aResponse['info']['version'] = '2022-11-29'; // Copied in swagger-initializer.js.
+
+        // Provide the available paths.
         $aResponse['paths'] = array(
             '/checkHGVS/{variant}' => array(
                 'get' => array(
@@ -290,7 +210,7 @@ class LOVD_API_OpenAPISpecs
                             'content' => array(
                                 'application/json' => array(
                                     'example' => array(
-                                        'version' => 1,
+                                        'version' => $this->API->nVersion,
                                         'messages' => array(
                                             'Hello!',
                                         ),
@@ -309,6 +229,143 @@ class LOVD_API_OpenAPISpecs
                         ),
                     ),
                 ),
+            ),
+        );
+
+        // Provide the available responses.
+        $aResponse['components']['responses'] = array(
+            '200_checkHGVS' => array(
+                'description' => 'A result of a successfully processed variant or list of variants. This does not mean that the input variant(s) are using valid nomenclature.',
+                'content' => array(
+                    'application/json' => array(
+                        'schema' => array(
+                            '$ref' => 'checkHGVS/schema.json',
+                        ),
+                        'example' => array(
+                            'version' => $this->API->nVersion,
+                            'messages' => array(
+                                'Successfully received 1 variant description.',
+                                'Note that this API does not validate variants on the sequence level, but only checks if the variant description follows the HGVS nomenclature rules.',
+                                'For sequence-level validation of DNA variants, please use https:\/\/variantvalidator.org.'
+                            ),
+                            'warnings' => array(),
+                            'errors' => array(),
+                            'data' => array(
+                                'NM_002225.3:c.157C>T' => array(
+                                    'messages' => array(
+                                        'IOK' => 'This variant description is HGVS-compliant.'
+                                    ),
+                                    'warnings' => array(),
+                                    'errors' => array(),
+                                    'data' => array(
+                                        'position_start' => 157,
+                                        'position_end' => 157,
+                                        'type' => 'subst',
+                                        'range' => false,
+                                        'suggested_correction' => array()
+                                    )
+                                )
+                            ),
+                            'library_version' => '2022-08-24'
+                        ),
+                    ),
+                ),
+            ),
+            '4XX_checkHGVS' => array(
+                'description' => 'A result of a processing error. The API has not been queried properly, and the data could not be processed.',
+                'content' => array(
+                    'application/json' => array(
+                        'schema' => array(
+                            '$ref' => 'checkHGVS/schema.json',
+                        ),
+                        'example' => array(
+                            'version' => $this->API->nVersion,
+                            'messages' => array(),
+                            'warnings' => array(),
+                            'errors' => array(
+                                'Could not parse the given request. Did you submit a variant?'
+                            ),
+                            'data' => array(),
+                            'library_version' => '2022-08-24'
+                        ),
+                    ),
+                ),
+            ),
+            '500_checkHGVS' => array(
+                'description' => 'A result of an internal error. The library could somehow not handle the request.',
+                'content' => array(
+                    'application/json' => array(
+                        'schema' => array(
+                            '$ref' => 'checkHGVS/schema.json',
+                        ),
+                        'example' => array(
+                            'version' => $this->API->nVersion,
+                            'messages' => array(),
+                            'warnings' => array(),
+                            'errors' => array(
+                                'Request not handled well by any handler.'
+                            ),
+                            'data' => array(),
+                            'library_version' => '2022-08-24'
+                        ),
+                    ),
+                ),
+            ),
+        );
+
+        return $aResponse;
+    }
+
+
+
+
+
+    public function v2_getOpenAPISpecs ()
+    {
+        // Fill in the v2-specific data.
+        // Takes the basics from the previous version, then makes changes.
+        $aResponse = $this->v1_getOpenAPISpecs();
+
+        // Add the version (date).
+        $aResponse['info']['version'] = '2025-02-19'; // Copied in swagger-initializer.js.
+
+        // Provide the available responses, they are different from v1.
+        // First, some general changes.
+        unset($aResponse['components']['responses']['200_checkHGVS']['content']['application/json']['example']['library_version']);
+        unset($aResponse['components']['responses']['4XX_checkHGVS']['content']['application/json']['example']['library_version']);
+        unset($aResponse['components']['responses']['500_checkHGVS']['content']['application/json']['example']['library_version']);
+
+        // Update the 200 OK output.
+        $aResponse['components']['responses']['200_checkHGVS']['content']['application/json']['example']['data'] = array(
+            array(
+                'input' => 'NM_002225.3:c.157C>T',
+                'identified_as' => 'full_variant_DNA',
+                'identified_as_formatted' => 'full variant (DNA)',
+                'valid' => true,
+                'messages' => array(),
+                'warnings' => array(),
+                'errors' => array(),
+                'data' => array(
+                    'position_start' => 157,
+                    'position_end' => 157,
+                    'position_start_intron' => 0,
+                    'position_end_intron' => 0,
+                    'range' => false,
+                    'type' => ">"
+                ),
+                'corrected_values' => array(
+                    'NM_002225.3:c.157C>T' => 1
+                )
+            )
+        );
+        $aResponse['components']['responses']['200_checkHGVS']['content']['application/json']['example']['versions'] = array(
+            'library_version' => '2025-02-14',
+            'HGVS_nomenclature_versions' => array(
+                'input' => array(
+                    'minimum' => '15.11',
+                    'maximum' => '21.1.1'
+                ),
+                'output' => '21.1.1'
             ),
         );
 

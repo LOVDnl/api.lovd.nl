@@ -4,10 +4,10 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-08
- * Modified    : 2024-05-31   // When modified, also change the library_version.
+ * Modified    : 2025-02-18
  * For LOVD    : 3.0-29
  *
- * Copyright   : 2004-2023 Leiden University Medical Center; http://www.LUMC.nl/
+ * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
  *
  *
@@ -53,7 +53,6 @@ class LOVD_API_checkHGVS
             return false;
         }
         $this->API = $oAPI;
-        $this->API->aResponse['library_version'] = '2024-05-31';
 
         return true;
     }
@@ -116,6 +115,19 @@ class LOVD_API_checkHGVS
         }
 
 
+
+        // Check the current version and run that method.
+        $sMethod = 'v' . $this->API->nVersion . '_checkHGVS';
+        return call_user_func(array($this, $sMethod), $aInput);
+    }
+
+
+
+
+
+    public function v1_checkHGVS ($aInput)
+    {
+        // Run the validations, using the old lovd_getVariantInfo() and lovd_fixHGVS() approach.
 
         // For non-unique input, throw a warning, but continue.
         $aInputUnique = array_unique($aInput, SORT_STRING);
@@ -246,6 +258,7 @@ class LOVD_API_checkHGVS
 
             $this->API->aResponse['data'][$sVariant] = $aResponse;
         }
+        $this->API->aResponse['library_version'] = '2024-05-31';
         return true;
     }
 
@@ -253,7 +266,62 @@ class LOVD_API_checkHGVS
 
 
 
-    // NOTE: Don't just change this function's name, it's called through call_user_func().
+    public function v2_checkHGVS ($aInput)
+    {
+        // Run the validations, using the new HGVS class approach.
+        if (!file_exists(ROOT_PATH . 'libs/HGVS-syntax-checker/HGVS.php')) {
+            // This API requires the HGVS.php class file from https://github.com/LOVDnl/HGVS-syntax-checker.
+            // If not found, double-check if you ran `git submodule init && git submodule update`.
+            // This repository will not duplicate the code.
+            $this->API->aResponse['errors'][] = 'Could not load the HGVS library.';
+            return false;
+        }
+
+        require ROOT_PATH . 'libs/HGVS-syntax-checker/HGVS.php';
+        $this->API->aResponse['versions'] = HGVS::getVersions();
+
+        // v1 used to have a check here for unique input, but since we format the output differently, we don't care.
+        $nInput = count($aInput);
+        $this->API->aResponse['messages'][] = "Successfully received $nInput variant description" . ($nInput == 1? "." : "s.");
+        $this->API->aResponse['messages'][] = 'Note that this API does not validate variants on the sequence level, but only checks if the variant description follows the HGVS nomenclature rules.';
+        $this->API->aResponse['messages'][] = 'For sequence-level validation of DNA variants, please use https://variantvalidator.org.';
+
+        // Now actually handle the request.
+        foreach ($aInput as $sVariant) {
+            $aResponse = HGVS::checkVariant($sVariant)->allowMissingReferenceSequence()->getInfo();
+
+            // In case it's set, we don't care about WNOTSUPPORTED. We won't validate anyway,
+            //  and this warning is thrown only for HGVS-compliant descriptions.
+            unset($aResponse['warnings']['WNOTSUPPORTED']);
+
+            if (isset($aResponse['errors']['ENOTSUPPORTED'])) {
+                // Catch and convert ENOTSUPPORTED.
+                // We don't actually know whether this is HGVS compliant or not.
+                // The library allows for ENOTSUPPORTED, and flags it as valid.
+                $aResponse['messages']['INOTSUPPORTED'] = 'This variant description contains unsupported syntax.' .
+                    ' Although we aim to support all of the HGVS nomenclature rules,' .
+                    ' some complex variants are not fully implemented yet in our syntax checker.' .
+                    ' We invite you to submit your variant description here, so we can have a look: https://github.com/LOVDnl/api.lovd.nl/issues.';
+                // And remove the ENOTSUPPORTED.
+                unset($aResponse['errors']['ENOTSUPPORTED']);
+            }
+
+            if (isset($aResponse['messages']['IREFSEQMISSING'])) {
+                // Our version is more informative.
+                $aResponse['messages']['IREFSEQMISSING'] = 'Please note that your variant description is missing a reference sequence. ' .
+                    'Although this is not necessary for our syntax check, a variant description does ' .
+                    'need a reference sequence to be fully informative and HGVS-compliant.';
+            }
+
+            $this->API->aResponse['data'][] = $aResponse;
+        }
+        return true;
+    }
+
+
+
+
+
     public function v1_getJSONSchema ()
     {
         // Return the JSON Schema for the v1 checkHGVS response format.
@@ -270,7 +338,7 @@ class LOVD_API_checkHGVS
                 'version' => array(
                     'description' => 'The version of the API specification.',
                     'type' => 'integer',
-                    'minimum' => 1,
+                    'const' => 1,
                 ),
                 'messages' => array(
                     'description' => 'A list of messages, simply providing information and not indicating any kind of error.',
@@ -473,6 +541,152 @@ class LOVD_API_checkHGVS
                 'library_version',
             ),
         );
+    }
+
+
+
+
+
+    public function v2_getJSONSchema ()
+    {
+        // Return the JSON Schema for the v2 checkHGVS response format.
+        // Takes the basics from the previous version, then makes changes.
+
+        $aReturn = $this->v1_getJSONSchema();
+
+        // Fix the version.
+        $aReturn['properties']['version']['const'] = 2;
+
+        // Fix the data specs.
+        $aReturn['properties']['data'] = array(
+            'description' => 'The data that is the result of the API request. This is empty if a problem occurred while handling the request.',
+            'type' => 'array',
+            'items' => array(
+                'type' => 'object',
+                'additionalProperties' => false,
+                'properties' => array(
+                    'input' => array(
+                        'description' => 'The given input.',
+                        'type' => 'string',
+                    ),
+                    'identified_as' => array(
+                        'description' => 'A short description of what the library identified the input as. This field is meant to be parsed, if needed.',
+                        'type' => 'string',
+                    ),
+                    'identified_as_formatted' => array(
+                        'description' => 'A formatted version of the "identified as" field. This field is meant to be displayed to the user, if needed.',
+                        'type' => 'string',
+                    ),
+                    'valid' => array(
+                        'description' => 'Whether the input was considered to be a valid variant description.',
+                        'type' => 'boolean',
+                    ),
+                    'messages' => $aReturn['properties']['data']['oneOf'][1]['patternProperties']['^.+$']['properties']['messages'],
+                    'warnings' => $aReturn['properties']['data']['oneOf'][1]['patternProperties']['^.+$']['properties']['warnings'],
+                    'errors'   => $aReturn['properties']['data']['oneOf'][1]['patternProperties']['^.+$']['properties']['errors'],
+                    'data'     => $aReturn['properties']['data']['oneOf'][1]['patternProperties']['^.+$']['properties']['data'],
+                    'corrected_values' => array(
+                        'description' => 'One or more corrected variant descriptions, given with a confidence score. The given corrections are not necessarily different from the input.',
+                        'type' => 'object',
+                        'additionalProperties' => false,
+                        'patternProperties' => array(
+                            '^.+$' => array(
+                                'description' => 'The confidence score for this correction, ranging from near zero to 100%.',
+                                'type' => 'number',
+                                'exclusiveMinimum' => 0,
+                                'maximum' => 1,
+                            ),
+                        ),
+                    ),
+                ),
+                'required' => array(
+                    'input',
+                    'identified_as',
+                    'identified_as_formatted',
+                    'valid',
+                    'messages',
+                    'warnings',
+                    'errors',
+                    'data',
+                    'corrected_values',
+                ),
+            ),
+        );
+
+        // OK, actually, "data" is not completely the same.
+        $aReturn['properties']['data']['items']['properties']['data']['properties']['type']['enum'] = array(
+            '=',
+            '>',
+            '?',
+            '^',
+            ';',
+            '0',
+            'chimeric',
+            'cnv',
+            'del',
+            'delins',
+            'dup',
+            'ins',
+            'inv',
+            'met',
+            'mosaic',
+            'repeat',
+            'sup',
+        );
+
+        // Remove "suggested_correction".
+        unset($aReturn['properties']['data']['items']['properties']['data']['properties']['suggested_correction']);
+        // Also "type" isn't required anymore, so just rebuild the "required" array.
+        $aReturn['properties']['data']['items']['properties']['data']['required'] = array(
+            'position_start',
+            'position_end',
+            'range',
+        );
+
+        // Replace "library_version" with "versions".
+        unset($aReturn['properties']['library_version']);
+        $aReturn['properties']['versions'] = array(
+            'description' => 'All relevant versions related to the library that powers this API.',
+            'type' => 'object',
+            'additionalProperties' => false,
+            'properties' => array(
+                'library_version' => array(
+                    'description' => 'The date that the library that powers this API, has been updated.',
+                    'type' => 'string',
+                    'pattern' => '^[0-9]{4}-[0-9]{2}-[0-9]{2}$',
+                ),
+                'HGVS_nomenclature_versions' => array(
+                    'description' => 'The HGVS nomenclature versions supported by this library.',
+                    'type' => 'object',
+                    'additionalProperties' => false,
+                    'properties' => array(
+                        'input' => array(
+                            'description' => 'The minimum and maximum HGVS nomenclature versions supported by this library as input.',
+                            'type' => 'object',
+                            'additionalProperties' => false,
+                            'properties' => array(
+                                'minimum' => array(
+                                    'type' => 'string',
+                                    'pattern' => '^[0-9]{2}\.[0-9]{1,2}(\.[0-9]{1,2})?$',
+                                ),
+                                'maximum' => array(
+                                    'type' => 'string',
+                                    'pattern' => '^[0-9]{2}\.[0-9]{1,2}\.[0-9]{1,2}$',
+                                ),
+                            ),
+                        ),
+                        'output' => array(
+                            'description' => 'The HGVS nomenclature version of the output created by this library.',
+                            'type' => 'string',
+                            'pattern' => '^[0-9]{2}\.[0-9]{1,2}\.[0-9]{1,2}$',
+                        ),
+                    ),
+                ),
+            ),
+        );
+        $aReturn['required'][4] = 'versions';
+
+        return $aReturn;
     }
 }
 ?>

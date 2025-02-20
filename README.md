@@ -39,16 +39,26 @@ If you wish to run a copy of these APIs locally, all you need is to place the
  unexpected problems if we would update the API.**
 
 To allow easy further development of this API,
- we might change the way the API works or change the way the API returns data.
+ we may change the way the API works or change the way the API returns data.
 To make sure this doesn't harm your application,
  you can instruct the API to use a fixed version.
-To do so, you must include the APIs version in the URL.
-For instance, to always use version 1 of the API,
- even when version 2 is already released, use
- `/v1/checkHGVS` instead of `/checkHGVS`.
+To do so, you must include the API's version in the URL.
+For instance, to always use
+ [version 1](https://api.lovd.nl/v1/checkHGVS/NM_002225.3%3Ac.157C%3ET)
+ of the API, even with
+ [version 2](https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157C%3ET)
+ now released, use `/v1/checkHGVS` instead of `/checkHGVS`.
 _When you're not supplying a version number in the URL,
  the API will automatically use the latest version._
+_This may cause your calls to fail if we release another update._
 Make a decision based on what works best for you in your situation.
+
+
+
+### Version 1 manual
+The manual specifically for version 1
+ [can be found here](https://github.com/LOVDnl/api.lovd.nl/blob/be43d94dc8703cf5224ed6a9ab918738ea24ba91/README.md#api-endpoints).
+Below is the updated manual for version 2.
 
 
 
@@ -60,13 +70,13 @@ Use this method just to see if the API is alive or not.
 If it is, it will return an HTTP 200 status with the following output.
 ```json
 {
-  "version": 1,
-  "messages": [
-    "Hello!"
-  ],
-  "warnings": [],
-  "errors": [],
-  "data": []
+    "version": 2,
+    "messages": [
+        "Hello!"
+    ],
+    "warnings": [],
+    "errors": [],
+    "data": []
 }
 ```
 
@@ -85,95 +95,127 @@ It will return informative messages, warnings, and/or errors about the variant
 The JSON schema for the API output is encoded in the API itself and can be
  accessed by opening the URL `/checkHGVS/schema.json`.
 If you want to retrieve the schema for a certain version,
- use `/v1/checkHGVS/schema.json`.
-As an example, see https://api.lovd.nl/v1/checkHGVS/schema.json.
+ use `/v2/checkHGVS/schema.json`.
+As an example, see https://api.lovd.nl/v2/checkHGVS/schema.json.
 
 ##### Single variant input
 To submit a single variant description, e.g., `NM_002225.3:c.157C>T`, simply add
  it to the URL following the requirements for URL encoding:
 ```
-https://api.lovd.nl/v1/checkHGVS/NM_002225.3%3Ac.157C%3ET
+https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157C%3ET
 ```
 ```json
 {
-    "version": 1,
+    "version": 2,
     "messages": [
         "Successfully received 1 variant description.",
         "Note that this API does not validate variants on the sequence level, but only checks if the variant description follows the HGVS nomenclature rules.",
-        "For sequence-level validation of DNA variants, please use https:\/\/variantvalidator.org."
+        "For sequence-level validation of DNA variants, please use https://variantvalidator.org."
     ],
     "warnings": [],
     "errors": [],
-    "data": {
-        "NM_002225.3:c.157C>T": {
-            "messages": {
-                "IOK": "This variant description is HGVS-compliant."
-            },
+    "data": [
+        {
+            "input": "NM_002225.3:c.157C>T",
+            "identified_as": "full_variant_DNA",
+            "identified_as_formatted": "full variant (DNA)",
+            "valid": true,
+            "messages": [],
             "warnings": [],
             "errors": [],
             "data": {
                 "position_start": 157,
                 "position_end": 157,
-                "type": "subst",
+                "position_start_intron": 0,
+                "position_end_intron": 0,
                 "range": false,
-                "suggested_correction": []
+                "type": ">"
+            },
+            "corrected_values": {
+                "NM_002225.3:c.157C>T": 1
             }
         }
-    },
-    "library_version": "2022-09-02"
+    ],
+    "versions": {
+        "library_version": "2025-02-14",
+        "HGVS_nomenclature_versions": {
+            "input": {
+                "minimum": "15.11",
+                "maximum": "21.1.1"
+            },
+            "output": "21.1.1"
+        }
+    }
 }
 ```
 
 Note that the first `messages`, `warnings`, and `errors` arrays describe the
- request as a whole, while those whithin the `data` object are specific for the
+ request as a whole, while those within the `data` object are specific for the
  given variant.
 Errors are, in general, non-recoverable.
 Warnings are, in general, recoverable and easily repairable.
 Messages are simply for your information.
 Due to limitations of our implementation of PHP's `json_encode()`, these objects
  will be arrays when empty.
-This applies as well to the `suggested_correction` object.
 This may be corrected in a later version of the API.
 
+The `versions` object collects all relevant versions related to the library that
+ powers this API.
 The `library_version` shows the date the internal libraries that interpret
  variant descriptions and provide feedback and possible corrections, were
  updated.
 Such an update will not create a new API version, as the API version defines
  the behaviour of the API and its output.
+The `HGVS_nomenclature_versions` object shows supported HGVS nomenclature
+ versions for input (minimum, maximum) and for output.
 
 ```
-https://api.lovd.nl/v1/checkHGVS/NM_002225.3%3Ac.157delCinsT
+https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157delCinsT
 ```
 ```json
 {
-    "version": 1,
+    "version": 2,
     "messages": [
         "Successfully received 1 variant description.",
         "Note that this API does not validate variants on the sequence level, but only checks if the variant description follows the HGVS nomenclature rules.",
-        "For sequence-level validation of DNA variants, please use https:\/\/variantvalidator.org."
+        "For sequence-level validation of DNA variants, please use https://variantvalidator.org."
     ],
     "warnings": [],
     "errors": [],
-    "data": {
-        "NM_002225.3:c.157delCinsT": {
+    "data": [
+        {
+            "input": "NM_002225.3:c.157delCinsT",
+            "identified_as": "full_variant_DNA",
+            "identified_as_formatted": "full variant (DNA)",
+            "valid": false,
             "messages": [],
             "warnings": {
-                "WWRONGTYPE": "A deletion-insertion of one base to one base should be described as a substitution. Please rewrite \"delCinsT\" to \"C>T\"."
+                "WWRONGTYPE": "Based on the given sequences, this deletion-insertion should be described as a substitution."
             },
             "errors": [],
             "data": {
                 "position_start": 157,
                 "position_end": 157,
-                "type": "delins",
+                "position_start_intron": 0,
+                "position_end_intron": 0,
                 "range": false,
-                "suggested_correction": {
-                    "value": "NM_002225.3:c.157C>T",
-                    "confidence": "high"
-                }
+                "type": "delins"
+            },
+            "corrected_values": {
+                "NM_002225.3:c.157C>T": 1
             }
         }
-    },
-    "library_version": "2022-09-02"
+    ],
+    "versions": {
+        "library_version": "2025-02-14",
+        "HGVS_nomenclature_versions": {
+            "input": {
+                "minimum": "15.11",
+                "maximum": "21.1.1"
+            },
+            "output": "21.1.1"
+        }
+    }
 }
 ```
 
@@ -194,9 +236,10 @@ Note also that errors and warnings exist with similar codes, e.g., `EWRONGTYPE`
 
 When requesting a variant that contains incorrect syntax, the API will attempt
  to repair your description.
-If this results in a suggested correction, this suggestion is always provided
- with a confidence of either `high`, `medium`, or `low`, indicating how sure the
- library is that its suggestion describes the variant you meant to describe.
+If this results in one or more suggested corrections,
+ these suggestions are always provided with a confidence score between
+ near-zero and one, indicating how sure the library is that its suggestion
+ represents the variant you meant to describe.
 
 ##### Multiple variant input
 To submit multiple variant descriptions in one request, present them as a
@@ -216,22 +259,25 @@ We decided on this structure since lots of possible single character separators
 E.g., the forward slash is used to indicate mosaicism and chimerism, and the
  pipe is used for non-sequence related changes such as loss of methylation.
 ```
-https://api.lovd.nl/v1/checkHGVS/%5B%22c.157C%3ET%22%2C%22g.40699840C%3ET%22%5D
+https://api.lovd.nl/v2/checkHGVS/%5B%22c.157C%3ET%22%2C%22g.40699840C%3ET%22%5D
 ```
 ```json
 {
-    "version": 1,
+    "version": 2,
     "messages": [
         "Successfully received 2 variant descriptions.",
         "Note that this API does not validate variants on the sequence level, but only checks if the variant description follows the HGVS nomenclature rules.",
-        "For sequence-level validation of DNA variants, please use https:\/\/variantvalidator.org."
+        "For sequence-level validation of DNA variants, please use https://variantvalidator.org."
     ],
     "warnings": [],
     "errors": [],
-    "data": {
-        "c.157C>T": {
+    "data": [
+        {
+            "input": "c.157C>T",
+            "identified_as": "variant_DNA",
+            "identified_as_formatted": "variant (DNA)",
+            "valid": true,
             "messages": {
-                "IOK": "This variant description is HGVS-compliant.",
                 "IREFSEQMISSING": "Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant."
             },
             "warnings": [],
@@ -239,14 +285,21 @@ https://api.lovd.nl/v1/checkHGVS/%5B%22c.157C%3ET%22%2C%22g.40699840C%3ET%22%5D
             "data": {
                 "position_start": 157,
                 "position_end": 157,
-                "type": "subst",
+                "position_start_intron": 0,
+                "position_end_intron": 0,
                 "range": false,
-                "suggested_correction": []
+                "type": ">"
+            },
+            "corrected_values": {
+                "c.157C>T": 1
             }
         },
-        "g.40699840C>T": {
+        {
+            "input": "g.40699840C>T",
+            "identified_as": "variant_DNA",
+            "identified_as_formatted": "variant (DNA)",
+            "valid": true,
             "messages": {
-                "IOK": "This variant description is HGVS-compliant.",
                 "IREFSEQMISSING": "Please note that your variant description is missing a reference sequence. Although this is not necessary for our syntax check, a variant description does need a reference sequence to be fully informative and HGVS-compliant."
             },
             "warnings": [],
@@ -254,17 +307,25 @@ https://api.lovd.nl/v1/checkHGVS/%5B%22c.157C%3ET%22%2C%22g.40699840C%3ET%22%5D
             "data": {
                 "position_start": 40699840,
                 "position_end": 40699840,
-                "type": "subst",
                 "range": false,
-                "suggested_correction": []
+                "type": ">"
+            },
+            "corrected_values": {
+                "g.40699840C>T": 1
             }
         }
-    },
-    "library_version": "2022-09-02"
+    ],
+    "versions": {
+        "library_version": "2025-02-14",
+        "HGVS_nomenclature_versions": {
+            "input": {
+                "minimum": "15.11",
+                "maximum": "21.1.1"
+            },
+            "output": "21.1.1"
+        }
+    }
 }
 ```
-If the same variant description has been submitted more than once in the same
- request, it will be presented in the output only once since the descriptions
- are used as keys.
 
 More information on the output can be found under "[Single variant input](#single-variant-input)".

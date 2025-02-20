@@ -5,10 +5,10 @@
  * Adapted from /src/class/api.php in the LOVD3 project.
  *
  * Created     : 2022-08-08
- * Modified    : 2024-05-07
+ * Modified    : 2025-02-18
  * For LOVD    : 3.0-30
  *
- * Copyright   : 2004-2024 Leiden University Medical Center; http://www.LUMC.nl/
+ * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
  *
  *
@@ -41,7 +41,7 @@ class LOVD_API
     // This class defines the LOVD API object, handling URL parsing and general
     //  handling of headers.
 
-    public $nVersion = 1;     // The API version. 0 for the LOVD2-style API. Higher versions are for the LOVD3-style REST API.
+    public $nVersion = 2;     // The API version. 0 for the LOVD2-style API. Higher versions are for the LOVD3-style REST API.
     public $sMethod = '';     // The used method (GET, POST, PUT, DELETE).
     public $sResource = '';   // The requested resource.
     public $nID = '';         // The ID of the requested resource.
