@@ -137,13 +137,14 @@ https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157C%3ET
         }
     ],
     "versions": {
-        "library_version": "2025-02-14",
+        "library_date": "2025-03-26",
+        "library_version": "0.4.2",
         "HGVS_nomenclature_versions": {
             "input": {
                 "minimum": "15.11",
-                "maximum": "21.1.1"
+                "maximum": "21.1.2"
             },
-            "output": "21.1.1"
+            "output": "21.1.2"
         }
     }
 }
@@ -161,11 +162,12 @@ This may be corrected in a later version of the API.
 
 The `versions` object collects all relevant versions related to the library that
  powers this API.
-The `library_version` shows the date the internal libraries that interpret
- variant descriptions and provide feedback and possible corrections, were
+The `library_date` shows the date the internal library that interprets
+ variant descriptions and provides feedback and possible corrections, was
  updated.
-Such an update will not create a new API version, as the API version defines
- the behaviour of the API and its output.
+The `library_version` shows the current version of this library.
+An update to this library will not create a new API version,
+ as the API version defines the behaviour of the API and its output.
 The `HGVS_nomenclature_versions` object shows supported HGVS nomenclature
  versions for input (minimum, maximum) and for output.
 
@@ -207,13 +209,14 @@ https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157delCinsT
         }
     ],
     "versions": {
-        "library_version": "2025-02-14",
+        "library_date": "2025-03-26",
+        "library_version": "0.4.2",
         "HGVS_nomenclature_versions": {
             "input": {
                 "minimum": "15.11",
-                "maximum": "21.1.1"
+                "maximum": "21.1.2"
             },
-            "output": "21.1.1"
+            "output": "21.1.2"
         }
     }
 }
@@ -316,13 +319,14 @@ https://api.lovd.nl/v2/checkHGVS/%5B%22c.157C%3ET%22%2C%22g.40699840C%3ET%22%5D
         }
     ],
     "versions": {
-        "library_version": "2025-02-14",
+        "library_date": "2025-03-26",
+        "library_version": "0.4.2",
         "HGVS_nomenclature_versions": {
             "input": {
                 "minimum": "15.11",
-                "maximum": "21.1.1"
+                "maximum": "21.1.2"
             },
-            "output": "21.1.1"
+            "output": "21.1.2"
         }
     }
 }

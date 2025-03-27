@@ -4,8 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-08
- * Modified    : 2025-02-18
- * For LOVD    : 3.0-29
+ * Modified    : 2025-03-26
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -650,10 +649,15 @@ class LOVD_API_checkHGVS
             'type' => 'object',
             'additionalProperties' => false,
             'properties' => array(
-                'library_version' => array(
+                'library_date' => array(
                     'description' => 'The date that the library that powers this API, has been updated.',
                     'type' => 'string',
                     'pattern' => '^[0-9]{4}-[0-9]{2}-[0-9]{2}$',
+                ),
+                'library_version' => array(
+                    'description' => 'The version of the library that powers this API.',
+                    'type' => 'string',
+                    'pattern' => '^[0-9]+\.[0-9]+\.[0-9]+$',
                 ),
                 'HGVS_nomenclature_versions' => array(
                     'description' => 'The HGVS nomenclature versions supported by this library.',
