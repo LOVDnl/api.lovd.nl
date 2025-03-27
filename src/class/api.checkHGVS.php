@@ -4,8 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-08
- * Modified    : 2025-02-18
- * For LOVD    : 3.0-29
+ * Modified    : 2025-03-26
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -297,11 +296,14 @@ class LOVD_API_checkHGVS
             if (isset($aResponse['errors']['ENOTSUPPORTED'])) {
                 // Catch and convert ENOTSUPPORTED.
                 // We don't actually know whether this is HGVS compliant or not.
+                if ($aResponse['valid']) {
+                    $aResponse['valid'] = null;
+                }
                 // The library allows for ENOTSUPPORTED, and flags it as valid.
                 $aResponse['messages']['INOTSUPPORTED'] = 'This variant description contains unsupported syntax.' .
                     ' Although we aim to support all of the HGVS nomenclature rules,' .
                     ' some complex variants are not fully implemented yet in our syntax checker.' .
-                    ' We invite you to submit your variant description here, so we can have a look: https://github.com/LOVDnl/api.lovd.nl/issues.';
+                    ' We invite you to submit your variant description here, so we can have a look: https://github.com/LOVDnl/HGVS-syntax-checker/issues.';
                 // And remove the ENOTSUPPORTED.
                 unset($aResponse['errors']['ENOTSUPPORTED']);
             }
@@ -311,6 +313,19 @@ class LOVD_API_checkHGVS
                 $aResponse['messages']['IREFSEQMISSING'] = 'Please note that your variant description is missing a reference sequence. ' .
                     'Although this is not necessary for our syntax check, a variant description does ' .
                     'need a reference sequence to be fully informative and HGVS-compliant.';
+            }
+
+            // Don't double-complain about not having a variant when we already complain in a similar way.
+            if (isset($aVariant['errors']['EFAIL'])) {
+                unset($aVariant['errors']['EVARIANTREQUIRED']);
+            } elseif (isset($aVariant['errors']['EVARIANTREQUIRED']) && isset($aVariant['warnings']['WVCF'])) {
+                unset($aVariant['errors']['EVARIANTREQUIRED']);
+                // If there are no more errors left, fix the corrected values.
+                if (!count($aVariant['errors'])) {
+                    foreach ($aVariant['corrected_values'] as $sCorrection => $nConfidence) {
+                        $aVariant['corrected_values'][$sCorrection] = ($nConfidence * 10);
+                    }
+                }
             }
 
             $this->API->aResponse['data'][] = $aResponse;
@@ -650,10 +665,15 @@ class LOVD_API_checkHGVS
             'type' => 'object',
             'additionalProperties' => false,
             'properties' => array(
-                'library_version' => array(
+                'library_date' => array(
                     'description' => 'The date that the library that powers this API, has been updated.',
                     'type' => 'string',
                     'pattern' => '^[0-9]{4}-[0-9]{2}-[0-9]{2}$',
+                ),
+                'library_version' => array(
+                    'description' => 'The version of the library that powers this API.',
+                    'type' => 'string',
+                    'pattern' => '^[0-9]+\.[0-9]+\.[0-9]+$',
                 ),
                 'HGVS_nomenclature_versions' => array(
                     'description' => 'The HGVS nomenclature versions supported by this library.',
