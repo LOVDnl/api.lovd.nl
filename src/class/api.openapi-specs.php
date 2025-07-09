@@ -367,6 +367,9 @@ class LOVD_API_OpenAPISpecs
                 ),
                 'output' => '21.1.2'
             ),
+            'caches' => array(
+                'genes' => '2025-06-17',
+            ),
         );
 
         return $aResponse;

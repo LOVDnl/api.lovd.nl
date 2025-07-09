@@ -735,6 +735,17 @@ class LOVD_API_checkHGVS
                         ),
                     ),
                 ),
+                'caches' => array(
+                    'description' => 'The dates that caches for this library have been updated.',
+                    'type' => 'object',
+                    'additionalProperties' => false,
+                    'properties' => array(
+                        'genes' => array(
+                            'type' => 'string',
+                            'pattern' => '^[0-9]{4}-[0-9]{2}-[0-9]{2}$',
+                        ),
+                    ),
+                ),
             ),
         );
         $aReturn['required'][4] = 'versions';
