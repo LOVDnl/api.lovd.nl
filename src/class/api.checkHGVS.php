@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-08
- * Modified    : 2025-03-26
+ * Modified    : 2025-07-09
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -199,7 +199,9 @@ class LOVD_API_checkHGVS
                 // Not HGVS-compliant, and not unsupported, so let's see if we can suggest something better.
                 $sFixedVariant = lovd_fixHGVS($sVariant);
                 $aFixedVariantInfo = lovd_getVariantInfo($sFixedVariant, false);
-                unset($aFixedVariantInfo['warnings']['WNOTSUPPORTED']);
+                if ($aFixedVariantInfo) {
+                    unset($aFixedVariantInfo['warnings']['WNOTSUPPORTED']);
+                }
 
                 // We normally don't show non-HGVS compliant suggestions. Exception 1;
                 // Treat the result as HGVS compliant (i.e., accept suggestion and show)
@@ -586,11 +588,25 @@ class LOVD_API_checkHGVS
                     ),
                     'identified_as' => array(
                         'description' => 'A short description of what the library identified the input as. This field is meant to be parsed, if needed.',
-                        'type' => 'string',
+                        'oneOf' => array(
+                            array(
+                                'type' => 'string',
+                            ),
+                            array(
+                                'const' => false,
+                            ),
+                        ),
                     ),
                     'identified_as_formatted' => array(
                         'description' => 'A formatted version of the "identified as" field. This field is meant to be displayed to the user, if needed.',
-                        'type' => 'string',
+                        'oneOf' => array(
+                            array(
+                                'type' => 'string',
+                            ),
+                            array(
+                                'const' => false,
+                            ),
+                        ),
                     ),
                     'valid' => array(
                         'description' => 'Whether the input was considered to be a valid variant description.',
@@ -599,17 +615,34 @@ class LOVD_API_checkHGVS
                     'messages' => $aReturn['properties']['data']['oneOf'][1]['patternProperties']['^.+$']['properties']['messages'],
                     'warnings' => $aReturn['properties']['data']['oneOf'][1]['patternProperties']['^.+$']['properties']['warnings'],
                     'errors'   => $aReturn['properties']['data']['oneOf'][1]['patternProperties']['^.+$']['properties']['errors'],
-                    'data'     => $aReturn['properties']['data']['oneOf'][1]['patternProperties']['^.+$']['properties']['data'],
+                    'data'     => array(
+                        'description' => $aReturn['properties']['data']['oneOf'][1]['patternProperties']['^.+$']['properties']['data']['description'],
+                        'oneOf' => array(
+                            array(
+                                'type' => 'array',
+                                'maxContains' => 0,
+                            ),
+                            array_diff_key($aReturn['properties']['data']['oneOf'][1]['patternProperties']['^.+$']['properties']['data'], array_flip(array('description'))),
+                        ),
+                    ),
                     'corrected_values' => array(
                         'description' => 'One or more corrected variant descriptions, given with a confidence score. The given corrections are not necessarily different from the input.',
-                        'type' => 'object',
-                        'additionalProperties' => false,
-                        'patternProperties' => array(
-                            '^.+$' => array(
-                                'description' => 'The confidence score for this correction, ranging from near zero to 100%.',
-                                'type' => 'number',
-                                'exclusiveMinimum' => 0,
-                                'maximum' => 1,
+                        'oneOf' => array(
+                            array(
+                                'type' => 'array',
+                                'maxContains' => 0,
+                            ),
+                            array(
+                                'type' => 'object',
+                                'additionalProperties' => false,
+                                'patternProperties' => array(
+                                    '^.+$' => array(
+                                        'description' => 'The confidence score for this correction, ranging from near zero to 100%.',
+                                        'type' => 'number',
+                                        'exclusiveMinimum' => 0,
+                                        'maximum' => 1,
+                                    ),
+                                ),
                             ),
                         ),
                     ),
@@ -629,7 +662,7 @@ class LOVD_API_checkHGVS
         );
 
         // OK, actually, "data" is not completely the same.
-        $aReturn['properties']['data']['items']['properties']['data']['properties']['type']['enum'] = array(
+        $aReturn['properties']['data']['items']['properties']['data']['oneOf'][1]['properties']['type']['enum'] = array(
             '=',
             '>',
             '?',
@@ -650,12 +683,32 @@ class LOVD_API_checkHGVS
         );
 
         // Remove "suggested_correction".
-        unset($aReturn['properties']['data']['items']['properties']['data']['properties']['suggested_correction']);
+        unset($aReturn['properties']['data']['items']['properties']['data']['oneOf'][1]['properties']['suggested_correction']);
         // Also "type" isn't required anymore, so just rebuild the "required" array.
-        $aReturn['properties']['data']['items']['properties']['data']['required'] = array(
+        $aReturn['properties']['data']['items']['properties']['data']['oneOf'][1]['required'] = array(
             'position_start',
             'position_end',
             'range',
+        );
+
+        // Adjust; we now also support gene information.
+        $aReturn['properties']['data']['items']['properties']['data']['oneOf'][1] = array(
+            'oneOf' => array(
+                $aReturn['properties']['data']['items']['properties']['data']['oneOf'][1],
+                array(
+                    'type' => 'object',
+                    'additionalProperties' => false,
+                    'properties' => array(
+                        'hgnc_id' => array(
+                            'description' => 'The HGNC ID of the given gene, if identified.',
+                            'type' => 'integer',
+                        ),
+                    ),
+                    'required' => array(
+                        'hgnc_id',
+                    ),
+                ),
+            ),
         );
 
         // Replace "library_version" with "versions".
@@ -699,6 +752,17 @@ class LOVD_API_checkHGVS
                             'description' => 'The HGVS nomenclature version of the output created by this library.',
                             'type' => 'string',
                             'pattern' => '^[0-9]{2}\.[0-9]{1,2}\.[0-9]{1,2}$',
+                        ),
+                    ),
+                ),
+                'caches' => array(
+                    'description' => 'The dates that caches for this library have been updated.',
+                    'type' => 'object',
+                    'additionalProperties' => false,
+                    'properties' => array(
+                        'genes' => array(
+                            'type' => 'string',
+                            'pattern' => '^[0-9]{4}-[0-9]{2}-[0-9]{2}$',
                         ),
                     ),
                 ),

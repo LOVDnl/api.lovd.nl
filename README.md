@@ -137,14 +137,17 @@ https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157C%3ET
         }
     ],
     "versions": {
-        "library_date": "2025-03-26",
-        "library_version": "0.4.2",
+        "library_date": "2025-07-08",
+        "library_version": "0.5.0",
         "HGVS_nomenclature_versions": {
             "input": {
                 "minimum": "15.11",
-                "maximum": "21.1.2"
+                "maximum": "21.1.3"
             },
-            "output": "21.1.2"
+            "output": "21.1.3"
+        },
+        "caches": {
+            "genes": "2025-07-08"
         }
     }
 }
@@ -170,6 +173,7 @@ An update to this library will not create a new API version,
  as the API version defines the behaviour of the API and its output.
 The `HGVS_nomenclature_versions` object shows supported HGVS nomenclature
  versions for input (minimum, maximum) and for output.
+The `caches` object shows the date that the gene cache have been updated.
 
 ```
 https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157delCinsT
@@ -209,14 +213,17 @@ https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157delCinsT
         }
     ],
     "versions": {
-        "library_date": "2025-03-26",
-        "library_version": "0.4.2",
+        "library_date": "2025-07-08",
+        "library_version": "0.5.0",
         "HGVS_nomenclature_versions": {
             "input": {
                 "minimum": "15.11",
-                "maximum": "21.1.2"
+                "maximum": "21.1.3"
             },
-            "output": "21.1.2"
+            "output": "21.1.3"
+        },
+        "caches": {
+            "genes": "2025-07-08"
         }
     }
 }
@@ -319,14 +326,17 @@ https://api.lovd.nl/v2/checkHGVS/%5B%22c.157C%3ET%22%2C%22g.40699840C%3ET%22%5D
         }
     ],
     "versions": {
-        "library_date": "2025-03-26",
-        "library_version": "0.4.2",
+        "library_date": "2025-07-08",
+        "library_version": "0.5.0",
         "HGVS_nomenclature_versions": {
             "input": {
                 "minimum": "15.11",
-                "maximum": "21.1.2"
+                "maximum": "21.1.3"
             },
-            "output": "21.1.2"
+            "output": "21.1.3"
+        },
+        "caches": {
+            "genes": "2025-07-08"
         }
     }
 }
