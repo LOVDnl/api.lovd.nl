@@ -691,6 +691,26 @@ class LOVD_API_checkHGVS
             'range',
         );
 
+        // Adjust; we now also support gene information.
+        $aReturn['properties']['data']['items']['properties']['data']['oneOf'][1] = array(
+            'oneOf' => array(
+                $aReturn['properties']['data']['items']['properties']['data']['oneOf'][1],
+                array(
+                    'type' => 'object',
+                    'additionalProperties' => false,
+                    'properties' => array(
+                        'hgnc_id' => array(
+                            'description' => 'The HGNC ID of the given gene, if identified.',
+                            'type' => 'integer',
+                        ),
+                    ),
+                    'required' => array(
+                        'hgnc_id',
+                    ),
+                ),
+            ),
+        );
+
         // Replace "library_version" with "versions".
         unset($aReturn['properties']['library_version']);
         $aReturn['properties']['versions'] = array(
