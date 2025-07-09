@@ -627,14 +627,22 @@ class LOVD_API_checkHGVS
                     ),
                     'corrected_values' => array(
                         'description' => 'One or more corrected variant descriptions, given with a confidence score. The given corrections are not necessarily different from the input.',
-                        'type' => 'object',
-                        'additionalProperties' => false,
-                        'patternProperties' => array(
-                            '^.+$' => array(
-                                'description' => 'The confidence score for this correction, ranging from near zero to 100%.',
-                                'type' => 'number',
-                                'exclusiveMinimum' => 0,
-                                'maximum' => 1,
+                        'oneOf' => array(
+                            array(
+                                'type' => 'array',
+                                'maxContains' => 0,
+                            ),
+                            array(
+                                'type' => 'object',
+                                'additionalProperties' => false,
+                                'patternProperties' => array(
+                                    '^.+$' => array(
+                                        'description' => 'The confidence score for this correction, ranging from near zero to 100%.',
+                                        'type' => 'number',
+                                        'exclusiveMinimum' => 0,
+                                        'maximum' => 1,
+                                    ),
+                                ),
                             ),
                         ),
                     ),
