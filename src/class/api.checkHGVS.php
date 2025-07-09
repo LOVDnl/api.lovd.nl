@@ -588,11 +588,25 @@ class LOVD_API_checkHGVS
                     ),
                     'identified_as' => array(
                         'description' => 'A short description of what the library identified the input as. This field is meant to be parsed, if needed.',
-                        'type' => 'string',
+                        'oneOf' => array(
+                            array(
+                                'type' => 'string',
+                            ),
+                            array(
+                                'const' => false,
+                            ),
+                        ),
                     ),
                     'identified_as_formatted' => array(
                         'description' => 'A formatted version of the "identified as" field. This field is meant to be displayed to the user, if needed.',
-                        'type' => 'string',
+                        'oneOf' => array(
+                            array(
+                                'type' => 'string',
+                            ),
+                            array(
+                                'const' => false,
+                            ),
+                        ),
                     ),
                     'valid' => array(
                         'description' => 'Whether the input was considered to be a valid variant description.',
