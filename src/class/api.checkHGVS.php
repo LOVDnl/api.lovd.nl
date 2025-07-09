@@ -615,7 +615,16 @@ class LOVD_API_checkHGVS
                     'messages' => $aReturn['properties']['data']['oneOf'][1]['patternProperties']['^.+$']['properties']['messages'],
                     'warnings' => $aReturn['properties']['data']['oneOf'][1]['patternProperties']['^.+$']['properties']['warnings'],
                     'errors'   => $aReturn['properties']['data']['oneOf'][1]['patternProperties']['^.+$']['properties']['errors'],
-                    'data'     => $aReturn['properties']['data']['oneOf'][1]['patternProperties']['^.+$']['properties']['data'],
+                    'data'     => array(
+                        'description' => $aReturn['properties']['data']['oneOf'][1]['patternProperties']['^.+$']['properties']['data']['description'],
+                        'oneOf' => array(
+                            array(
+                                'type' => 'array',
+                                'maxContains' => 0,
+                            ),
+                            array_diff_key($aReturn['properties']['data']['oneOf'][1]['patternProperties']['^.+$']['properties']['data'], array_flip(array('description'))),
+                        ),
+                    ),
                     'corrected_values' => array(
                         'description' => 'One or more corrected variant descriptions, given with a confidence score. The given corrections are not necessarily different from the input.',
                         'type' => 'object',
@@ -645,7 +654,7 @@ class LOVD_API_checkHGVS
         );
 
         // OK, actually, "data" is not completely the same.
-        $aReturn['properties']['data']['items']['properties']['data']['properties']['type']['enum'] = array(
+        $aReturn['properties']['data']['items']['properties']['data']['oneOf'][1]['properties']['type']['enum'] = array(
             '=',
             '>',
             '?',
@@ -666,9 +675,9 @@ class LOVD_API_checkHGVS
         );
 
         // Remove "suggested_correction".
-        unset($aReturn['properties']['data']['items']['properties']['data']['properties']['suggested_correction']);
+        unset($aReturn['properties']['data']['items']['properties']['data']['oneOf'][1]['properties']['suggested_correction']);
         // Also "type" isn't required anymore, so just rebuild the "required" array.
-        $aReturn['properties']['data']['items']['properties']['data']['required'] = array(
+        $aReturn['properties']['data']['items']['properties']['data']['oneOf'][1]['required'] = array(
             'position_start',
             'position_end',
             'range',
