@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-08
- * Modified    : 2025-03-26
+ * Modified    : 2025-07-09
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -199,7 +199,9 @@ class LOVD_API_checkHGVS
                 // Not HGVS-compliant, and not unsupported, so let's see if we can suggest something better.
                 $sFixedVariant = lovd_fixHGVS($sVariant);
                 $aFixedVariantInfo = lovd_getVariantInfo($sFixedVariant, false);
-                unset($aFixedVariantInfo['warnings']['WNOTSUPPORTED']);
+                if ($aFixedVariantInfo) {
+                    unset($aFixedVariantInfo['warnings']['WNOTSUPPORTED']);
+                }
 
                 // We normally don't show non-HGVS compliant suggestions. Exception 1;
                 // Treat the result as HGVS compliant (i.e., accept suggestion and show)
