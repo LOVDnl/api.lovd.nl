@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-24
- * Modified    : 2025-03-26         // When modified, also change info->version.
+ * Modified    : 2025-07-10         // When modified, also change info->version.
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -371,6 +371,116 @@ class LOVD_API_OpenAPISpecs
                 'genes' => '2025-06-17',
             ),
         );
+
+        // Add the checkGene endpoint.
+        $aResponse['paths'] = array_merge(
+            array(
+                '/checkGene/{gene}' => array(
+                    'get' => array(
+                        'tags' => array(
+                            'Public LOVD API endpoints'
+                        ),
+                        'summary' => 'Method to validate gene symbols and HGNC IDs.',
+                        'description' => 'Validate one or more gene symbols or HGNC IDs using this API. It will return the HGNC ID and the official gene symbol if a match has been found.',
+                        'operationId' => 'getCheckGene',
+                        'parameters' => array(
+                            array(
+                                'name' => 'gene',
+                                'in' => 'path',
+                                'description' => 'A single term or a JSON-formatted list of terms.',
+                                'required' => true,
+                                'schema' => array(
+                                    'oneOf' => array(
+                                        // These schemas can also contain examples, but Swagger doesn't show them.
+                                        // So pulled out the examples, and stored them separately.
+                                        array(
+                                            'title' => 'A single gene symbol or HGNC ID.',
+                                            'type' => 'string',
+                                        ),
+                                        array(
+                                            'title' => 'A JSON-formatted list of gene symbols or HGNC IDs.',
+                                            'type' => 'string',
+                                            'pattern' => '^\[".+"\]$',
+                                        ),
+                                    ),
+                                ),
+                                'examples' => array(
+                                    // The key name doesn't seem to matter.
+                                    'single' => array(
+                                        'summary' => 'A single term.',
+                                        'value' => 'IVD',
+                                    ),
+                                    'multiple' => array(
+                                        'summary' => 'A JSON-formatted list of terms.',
+                                        'value' => '["IVD","HGNC:6186"]',
+                                    ),
+                                ),
+                            ),
+                        ),
+                        'responses' => array(
+                            '200' => array(
+                                '$ref' => '#/components/responses/200_checkGene',
+                            ),
+                            '4XX' => array(
+                                '$ref' => '#/components/responses/4XX_checkGene',
+                            ),
+                            '500' => array(
+                                '$ref' => '#/components/responses/500_checkGene',
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            $aResponse['paths']
+        );
+
+        // Provide the available responses.
+        $aResponse['components']['responses'] = array_merge(
+            array(
+                '200_checkGene' => array(
+                    'description' => 'A result of a successfully processed query or list of queries. This does not mean that the input was valid.',
+                    'content' => array(
+                        'application/json' => array(
+                            'schema' => array(
+                                '$ref' => 'checkGene/schema.json',
+                            ),
+                            'example' => array(
+                                'version' => $this->API->nVersion,
+                                'messages' => array(
+                                    'Successfully received 1 query.',
+                                ),
+                                'warnings' => array(),
+                                'errors' => array(),
+                                'data' => array(
+                                    array(
+                                        'input' => 'IVD',
+                                        'identified_as' => 'gene_symbol',
+                                        'identified_as_formatted' => 'gene symbol',
+                                        'valid' => true,
+                                        'messages' => array(),
+                                        'warnings' => array(),
+                                        'errors' => array(),
+                                        'data' => array(
+                                            'hgnc_id' => 6186,
+                                        ),
+                                        'corrected_values' => array(
+                                            'IVD' => 1
+                                        ),
+                                    ),
+                                ),
+                                'versions' => $aResponse['components']['responses']['200_checkHGVS']['content']['application/json']['example']['versions'],
+                            ),
+                        ),
+                    ),
+                ),
+                '4XX_checkGene' => $aResponse['components']['responses']['4XX_checkHGVS'],
+                '500_checkGene' => $aResponse['components']['responses']['500_checkHGVS'],
+            ),
+            $aResponse['components']['responses'],
+        );
+        $aResponse['components']['responses']['4XX_checkGene']['content']['application/json']['schema']['$ref'] = 'checkGene/schema.json';
+        $aResponse['components']['responses']['4XX_checkGene']['content']['application/json']['example']['errors'][0] = 'Could not parse the given request. Did you submit a gene?';
+        $aResponse['components']['responses']['500_checkGene']['content']['application/json']['schema']['$ref'] = 'checkGene/schema.json';
 
         return $aResponse;
     }
