@@ -80,6 +80,33 @@ class LOVD_API_checkGene extends LOVD_API_checkHGVS
         }
         return true;
     }
+
+
+
+
+
+    public function v2_getJSONSchema ()
+    {
+        // Return the JSON Schema for the v2 checkGene response format.
+        // Takes the basics from the checkHGVS output, then makes changes.
+        $aReturn = parent::v2_getJSONSchema();
+
+        // Fix the title and description.
+        $aReturn['title'] = str_replace('checkHGVS', 'checkGene', $aReturn['title']);
+        $aReturn['description'] = str_replace('checkHGVS', 'checkGene', $aReturn['description']);
+
+        // Fix the data specs.
+        $aReturn['properties']['data']['items']['properties']['valid']['description'] = str_replace(
+            'variant description',
+            'gene symbol or identifier',
+            $aReturn['properties']['data']['items']['properties']['valid']['description']
+        );
+        $aReturn['properties']['data']['items']['properties']['data']['oneOf'][1] = $aReturn['properties']['data']['items']['properties']['data']['oneOf'][1]['oneOf'][1];
+        $aReturn['properties']['data']['items']['properties']['corrected_values']['description'] =
+            'The valid gene symbol for the given gene, given with a confidence score. The given value is not necessarily different from the input.';
+
+        return $aReturn;
+    }
 }
 
 
