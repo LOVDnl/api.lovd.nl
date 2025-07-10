@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-08
- * Modified    : 2025-07-09
+ * Modified    : 2025-07-10
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -38,7 +38,7 @@ class LOVD_API_checkHGVS
 {
     // This class defines the LOVD API object handling the checkHGVS API.
 
-    private $API;                     // The API object.
+    protected $API;                   // The API object.
 
 
 
@@ -116,7 +116,7 @@ class LOVD_API_checkHGVS
 
 
         // Check the current version and run that method.
-        $sMethod = 'v' . $this->API->nVersion . '_checkHGVS';
+        $sMethod = str_replace('LOVD_API', 'v' . $this->API->nVersion, get_class($this));
         return call_user_func(array($this, $sMethod), $aInput);
     }
 
