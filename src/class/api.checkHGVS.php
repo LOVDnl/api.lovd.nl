@@ -34,6 +34,30 @@ if (!defined('ROOT_PATH')) {
 
 
 
+class LOVD_API_checkGene extends LOVD_API_checkHGVS
+{
+    // This class defines the LOVD API object handling the checkGene API.
+    // This class extends the LOVD_API_checkHGVS class, since they use the same internal tools.
+
+    public function processGET ($aURLElements, $bReturnBody)
+    {
+        // Handle GET and HEAD requests for the checkGene API, based on the checkHGVS API.
+        $b = parent::processGET($aURLElements, $bReturnBody);
+
+        // If we received no input, change the output message.
+        if (!empty($this->API->aResponse['errors'])
+            && str_ends_with($this->API->aResponse['errors'][0], 'Did you submit a variant?')) {
+            $this->API->aResponse['errors'][0] = str_replace('variant?', 'gene?', $this->API->aResponse['errors'][0]);
+        }
+
+        return $b;
+    }
+}
+
+
+
+
+
 class LOVD_API_checkHGVS
 {
     // This class defines the LOVD API object handling the checkHGVS API.
