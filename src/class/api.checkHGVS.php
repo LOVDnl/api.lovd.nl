@@ -52,6 +52,34 @@ class LOVD_API_checkGene extends LOVD_API_checkHGVS
 
         return $b;
     }
+
+
+
+
+
+    public function v2_checkGene ($aInput)
+    {
+        // Run the validations, using the new HGVS class approach.
+        if (!file_exists(ROOT_PATH . 'libs/HGVS-syntax-checker/HGVS.php')) {
+            // This API requires the HGVS.php class file from https://github.com/LOVDnl/HGVS-syntax-checker.
+            // If not found, double-check if you ran `git submodule init && git submodule update`.
+            // This repository will not duplicate the code.
+            $this->API->aResponse['errors'][] = 'Could not load the HGVS library.';
+            return false;
+        }
+
+        require ROOT_PATH . 'libs/HGVS-syntax-checker/HGVS.php';
+        $this->API->aResponse['versions'] = HGVS::getVersions();
+
+        $nInput = count($aInput);
+        $this->API->aResponse['messages'][] = "Successfully received $nInput quer" . ($nInput == 1? "y." : "ies.");
+
+        // Now actually handle the request.
+        foreach ($aInput as $sInput) {
+            $this->API->aResponse['data'][] = HGVS_Gene::check($sInput)->getInfo();
+        }
+        return true;
+    }
 }
 
 
