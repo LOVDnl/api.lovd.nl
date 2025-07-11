@@ -136,6 +136,79 @@ This API doesn't support any input.
 
 
 
+### /checkGene (v2 only)
+Validate one or more gene symbols or identifiers using this API.
+It recognizes discontinued gene symbols and aliases.
+The API will return the HGNC ID and the official gene symbol.
+
+#### API possibilities
+The JSON schema for the API output is encoded in the API itself and can be
+ accessed by opening the URL `/checkGene/schema.json`.
+If you want to retrieve the schema for a certain version,
+ use `/v2/checkGene/schema.json`.
+As an example, see https://api.lovd.nl/v2/checkGene/schema.json.
+
+##### Single query
+To submit a single query, e.g., `IVD`, simply add it to the URL.
+If special characters are used, follow the requirements for URL encoding.
+
+```
+https://api.lovd.nl/v2/checkGene/IVD
+```
+
+```json
+{
+    "version": 2,
+    "messages": [
+        "Successfully received 1 query."
+    ],
+    "warnings": [],
+    "errors": [],
+    "data": [
+        {
+            "input": "IVD",
+            "identified_as": "gene_symbol",
+            "identified_as_formatted": "gene symbol",
+            "valid": true,
+            "messages": [],
+            "warnings": [],
+            "errors": [],
+            "data": {
+                "hgnc_id": 6186
+            },
+            "corrected_values": {
+                "IVD": 1
+            }
+        }
+    ],
+    "versions": {
+        "library_date": "2025-07-08",
+        "library_version": "0.5.0",
+        "HGVS_nomenclature_versions": {
+            "input": {
+                "minimum": "15.11",
+                "maximum": "21.1.3"
+            },
+            "output": "21.1.3"
+        },
+        "caches": {
+            "genes": "2025-07-08"
+        }
+    }
+}
+```
+
+The `identified_as` and `identified_as_formatted` fields show whether your
+ query was identified as a gene symbol or an HGNC ID.
+The `valid` boolean shows whether your input was valid; deprecated gene symbols
+ or aliases will return `false` here.
+The `hgnc_id` field will list the HGNC ID for the given gene.
+The `corrected_values` object will list the official gene symbol and the
+ associated confidence score between near-zero and one, indicating how sure the
+ library is that its suggestion represents the gene you meant to describe.
+
+
+
 ### /checkHGVS
 Validate a single variant description or
  a set of variant descriptions using this API.
