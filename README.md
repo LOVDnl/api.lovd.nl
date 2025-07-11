@@ -118,6 +118,7 @@ The `caches` object shows the date that the gene cache has been updated.
 ### /hello
 Use this method just to see if the API is alive or not.
 If it is, it will return an HTTP 200 status with the following output.
+
 ```json
 {
     "version": 2,
@@ -151,9 +152,11 @@ As an example, see https://api.lovd.nl/v2/checkHGVS/schema.json.
 ##### Single variant input
 To submit a single variant description, e.g., `NM_002225.3:c.157C>T`, simply add
  it to the URL following the requirements for URL encoding:
+
 ```
 https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157C%3ET
 ```
+
 ```json
 {
     "version": 2,
@@ -208,6 +211,7 @@ Problems are automatically fixed if possible:
 ```
 https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157delCinsT
 ```
+
 ```json
 {
     "version": 2,
@@ -275,10 +279,13 @@ To submit multiple variant descriptions in one request, present them as a
  JSON array, added to the URL using the standard URL encoding.
 For instance, to submit `c.157C>T` and `g.40699840C>T` for validation,
  you should construct an JSON array like so:
+
 ```json
 ["c.157C>T","g.40699840C>T"]
 ```
+
 which is then URL encoded to:
+
 ```
 %5B%22c.157C%3ET%22%2C%22g.40699840C%3ET%22%5D
 ```
@@ -287,9 +294,11 @@ We decided on this structure since lots of possible single character separators
  are now, or maybe in the future, used as a part of the HGVS nomenclature.
 E.g., the forward slash is used to indicate mosaicism and chimerism, and the
  pipe is used for non-sequence related changes such as loss of methylation.
+
 ```
 https://api.lovd.nl/v2/checkHGVS/%5B%22c.157C%3ET%22%2C%22g.40699840C%3ET%22%5D
 ```
+
 ```json
 {
     "version": 2,
