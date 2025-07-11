@@ -64,10 +64,61 @@ Below is the updated manual for version 2.
 
 
 
+## General information about the output
+Besides the `version` key, all outputs also show the `messages`, `warnings`,
+ `errors`, and `data` keys.
+Note that the first `messages`, `warnings`, and `errors` arrays describe the
+ request as a whole, while those possibly found within the `data` object are
+ specific for the given query.
+Errors are, in general, non-recoverable.
+Warnings are, in general, recoverable and repairable.
+Messages are simply for your information.
+Due to limitations of our implementation of PHP's `json_encode()`, these objects
+ will be arrays when empty.
+This may be corrected in a later version of the API.
+The `data` array contains the output of your query.
+This is empty when the query did not produce any output or if there was a
+ problem with processing your query.
+Otherwise, `data` holds an array of query results; one result per query.
+
+All `messages`, `warnings`, and `errors` within the result objects in the `data`
+ array return a code, e.g., `WWRONGTYPE`, as well as a human-readable text.
+Codes allow you to interpret the meaning of the feedback without the need to
+ read it or rely on the stability of the verbose strings.
+We stress that between different library versions, the strings may be updated.
+Therefore, use the stable codes to recognize the type of feedback given.
+The text is meant for human users, and can be used by you for this purpose.
+
+The first letter of each code describes the type of reply;
+ `I` for information (messages), `W` for warning, and `E` for error.
+This allows you to group these objects if needed, while still being clear on the
+ origin of each entry.
+Note also that errors and warnings exist with similar codes, e.g., `EWRONGTYPE`
+ and `WWRONGTYPE`.
+
+API endpoints that use the
+ [LOVD HGVS library](https://github.com/LOVDnl/HGVS-syntax-checker)
+ also return a `versions` key in the main result object.
+The `versions` object collects all relevant versions related to the library.
+The `library_date` shows the date the internal library that interprets
+ variant descriptions and provides feedback and possible corrections, was
+ updated.
+The `library_version` shows the current version of this library.
+An update to this library will not create a new API version,
+ as the API version defines the behaviour of the API and its output.
+The `HGVS_nomenclature_versions` object shows supported HGVS nomenclature
+ versions for input (minimum, maximum) and for output.
+The `caches` object shows the date that the gene cache has been updated.
+
+
+
+
+
 ## API endpoints
 ### /hello
 Use this method just to see if the API is alive or not.
 If it is, it will return an HTTP 200 status with the following output.
+
 ```json
 {
     "version": 2,
@@ -82,6 +133,164 @@ If it is, it will return an HTTP 200 status with the following output.
 
 #### API possibilities
 This API doesn't support any input.
+
+
+
+### /checkGene (v2 only)
+Validate one or more gene symbols or identifiers using this API.
+It recognizes discontinued gene symbols and aliases.
+The API will return the HGNC ID and the official gene symbol.
+
+#### API possibilities
+The JSON schema for the API output is encoded in the API itself and can be
+ accessed by opening the URL `/checkGene/schema.json`.
+If you want to retrieve the schema for a certain version,
+ use `/v2/checkGene/schema.json`.
+As an example, see https://api.lovd.nl/v2/checkGene/schema.json.
+
+##### Single query
+To submit a single query, e.g., `IVD`, simply add it to the URL.
+If special characters are used, follow the requirements for URL encoding.
+
+```
+https://api.lovd.nl/v2/checkGene/IVD
+```
+
+```json
+{
+    "version": 2,
+    "messages": [
+        "Successfully received 1 query."
+    ],
+    "warnings": [],
+    "errors": [],
+    "data": [
+        {
+            "input": "IVD",
+            "identified_as": "gene_symbol",
+            "identified_as_formatted": "gene symbol",
+            "valid": true,
+            "messages": [],
+            "warnings": [],
+            "errors": [],
+            "data": {
+                "hgnc_id": 6186
+            },
+            "corrected_values": {
+                "IVD": 1
+            }
+        }
+    ],
+    "versions": {
+        "library_date": "2025-07-08",
+        "library_version": "0.5.0",
+        "HGVS_nomenclature_versions": {
+            "input": {
+                "minimum": "15.11",
+                "maximum": "21.1.3"
+            },
+            "output": "21.1.3"
+        },
+        "caches": {
+            "genes": "2025-07-08"
+        }
+    }
+}
+```
+
+The `identified_as` and `identified_as_formatted` fields show whether your
+ query was identified as a gene symbol or an HGNC ID.
+The `valid` boolean shows whether your input was valid; deprecated gene symbols
+ or aliases will return `false` here.
+The `hgnc_id` field will list the HGNC ID for the given gene.
+The `corrected_values` object will list the official gene symbol and the
+ associated confidence score between near-zero and one, indicating how sure the
+ library is that its suggestion represents the gene you meant to describe.
+
+##### Multiple queries
+To submit multiple queries in one request, present them as a
+ JSON array, added to the URL using the standard URL encoding.
+For instance, to submit `BRCA1` and `HGNC:1101` for validation,
+ you should construct an JSON array like so:
+
+```json
+["BRCA1","HGNC:1101"]
+```
+
+which is then URL encoded to:
+
+```
+%5B%22BRCA1%22%2C%22HGNC%3A1101%22%5D
+```
+
+We decided on this structure for compatibility with the `checkHGVS` endpoint.
+Lots of possible single character separators are now,
+ or maybe in the future, used as a part of the HGVS nomenclature.
+E.g., the forward slash is used to indicate mosaicism and chimerism, and the
+ pipe is used for non-sequence related changes such as loss of methylation.
+
+```
+http://localhost/git/api.lovd.nl/src/v2/checkGene/%5B%22BRCA1%22%2C%22HGNC%3A1101%22%5D
+```
+
+```json
+{
+    "version": 2,
+    "messages": [
+        "Successfully received 2 queries."
+    ],
+    "warnings": [],
+    "errors": [],
+    "data": [
+        {
+            "input": "BRCA1",
+            "identified_as": "gene_symbol",
+            "identified_as_formatted": "gene symbol",
+            "valid": true,
+            "messages": [],
+            "warnings": [],
+            "errors": [],
+            "data": {
+                "hgnc_id": 1100
+            },
+            "corrected_values": {
+                "BRCA1": 1
+            }
+        },
+        {
+            "input": "HGNC:1101",
+            "identified_as": "HGNC_ID",
+            "identified_as_formatted": "HGNC ID",
+            "valid": true,
+            "messages": {
+                "ISYMBOLFOUND": "The HGNC ID 1101 points to gene symbol \"BRCA2\"."
+            },
+            "warnings": [],
+            "errors": [],
+            "data": {
+                "hgnc_id": "1101"
+            },
+            "corrected_values": {
+                "BRCA2": 1
+            }
+        }
+    ],
+    "versions": {
+        "library_date": "2025-07-08",
+        "library_version": "0.5.0",
+        "HGVS_nomenclature_versions": {
+            "input": {
+                "minimum": "15.11",
+                "maximum": "21.1.3"
+            },
+            "output": "21.1.3"
+        },
+        "caches": {
+            "genes": "2025-07-08"
+        }
+    }
+}
+```
 
 
 
@@ -101,9 +310,11 @@ As an example, see https://api.lovd.nl/v2/checkHGVS/schema.json.
 ##### Single variant input
 To submit a single variant description, e.g., `NM_002225.3:c.157C>T`, simply add
  it to the URL following the requirements for URL encoding:
+
 ```
 https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157C%3ET
 ```
+
 ```json
 {
     "version": 2,
@@ -153,31 +364,12 @@ https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157C%3ET
 }
 ```
 
-Note that the first `messages`, `warnings`, and `errors` arrays describe the
- request as a whole, while those within the `data` object are specific for the
- given variant.
-Errors are, in general, non-recoverable.
-Warnings are, in general, recoverable and easily repairable.
-Messages are simply for your information.
-Due to limitations of our implementation of PHP's `json_encode()`, these objects
- will be arrays when empty.
-This may be corrected in a later version of the API.
-
-The `versions` object collects all relevant versions related to the library that
- powers this API.
-The `library_date` shows the date the internal library that interprets
- variant descriptions and provides feedback and possible corrections, was
- updated.
-The `library_version` shows the current version of this library.
-An update to this library will not create a new API version,
- as the API version defines the behaviour of the API and its output.
-The `HGVS_nomenclature_versions` object shows supported HGVS nomenclature
- versions for input (minimum, maximum) and for output.
-The `caches` object shows the date that the gene cache have been updated.
+Problems are automatically fixed if possible:
 
 ```
 https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157delCinsT
 ```
+
 ```json
 {
     "version": 2,
@@ -229,20 +421,9 @@ https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157delCinsT
 }
 ```
 
-All `messages`, `warnings`, and `errors` within the `data` object return a code,
- e.g., `WWRONGTYPE`, as well as a human-readable text.
-Codes allow you to interpret the meaning of the feedback without the need to
- read it or rely on the stability of the verbose strings.
-We stress that between different library versions, the strings may be updated.
-Therefore, use the stable codes to recognize the type of feedback given.
-The text is meant for human users, and can be used by you for this purpose.
-
-The first letter of each code describes the type of reply;
- `I` for information (messages), `W` for warning, and `E` for error.
-This allows you to group these objects if needed, while still being clear on the
- origin of each entry.
-Note also that errors and warnings exist with similar codes, e.g., `EWRONGTYPE`
- and `WWRONGTYPE`. 
+Information about `messages`, `warnings`, and `errors` within the `data` object
+ is explained under
+ "[General information about the output](#general-information-about-the-output)".
 
 When requesting a variant that contains incorrect syntax, the API will attempt
  to repair your description.
@@ -256,10 +437,13 @@ To submit multiple variant descriptions in one request, present them as a
  JSON array, added to the URL using the standard URL encoding.
 For instance, to submit `c.157C>T` and `g.40699840C>T` for validation,
  you should construct an JSON array like so:
+
 ```json
 ["c.157C>T","g.40699840C>T"]
 ```
+
 which is then URL encoded to:
+
 ```
 %5B%22c.157C%3ET%22%2C%22g.40699840C%3ET%22%5D
 ```
@@ -268,9 +452,11 @@ We decided on this structure since lots of possible single character separators
  are now, or maybe in the future, used as a part of the HGVS nomenclature.
 E.g., the forward slash is used to indicate mosaicism and chimerism, and the
  pipe is used for non-sequence related changes such as loss of methylation.
+
 ```
 https://api.lovd.nl/v2/checkHGVS/%5B%22c.157C%3ET%22%2C%22g.40699840C%3ET%22%5D
 ```
+
 ```json
 {
     "version": 2,

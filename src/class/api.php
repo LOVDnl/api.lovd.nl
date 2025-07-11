@@ -5,8 +5,7 @@
  * Adapted from /src/class/api.php in the LOVD3 project.
  *
  * Created     : 2022-08-08
- * Modified    : 2025-02-18
- * For LOVD    : 3.0-30
+ * Modified    : 2025-07-10
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -61,6 +60,7 @@ class LOVD_API
 
     // Currently supported resources (resource => array(methods)):
     private $aResourcesSupported = array(
+        'checkGene' => array('GET', 'HEAD'),
         'checkHGVS' => array('GET', 'HEAD'),
         'hello' => array('GET', 'HEAD', 'POST'),
         'openapi.json' => array('GET', 'HEAD'),
@@ -420,7 +420,10 @@ class LOVD_API
         // Processes the GET calls to the API.
 
         // Currently handling the checkHGVS API from api.lovd.nl, and the 'ga4gh' resource, for GA4GH Data Connect.
-        if ($this->sResource == 'checkHGVS') {
+        if ($this->sResource == 'checkGene') {
+            require_once 'class/api.checkHGVS.php';
+            $o = new LOVD_API_checkGene($this);
+        } elseif ($this->sResource == 'checkHGVS') {
             require_once 'class/api.checkHGVS.php';
             $o = new LOVD_API_checkHGVS($this);
         } elseif ($this->sResource == 'ga4gh') {

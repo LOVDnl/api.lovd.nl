@@ -4,7 +4,7 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-08
- * Modified    : 2025-07-09
+ * Modified    : 2025-07-10
  *
  * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
@@ -34,11 +34,90 @@ if (!defined('ROOT_PATH')) {
 
 
 
+class LOVD_API_checkGene extends LOVD_API_checkHGVS
+{
+    // This class defines the LOVD API object handling the checkGene API.
+    // This class extends the LOVD_API_checkHGVS class, since they use the same internal tools.
+
+    public function processGET ($aURLElements, $bReturnBody)
+    {
+        // Handle GET and HEAD requests for the checkGene API, based on the checkHGVS API.
+        $b = parent::processGET($aURLElements, $bReturnBody);
+
+        // If we received no input, change the output message.
+        if (!empty($this->API->aResponse['errors'])
+            && str_ends_with($this->API->aResponse['errors'][0], 'Did you submit a variant?')) {
+            $this->API->aResponse['errors'][0] = str_replace('variant?', 'gene?', $this->API->aResponse['errors'][0]);
+        }
+
+        return $b;
+    }
+
+
+
+
+
+    public function v2_checkGene ($aInput)
+    {
+        // Run the validations, using the new HGVS class approach.
+        if (!file_exists(ROOT_PATH . 'libs/HGVS-syntax-checker/HGVS.php')) {
+            // This API requires the HGVS.php class file from https://github.com/LOVDnl/HGVS-syntax-checker.
+            // If not found, double-check if you ran `git submodule init && git submodule update`.
+            // This repository will not duplicate the code.
+            $this->API->aResponse['errors'][] = 'Could not load the HGVS library.';
+            return false;
+        }
+
+        require ROOT_PATH . 'libs/HGVS-syntax-checker/HGVS.php';
+        $this->API->aResponse['versions'] = HGVS::getVersions();
+
+        $nInput = count($aInput);
+        $this->API->aResponse['messages'][] = "Successfully received $nInput quer" . ($nInput == 1? "y." : "ies.");
+
+        // Now actually handle the request.
+        foreach ($aInput as $sInput) {
+            $this->API->aResponse['data'][] = HGVS_Gene::check($sInput)->getInfo();
+        }
+        return true;
+    }
+
+
+
+
+
+    public function v2_getJSONSchema ()
+    {
+        // Return the JSON Schema for the v2 checkGene response format.
+        // Takes the basics from the checkHGVS output, then makes changes.
+        $aReturn = parent::v2_getJSONSchema();
+
+        // Fix the title and description.
+        $aReturn['title'] = str_replace('checkHGVS', 'checkGene', $aReturn['title']);
+        $aReturn['description'] = str_replace('checkHGVS', 'checkGene', $aReturn['description']);
+
+        // Fix the data specs.
+        $aReturn['properties']['data']['items']['properties']['valid']['description'] = str_replace(
+            'variant description',
+            'gene symbol or identifier',
+            $aReturn['properties']['data']['items']['properties']['valid']['description']
+        );
+        $aReturn['properties']['data']['items']['properties']['data']['oneOf'][1] = $aReturn['properties']['data']['items']['properties']['data']['oneOf'][1]['oneOf'][1];
+        $aReturn['properties']['data']['items']['properties']['corrected_values']['description'] =
+            'The valid gene symbol for the given gene, given with a confidence score. The given value is not necessarily different from the input.';
+
+        return $aReturn;
+    }
+}
+
+
+
+
+
 class LOVD_API_checkHGVS
 {
     // This class defines the LOVD API object handling the checkHGVS API.
 
-    private $API;                     // The API object.
+    protected $API;                   // The API object.
 
 
 
@@ -116,7 +195,7 @@ class LOVD_API_checkHGVS
 
 
         // Check the current version and run that method.
-        $sMethod = 'v' . $this->API->nVersion . '_checkHGVS';
+        $sMethod = str_replace('LOVD_API', 'v' . $this->API->nVersion, get_class($this));
         return call_user_func(array($this, $sMethod), $aInput);
     }
 
