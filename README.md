@@ -207,6 +207,91 @@ The `corrected_values` object will list the official gene symbol and the
  associated confidence score between near-zero and one, indicating how sure the
  library is that its suggestion represents the gene you meant to describe.
 
+##### Multiple queries
+To submit multiple queries in one request, present them as a
+ JSON array, added to the URL using the standard URL encoding.
+For instance, to submit `BRCA1` and `HGNC:1101` for validation,
+ you should construct an JSON array like so:
+
+```json
+["BRCA1","HGNC:1101"]
+```
+
+which is then URL encoded to:
+
+```
+%5B%22BRCA1%22%2C%22HGNC%3A1101%22%5D
+```
+
+We decided on this structure for compatibility with the `checkHGVS` endpoint.
+Lots of possible single character separators are now,
+ or maybe in the future, used as a part of the HGVS nomenclature.
+E.g., the forward slash is used to indicate mosaicism and chimerism, and the
+ pipe is used for non-sequence related changes such as loss of methylation.
+
+```
+http://localhost/git/api.lovd.nl/src/v2/checkGene/%5B%22BRCA1%22%2C%22HGNC%3A1101%22%5D
+```
+
+```json
+{
+    "version": 2,
+    "messages": [
+        "Successfully received 2 queries."
+    ],
+    "warnings": [],
+    "errors": [],
+    "data": [
+        {
+            "input": "BRCA1",
+            "identified_as": "gene_symbol",
+            "identified_as_formatted": "gene symbol",
+            "valid": true,
+            "messages": [],
+            "warnings": [],
+            "errors": [],
+            "data": {
+                "hgnc_id": 1100
+            },
+            "corrected_values": {
+                "BRCA1": 1
+            }
+        },
+        {
+            "input": "HGNC:1101",
+            "identified_as": "HGNC_ID",
+            "identified_as_formatted": "HGNC ID",
+            "valid": true,
+            "messages": {
+                "ISYMBOLFOUND": "The HGNC ID 1101 points to gene symbol \"BRCA2\"."
+            },
+            "warnings": [],
+            "errors": [],
+            "data": {
+                "hgnc_id": "1101"
+            },
+            "corrected_values": {
+                "BRCA2": 1
+            }
+        }
+    ],
+    "versions": {
+        "library_date": "2025-07-08",
+        "library_version": "0.5.0",
+        "HGVS_nomenclature_versions": {
+            "input": {
+                "minimum": "15.11",
+                "maximum": "21.1.3"
+            },
+            "output": "21.1.3"
+        },
+        "caches": {
+            "genes": "2025-07-08"
+        }
+    }
+}
+```
+
 
 
 ### /checkHGVS
