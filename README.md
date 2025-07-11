@@ -64,6 +64,56 @@ Below is the updated manual for version 2.
 
 
 
+## General information about the output
+Besides the `version` key, all outputs also show the `messages`, `warnings`,
+ `errors`, and `data` keys.
+Note that the first `messages`, `warnings`, and `errors` arrays describe the
+ request as a whole, while those possibly found within the `data` object are
+ specific for the given query.
+Errors are, in general, non-recoverable.
+Warnings are, in general, recoverable and repairable.
+Messages are simply for your information.
+Due to limitations of our implementation of PHP's `json_encode()`, these objects
+ will be arrays when empty.
+This may be corrected in a later version of the API.
+The `data` array contains the output of your query.
+This is empty when the query did not produce any output or if there was a
+ problem with processing your query.
+Otherwise, `data` holds an array of query results; one result per query.
+
+All `messages`, `warnings`, and `errors` within the result objects in the `data`
+ array return a code, e.g., `WWRONGTYPE`, as well as a human-readable text.
+Codes allow you to interpret the meaning of the feedback without the need to
+ read it or rely on the stability of the verbose strings.
+We stress that between different library versions, the strings may be updated.
+Therefore, use the stable codes to recognize the type of feedback given.
+The text is meant for human users, and can be used by you for this purpose.
+
+The first letter of each code describes the type of reply;
+ `I` for information (messages), `W` for warning, and `E` for error.
+This allows you to group these objects if needed, while still being clear on the
+ origin of each entry.
+Note also that errors and warnings exist with similar codes, e.g., `EWRONGTYPE`
+ and `WWRONGTYPE`.
+
+API endpoints that use the
+ [LOVD HGVS library](https://github.com/LOVDnl/HGVS-syntax-checker)
+ also return a `versions` key in the main result object.
+The `versions` object collects all relevant versions related to the library.
+The `library_date` shows the date the internal library that interprets
+ variant descriptions and provides feedback and possible corrections, was
+ updated.
+The `library_version` shows the current version of this library.
+An update to this library will not create a new API version,
+ as the API version defines the behaviour of the API and its output.
+The `HGVS_nomenclature_versions` object shows supported HGVS nomenclature
+ versions for input (minimum, maximum) and for output.
+The `caches` object shows the date that the gene cache has been updated.
+
+
+
+
+
 ## API endpoints
 ### /hello
 Use this method just to see if the API is alive or not.
@@ -153,27 +203,7 @@ https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157C%3ET
 }
 ```
 
-Note that the first `messages`, `warnings`, and `errors` arrays describe the
- request as a whole, while those within the `data` object are specific for the
- given variant.
-Errors are, in general, non-recoverable.
-Warnings are, in general, recoverable and easily repairable.
-Messages are simply for your information.
-Due to limitations of our implementation of PHP's `json_encode()`, these objects
- will be arrays when empty.
-This may be corrected in a later version of the API.
-
-The `versions` object collects all relevant versions related to the library that
- powers this API.
-The `library_date` shows the date the internal library that interprets
- variant descriptions and provides feedback and possible corrections, was
- updated.
-The `library_version` shows the current version of this library.
-An update to this library will not create a new API version,
- as the API version defines the behaviour of the API and its output.
-The `HGVS_nomenclature_versions` object shows supported HGVS nomenclature
- versions for input (minimum, maximum) and for output.
-The `caches` object shows the date that the gene cache have been updated.
+Problems are automatically fixed if possible:
 
 ```
 https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157delCinsT
@@ -229,20 +259,9 @@ https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157delCinsT
 }
 ```
 
-All `messages`, `warnings`, and `errors` within the `data` object return a code,
- e.g., `WWRONGTYPE`, as well as a human-readable text.
-Codes allow you to interpret the meaning of the feedback without the need to
- read it or rely on the stability of the verbose strings.
-We stress that between different library versions, the strings may be updated.
-Therefore, use the stable codes to recognize the type of feedback given.
-The text is meant for human users, and can be used by you for this purpose.
-
-The first letter of each code describes the type of reply;
- `I` for information (messages), `W` for warning, and `E` for error.
-This allows you to group these objects if needed, while still being clear on the
- origin of each entry.
-Note also that errors and warnings exist with similar codes, e.g., `EWRONGTYPE`
- and `WWRONGTYPE`. 
+Information about `messages`, `warnings`, and `errors` within the `data` object
+ is explained under
+ "[General information about the output](#general-information-about-the-output)".
 
 When requesting a variant that contains incorrect syntax, the API will attempt
  to repair your description.
