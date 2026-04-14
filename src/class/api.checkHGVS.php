@@ -4,9 +4,9 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-08
- * Modified    : 2025-07-10
+ * Modified    : 2026-04-14
  *
- * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
+ * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
  *
  *
@@ -69,14 +69,14 @@ class LOVD_API_checkGene extends LOVD_API_checkHGVS
         }
 
         require ROOT_PATH . 'libs/HGVS-syntax-checker/HGVS.php';
-        $this->API->aResponse['versions'] = HGVS::getVersions();
+        $this->API->aResponse['versions'] = LOVD\HGVS\HGVS::getVersions();
 
         $nInput = count($aInput);
         $this->API->aResponse['messages'][] = "Successfully received $nInput quer" . ($nInput == 1? "y." : "ies.");
 
         // Now actually handle the request.
         foreach ($aInput as $sInput) {
-            $this->API->aResponse['data'][] = HGVS_Gene::check($sInput)->getInfo();
+            $this->API->aResponse['data'][] = LOVD\HGVS\HGVS_Gene::check($sInput)->getInfo();
         }
         return true;
     }
@@ -358,7 +358,7 @@ class LOVD_API_checkHGVS
         }
 
         require ROOT_PATH . 'libs/HGVS-syntax-checker/HGVS.php';
-        $this->API->aResponse['versions'] = HGVS::getVersions();
+        $this->API->aResponse['versions'] = LOVD\HGVS\HGVS::getVersions();
 
         // v1 used to have a check here for unique input, but since we format the output differently, we don't care.
         $nInput = count($aInput);
@@ -368,7 +368,7 @@ class LOVD_API_checkHGVS
 
         // Now actually handle the request.
         foreach ($aInput as $sVariant) {
-            $aResponse = HGVS::checkVariant($sVariant)->allowMissingReferenceSequence()->getInfo();
+            $aResponse = LOVD\HGVS\HGVS::checkVariant($sVariant)->allowMissingReferenceSequence()->getInfo();
 
             // In case it's set, we don't care about WNOTSUPPORTED. We won't validate anyway,
             //  and this warning is thrown only for HGVS-compliant descriptions.
