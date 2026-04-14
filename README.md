@@ -44,9 +44,9 @@ To make sure this doesn't harm your application,
  you can instruct the API to use a fixed version.
 To do so, you must include the API's version in the URL.
 For instance, to always use
- [version 1](https://api.lovd.nl/v1/checkHGVS/NM_002225.3%3Ac.157C%3ET)
+ [version 1](https://api.lovd.nl/v1/checkHGVS/NM_002225.5%3Ac.157C%3ET)
  of the API, even with
- [version 2](https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157C%3ET)
+ [version 2](https://api.lovd.nl/v2/checkHGVS/NM_002225.5%3Ac.157C%3ET)
  now released, use `/v1/checkHGVS` instead of `/checkHGVS`.
 _When you're not supplying a version number in the URL,
  the API will automatically use the latest version._
@@ -310,11 +310,11 @@ If you want to retrieve the schema for a certain version,
 As an example, see https://api.lovd.nl/v2/checkHGVS/schema.json.
 
 ##### Single variant input
-To submit a single variant description, e.g., `NM_002225.3:c.157C>T`, simply add
+To submit a single variant description, e.g., `NM_002225.5:c.157C>T`, simply add
  it to the URL following the requirements for URL encoding:
 
 ```
-https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157C%3ET
+https://api.lovd.nl/v2/checkHGVS/NM_002225.5%3Ac.157C%3ET
 ```
 
 ```json
@@ -329,7 +329,7 @@ https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157C%3ET
     "errors": [],
     "data": [
         {
-            "input": "NM_002225.3:c.157C>T",
+            "input": "NM_002225.5:c.157C>T",
             "identified_as": "full_variant_DNA",
             "identified_as_formatted": "full variant (DNA)",
             "valid": true,
@@ -346,7 +346,7 @@ https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157C%3ET
                 "type": ">"
             },
             "corrected_values": {
-                "NM_002225.3:c.157C>T": 1
+                "NM_002225.5:c.157C>T": 1
             }
         }
     ],
@@ -371,7 +371,7 @@ https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157C%3ET
 Problems are automatically fixed if possible:
 
 ```
-https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157delCinsT
+https://api.lovd.nl/v2/checkHGVS/NM_002225.5%3Ac.157delCinsT
 ```
 
 ```json
@@ -386,7 +386,7 @@ https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157delCinsT
     "errors": [],
     "data": [
         {
-            "input": "NM_002225.3:c.157delCinsT",
+            "input": "NM_002225.5:c.157delCinsT",
             "identified_as": "full_variant_DNA",
             "identified_as_formatted": "full variant (DNA)",
             "valid": false,
