@@ -182,8 +182,8 @@ https://api.lovd.nl/v2/checkGene/IVD
         }
     ],
     "versions": {
-        "library_date": "2025-07-08",
-        "library_version": "0.5.0",
+        "library_date": "2026-04-14",
+        "library_version": "1.1.2",
         "HGVS_nomenclature_versions": {
             "input": {
                 "minimum": "15.11",
@@ -192,7 +192,8 @@ https://api.lovd.nl/v2/checkGene/IVD
             "output": "21.1.3"
         },
         "caches": {
-            "genes": "2025-07-08"
+            "genes": "2026-04-14",
+            "transcripts": "2026-04-14"
         }
     }
 }
@@ -230,7 +231,7 @@ E.g., the forward slash is used to indicate mosaicism and chimerism, and the
  pipe is used for non-sequence related changes such as loss of methylation.
 
 ```
-http://localhost/git/api.lovd.nl/src/v2/checkGene/%5B%22BRCA1%22%2C%22HGNC%3A1101%22%5D
+https://api.lovd.nl/v2/checkGene/%5B%22BRCA1%22%2C%22HGNC%3A1101%22%5D
 ```
 
 ```json
@@ -268,7 +269,7 @@ http://localhost/git/api.lovd.nl/src/v2/checkGene/%5B%22BRCA1%22%2C%22HGNC%3A110
             "warnings": [],
             "errors": [],
             "data": {
-                "hgnc_id": "1101"
+                "hgnc_id": 1101
             },
             "corrected_values": {
                 "BRCA2": 1
@@ -276,8 +277,8 @@ http://localhost/git/api.lovd.nl/src/v2/checkGene/%5B%22BRCA1%22%2C%22HGNC%3A110
         }
     ],
     "versions": {
-        "library_date": "2025-07-08",
-        "library_version": "0.5.0",
+        "library_date": "2026-04-14",
+        "library_version": "1.1.2",
         "HGVS_nomenclature_versions": {
             "input": {
                 "minimum": "15.11",
@@ -286,7 +287,8 @@ http://localhost/git/api.lovd.nl/src/v2/checkGene/%5B%22BRCA1%22%2C%22HGNC%3A110
             "output": "21.1.3"
         },
         "caches": {
-            "genes": "2025-07-08"
+            "genes": "2026-04-14",
+            "transcripts": "2026-04-14"
         }
     }
 }
@@ -335,6 +337,7 @@ https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157C%3ET
             "warnings": [],
             "errors": [],
             "data": {
+                "hgnc_id": 6186,
                 "position_start": 157,
                 "position_end": 157,
                 "position_start_intron": 0,
@@ -348,8 +351,8 @@ https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157C%3ET
         }
     ],
     "versions": {
-        "library_date": "2025-07-08",
-        "library_version": "0.5.0",
+        "library_date": "2026-04-14",
+        "library_version": "1.1.2",
         "HGVS_nomenclature_versions": {
             "input": {
                 "minimum": "15.11",
@@ -358,7 +361,8 @@ https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157C%3ET
             "output": "21.1.3"
         },
         "caches": {
-            "genes": "2025-07-08"
+            "genes": "2026-04-14",
+            "transcripts": "2026-04-14"
         }
     }
 }
@@ -392,6 +396,7 @@ https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157delCinsT
             },
             "errors": [],
             "data": {
+                "hgnc_id": 6186,
                 "position_start": 157,
                 "position_end": 157,
                 "position_start_intron": 0,
@@ -400,13 +405,13 @@ https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157delCinsT
                 "type": "delins"
             },
             "corrected_values": {
-                "NM_002225.3:c.157C>T": 1
+                "NM_002225.5:c.157C>T": 1
             }
         }
     ],
     "versions": {
-        "library_date": "2025-07-08",
-        "library_version": "0.5.0",
+        "library_date": "2026-04-14",
+        "library_version": "1.1.2",
         "HGVS_nomenclature_versions": {
             "input": {
                 "minimum": "15.11",
@@ -415,7 +420,8 @@ https://api.lovd.nl/v2/checkHGVS/NM_002225.3%3Ac.157delCinsT
             "output": "21.1.3"
         },
         "caches": {
-            "genes": "2025-07-08"
+            "genes": "2026-04-14",
+            "transcripts": "2026-04-14"
         }
     }
 }
@@ -512,8 +518,8 @@ https://api.lovd.nl/v2/checkHGVS/%5B%22c.157C%3ET%22%2C%22g.40699840C%3ET%22%5D
         }
     ],
     "versions": {
-        "library_date": "2025-07-08",
-        "library_version": "0.5.0",
+        "library_date": "2026-04-14",
+        "library_version": "1.1.2",
         "HGVS_nomenclature_versions": {
             "input": {
                 "minimum": "15.11",
@@ -522,7 +528,8 @@ https://api.lovd.nl/v2/checkHGVS/%5B%22c.157C%3ET%22%2C%22g.40699840C%3ET%22%5D
             "output": "21.1.3"
         },
         "caches": {
-            "genes": "2025-07-08"
+            "genes": "2026-04-14",
+            "transcripts": "2026-04-14"
         }
     }
 }
