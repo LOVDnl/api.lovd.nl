@@ -4,10 +4,10 @@
  * LEIDEN OPEN VARIATION DATABASE (LOVD)
  *
  * Created     : 2022-08-16
- * Modified    : 2025-02-19
+ * Modified    : 2026-04-14
  * For LOVD    : 3.0-29
  *
- * Copyright   : 2004-2025 Leiden University Medical Center; http://www.LUMC.nl/
+ * Copyright   : 2004-2026 Leiden University Medical Center; http://www.LUMC.nl/
  * Programmer  : Ivo F.A.C. Fokkema <I.F.A.C.Fokkema@LUMC.nl>
  *
  *
@@ -1298,14 +1298,18 @@ $aTests = array(
             'identified_as' => 'full_variant_DNA',
             'identified_as_formatted' => 'full variant (DNA)',
             'valid' => false,
+            'messages' => array(
+                'IREFSEQVERSION' => 'Consider updating your use of NM_000277 to a newer version (e.g., NM_000277.3).',
+            ),
             'warnings' => array(
                 'WSUFFIXFORMAT' => 'The part after "del" does not follow HGVS guidelines.',
                 'WSUFFIXGIVEN' => 'The deleted sequence is redundant and should be removed.',
             ),
             'errors' => array(
-                'EWRONGREFERENCE' => 'A genomic transcript reference sequence is required to verify intronic positions.',
+                'EWRONGREFERENCE' => 'To verify intronic positions, add a genomic context to the transcript reference sequence.',
             ),
             'data' => array(
+                'hgnc_id' => 8582,
                 'position_start' => 838,
                 'position_end' => 842,
                 'position_start_intron' => 0,
@@ -1458,10 +1462,14 @@ foreach ($aTests[$nVersion] as $aExpectedOutput) {
     }
 
     if (!isset($aOutput['versions'])
-        || array_keys($aOutput['versions']) != ['library_version', 'HGVS_nomenclature_versions']
+        || array_keys($aOutput['versions']) != ['library_date', 'library_version', 'HGVS_nomenclature_versions', 'caches']
+        || !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $aOutput['versions']['library_date'])
+        || !preg_match('/^[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}$/', $aOutput['versions']['library_version'])
         || array_keys($aOutput['versions']['HGVS_nomenclature_versions']) != ['input', 'output']
         || array_keys($aOutput['versions']['HGVS_nomenclature_versions']['input']) != ['minimum', 'maximum']
-        || !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $aOutput['versions']['library_version'])) {
+        || array_keys($aOutput['versions']['caches']) != ['genes', 'transcripts']
+        || !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $aOutput['versions']['caches']['genes'])
+        || !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $aOutput['versions']['caches']['transcripts'])) {
         // Error...
         $aDifferences[$nTests] = array($nVersion, $sVariant, $aExpectedOutput, $aOutput);
         echo 'E';
